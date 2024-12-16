@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 export default function Demo() {
 
   const { address } = useAccount()
-  const { createToken } = useContract()
+  const { createToken, buy, sell } = useContract()
   const [name, setName] = useState('')
   const [symbol, setSymbol] = useState('')
   const [tx, setTx] = useState('')
@@ -51,6 +51,15 @@ export default function Demo() {
     }).then(res => res.json())
     setSignature(res.data)
   }
+
+  const handleBuyToken = async () => {
+    await buy('0x1c392906d0ff47f28e51219830a11fa9da7cccc7', 1, 0.1)
+  }
+
+  const handleSellToken = async () => {
+    await sell('0x1c392906d0ff47f28e51219830a11fa9da7cccc7', 5000000, 0.1)
+  }
+
 
   return (
     <div className='px-[10vw] py-4'>
@@ -95,6 +104,16 @@ export default function Demo() {
         <CardFooter>
           <Button onClick={handleGenerateSignature}>Submit</Button>
           <span className="ml-2">{signature}</span>
+        </CardFooter>
+      </Card>
+
+      <Card className='mt-10'>
+        <CardHeader>
+          <CardTitle>Buy/Sell Token</CardTitle>
+        </CardHeader>
+        <CardFooter>
+          <Button onClick={handleBuyToken}>Buy</Button>
+          <Button onClick={handleSellToken}>Sell</Button>
         </CardFooter>
       </Card>
     </div>

@@ -13,6 +13,9 @@ import FarcasterProvider from "@/hooks/farcaster";
 import { AuthKitProvider } from "@farcaster/auth-kit";
 
 dayjs.extend(relativeTime);
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

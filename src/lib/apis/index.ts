@@ -42,7 +42,7 @@ export const setUpApi = async (data: { address: string; picture: string; website
 };
 
 export const getSignatureApi = async (fcMessage: string, fcSignature: string, commitment: Commitment) => {
-  const res = await request("/api/token/signature", {
+  const res = await request("/api/signature", {
     method: "post",
     data: {
       fcMessage,

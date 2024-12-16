@@ -64,7 +64,8 @@ export function useContract() {
       sqrtPriceLimitX96: BigInt(0),
       expired: BigInt(Math.floor(Date.now()) + 60 * 100)
     }
-    const buySignature = await getSignatureApi(message!, signature!, commitment)
+    const buySignatureRes = await getSignatureApi(message!, signature!, commitment)
+    const buySignature = buySignatureRes.data
     const tx = await writeContractAsync({
       address: token,
       abi: ABIs.HaresAbi,

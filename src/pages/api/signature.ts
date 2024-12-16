@@ -2,9 +2,10 @@
 import { Address, contractAddress, mainChain } from "@/lib/constant";
 import { Commitment } from "@/lib/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createWalletClient, http } from "viem";
 import { signTypedData, toAccount } from 'viem/accounts'
-import { privateKeyToAccount } from "viem/accounts";
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
 
 export default async function handler (
   req: NextApiRequest,
