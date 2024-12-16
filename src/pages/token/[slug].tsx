@@ -91,7 +91,7 @@ export default function Token() {
   ];
 
   async function fetchHistory(ca: Address) {
-    const res = await getHistoryApi({ address: ca });
+    const res = await getHistoryApi({ address: ca.toLocaleLowerCase() as Address });
     console.log("getHistoryApi", res);
     setHistoryList(res?.data ?? []);
   }
