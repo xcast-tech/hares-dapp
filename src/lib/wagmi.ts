@@ -8,7 +8,7 @@ const connectors = connectorsForWallets(
   [
     {
       groupName: "Recommended",
-      wallets: [metaMaskWallet, binanceWallet],
+      wallets: [metaMaskWallet],
     },
     {
       groupName: "Popular",
