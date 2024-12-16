@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 export default function Demo() {
 
   const { address } = useAccount()
-  const { createToken, buy, sell } = useContract()
+  const { createToken, buy, sell, getTokenPoolAddress, getCurrentSqrtPriceX96 } = useContract()
   const [name, setName] = useState('')
   const [symbol, setSymbol] = useState('')
   const [tx, setTx] = useState('')
@@ -53,13 +53,19 @@ export default function Demo() {
   }
 
   const handleBuyToken = async () => {
-    await buy('0x1c392906d0ff47f28e51219830a11fa9da7cccc7', 1, 0.1)
+    await buy('0xe975ff9748f37c82071c9217e1bf8e39cd251256', 1, 0.1)
   }
 
   const handleSellToken = async () => {
-    await sell('0x1c392906d0ff47f28e51219830a11fa9da7cccc7', 5000000, 0.1)
+    await sell('0xe975ff9748f37c82071c9217e1bf8e39cd251256', 5000000, 0.1)
   }
 
+  const testGetSqrtX96 = async () => {
+    const poolAddress = await getTokenPoolAddress('0xe975ff9748f37c82071c9217e1bf8e39cd251256')
+    console.log(poolAddress)
+    const sqrtX96 = await getCurrentSqrtPriceX96(poolAddress)
+    console.log(sqrtX96)
+  }
 
   return (
     <div className='px-[10vw] py-4'>
@@ -114,6 +120,7 @@ export default function Demo() {
         <CardFooter>
           <Button onClick={handleBuyToken}>Buy</Button>
           <Button onClick={handleSellToken}>Sell</Button>
+          <Button onClick={testGetSqrtX96}>TestGetSqrtX96</Button>
         </CardFooter>
       </Card>
     </div>

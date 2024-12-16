@@ -4,6 +4,7 @@ import BondingCurveAbi from './abi/BondingCurve'
 import HaresFactoryAbi from './abi/HaresFactory'
 import HaresAbi from './abi/Hares'
 import HaresValidatorAbi from './abi/HaresValidator'
+import UniswapV3Pool from './abi/UniswapV3Pool'
 
 export type Address = `0x${string}`
 export const mainChain = polygon
@@ -11,6 +12,7 @@ export const contractAddress = {
   BondingCurve: '0x329021C690a25217384BE9Cc5D7173Cdfc3A18Cb' as Address,
   HaresValidator: '0xDd6A3990FC4E39281daa1593c2Ca0AEC9525a130' as Address,
   HaresFactory: '0x623fDeEDA888AD5D14D05033022EE94be8E850d6' as Address,
+  WETH: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270' as Address,
 }
 
 export const ABIs = {
@@ -18,6 +20,7 @@ export const ABIs = {
   HaresFactoryAbi,
   HaresAbi,
   HaresValidatorAbi,
+  UniswapV3Pool
 }
 
 export const EventTopic: Record<string, string> = {

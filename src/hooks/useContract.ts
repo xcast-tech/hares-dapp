@@ -1,7 +1,7 @@
 import { getSignatureApi } from "@/lib/apis";
 import { ABIs, contractAddress, EventTopic } from "@/lib/constant"
 import { Address } from "@/lib/types"
-import { getEthBuyQuote, getTokenSellQuote } from "@/lib/utils";
+import { getEthBuyQuote, getSqrtPriceLimitX96, getTokenSellQuote } from "@/lib/utils";
 import { useSignInMessage } from "@farcaster/auth-kit";
 import { decodeEventLog, parseEther } from "viem"
 import { useAccount, usePublicClient, useWriteContract } from "wagmi"
@@ -50,18 +50,54 @@ export function useContract() {
     return res
   }
 
+  async function getTokenPoolAddress(token: Address) {
+    if (!publicClient) {
+      return 0
+    }
+    const res = await publicClient?.readContract({
+      address: token,
+      abi: ABIs.HaresAbi,
+      functionName: 'poolAddress',
+      args: [],
+    })
+    return res
+  }
+
+  async function getCurrentSqrtPriceX96(pool: Address) {
+    if (!publicClient) {
+      return 0
+    }
+    const res = await publicClient?.readContract({
+      address: pool,
+      abi: ABIs.UniswapV3Pool,
+      functionName: 'slot0',
+      args: [],
+    })
+    return res[0]
+  }
+
   async function buy(token: Address, eth: number, slipage: number) {
     if (!address) {
       return
     }
     const currentSupply = await getCurrentSupply(token)
+    let minOrderSize = BigInt(0)
+    let sqrtPriceLimitX96 = BigInt(0)
     const buyQuote = Number(getEthBuyQuote(Number(currentSupply) / 1e18, eth))
+    if (currentSupply > 8e26) {
+      const poolAddress = await getTokenPoolAddress(token)
+      const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address)
+      const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token)
+      sqrtPriceLimitX96 = BigInt(getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true))
+    } else {
+      minOrderSize = BigInt(Math.floor(buyQuote * (1 - slipage)))
+    }
     const commitment = {
       value: parseEther(eth.toString()),
       recipient: address,
       refundRecipient: address,
-      minOrderSize: BigInt(Math.floor(buyQuote * (1 - slipage))),
-      sqrtPriceLimitX96: BigInt(0),
+      minOrderSize,
+      sqrtPriceLimitX96,
       expired: BigInt(Math.floor(Date.now()) + 60 * 100)
     }
     const buySignatureRes = await getSignatureApi(message!, signature!, commitment)
@@ -86,12 +122,22 @@ export function useContract() {
     }
     const currentSupply = await getCurrentSupply(token)
     const sellQuote = Number(getTokenSellQuote(Number(currentSupply) / 1e18, tokenToSell))
-    
+
+    let minOrderSize = BigInt(0)
+    let sqrtPriceLimitX96 = BigInt(0)
+    if (currentSupply > 8e26) {
+      const poolAddress = await getTokenPoolAddress(token)
+      const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address)
+      const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token)
+      sqrtPriceLimitX96 = BigInt(getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, false))
+    } else {
+      minOrderSize = BigInt(Math.floor(sellQuote * (1 - slipage)))
+    }
     const tx = await writeContractAsync({
       address: token,
       abi: ABIs.HaresAbi,
       functionName: 'sell',
-      args: [parseEther(tokenToSell.toString()), address, BigInt(Math.floor(sellQuote * (1 - slipage))), BigInt(0)],
+      args: [parseEther(tokenToSell.toString()), address, minOrderSize, sqrtPriceLimitX96],
       // gas,
     })
     const res = await publicClient?.waitForTransactionReceipt({
@@ -103,6 +149,8 @@ export function useContract() {
   return {
     createToken,
     getCurrentSupply,
+    getTokenPoolAddress,
+    getCurrentSqrtPriceX96,
     buy,
     sell
   }
