@@ -18,7 +18,7 @@ function Token({ detail }: TokenProps) {
         </div>
         <div>
           <div>created {dayjs().to(dayjs(detail?.created_at))}</div>
-          <div className="text-green-400">market cap: ${formatThousandNumber(+detail?.marketCap)}</div>
+          {/* <div className="text-green-400">market cap: ${formatThousandNumber(+detail?.marketCap)}</div> */}
           <div>
             <span className="font-bold mr-1">{detail?.name}:</span>
             <span>{detail?.desc || "-"}</span>

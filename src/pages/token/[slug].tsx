@@ -186,10 +186,10 @@ export default function Token() {
                 {detail?.name} ({detail?.symbol})
               </div>
               <div>created {dayjs().to(dayjs(detail?.created_at))}</div>
-              <div className="text-green-400">market cap: ${formatNumber(+(detail?.marketCap || ""), 0)}</div>
+              {/* <div className="text-green-400">market cap: ${formatNumber(+(detail?.marketCap || ""), 0)}</div> */}
             </div>
           </div>
-          {ethPrice && <TVChart data={getKChartData(historyList, ethPrice)} />}
+          {!!ethPrice && <TVChart data={getKChartData(historyList, ethPrice)} />}
         </div>
 
         <div>
