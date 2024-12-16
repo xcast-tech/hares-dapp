@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { useContract } from '@/hooks/useContract';
 import { useAccount } from 'wagmi';
 import { Label } from '@/components/ui/label';
+import { Address } from '@/lib/types';
 
 export default function Demo() {
 
@@ -53,7 +54,7 @@ export default function Demo() {
   }
 
   const handleBuyToken = async () => {
-    await buy('0xe975ff9748f37c82071c9217e1bf8e39cd251256', 1, 0.1)
+    await buy('0x1c392906d0ff47f28e51219830a11fa9da7cccc7', 0.001, 0.1)
   }
 
   const handleSellToken = async () => {
@@ -63,7 +64,7 @@ export default function Demo() {
   const testGetSqrtX96 = async () => {
     const poolAddress = await getTokenPoolAddress('0xe975ff9748f37c82071c9217e1bf8e39cd251256')
     console.log(poolAddress)
-    const sqrtX96 = await getCurrentSqrtPriceX96(poolAddress)
+    const sqrtX96 = await getCurrentSqrtPriceX96(poolAddress as Address)
     console.log(sqrtX96)
   }
 

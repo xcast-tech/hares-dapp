@@ -1,3 +1,4 @@
+import { Address } from "../constant";
 import { Commitment } from "../types";
 import { request } from "./request";
 
@@ -52,3 +53,15 @@ export const getSignatureApi = async (fcMessage: string, fcSignature: string, co
   });
   return res?.data;
 }
+
+export interface HistoryApiData {
+  address: Address;
+}
+
+export const getHistoryApi = async (data: HistoryApiData) => {
+  const res = await request("/api/trade/history", {
+    method: "post",
+    params: data,
+  });
+  return res?.data;
+};

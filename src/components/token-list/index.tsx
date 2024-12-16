@@ -11,7 +11,7 @@ interface TokenProps {
 
 function Token({ detail }: TokenProps) {
   return (
-    <Link href={`/coin/${detail?.address}`}>
+    <Link href={`/token/${detail?.address}`}>
       <div className="p-2 flex gap-2">
         <div>
           <div className="w-[100px] h-[100px] relative">{detail?.picture && <Image fill alt="" src={detail?.picture} />}</div>
