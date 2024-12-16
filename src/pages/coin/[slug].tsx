@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { use, useEffect, useState } from "react";
 import { Info } from "@/components/info";
 import { TVChart } from "@/components/tvchart";
-import { tokenApi } from "@/lib/apis";
+import { getHistoryApi, tokenApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken } from "@/lib/types";
 import dayjs from "dayjs";
@@ -87,6 +87,11 @@ export default function Token() {
     },
   ];
 
+  async function fetchHistory(ca: Address) {
+    const history = await getHistoryApi({ address: ca})
+    console.log('getHistoryApi', history)
+  }
+
   async function fetchToken(ca: string) {
     const res = await tokenApi({
       address: ca,
@@ -156,6 +161,7 @@ export default function Token() {
   useEffect(() => {
     if (ca) {
       fetchToken(ca);
+      fetchHistory(ca);
     }
   }, [ca]);
 
