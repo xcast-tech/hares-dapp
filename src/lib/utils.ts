@@ -73,7 +73,7 @@ export function getTokenSellQuote(currentSupply: number, tokenToSell: number) {
   return BigInt(Math.floor(delta))
 }
 
-export function getSqrtPriceLimitX96(sqrtPriceLimitX96: number, slippage: number, isWETHToken0: boolean, isBuy: boolean) {
+export function getSqrtPriceLimitX96(sqrtPriceLimitX96: number | bigint, slippage: number, isWETHToken0: boolean, isBuy: boolean) {
   if (isWETHToken0 && isBuy) {
     return Number(sqrtPriceLimitX96) * (1 - slippage)
   }
