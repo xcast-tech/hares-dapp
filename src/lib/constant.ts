@@ -1,0 +1,34 @@
+import { polygon } from "viem/chains";
+
+import BondingCurveAbi from './abi/BondingCurve'
+import HaresFactoryAbi from './abi/HaresFactory'
+import HaresAbi from './abi/Hares'
+import HaresValidatorAbi from './abi/HaresValidator'
+
+export type Address = `0x${string}`
+export const mainChain = polygon
+export const contractAddress = {
+  BondingCurve: '0x329021C690a25217384BE9Cc5D7173Cdfc3A18Cb' as Address,
+  HaresValidator: '0xDd6A3990FC4E39281daa1593c2Ca0AEC9525a130' as Address,
+  HaresFactory: '0x623fDeEDA888AD5D14D05033022EE94be8E850d6' as Address,
+}
+
+export const ABIs = {
+  BondingCurveAbi,
+  HaresFactoryAbi,
+  HaresAbi,
+  HaresValidatorAbi,
+}
+
+export const EventTopic: Record<string, string> = {
+  HaresTokenCreated: '0x513260abbe38eb57e6cca56fe20a92384793c4d1192afba9e393d7c7b2ea5588',
+  HaresTokenTransfer: '0x1b8d7365dae3cd94c61c4353507a591533f5b24569ad4792690b605287eb3399',
+  HaresTokenBuy: '0x53aedb61808d0c6b119592ca2d3e621372bd951061604f945887f28270c172f0',
+  HaresTokenSell: '0xccd08e8d623ae7c390b796d06f88141f7f458b173dad570718c9a2716f3b2d7b',
+  HaresMarketGraduated: '0x9d436d1d2465f3ad09e9f3badd64e111aa2ab084f06f755ee55dc8557c596f75',
+}
+
+export const BondingCurveConfig = {
+  A: 750000000,
+  B: 4000000000,
+}

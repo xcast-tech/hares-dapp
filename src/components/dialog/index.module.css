@@ -1,0 +1,39 @@
+@keyframes slideUp {
+  0% { transform: translateY(100%) };
+  100% { transform: translateY(0) };
+}
+
+@keyframes identifier {
+  0% { opacity: 0 };
+  100% { opacity: 1 };
+
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0 };
+  100% { opacity: 1 };
+}
+
+.overlay {
+  backdrop-filter: modalOverlay;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  animation: fadeIn 150ms ease;
+  bottom: -200px;
+  left: -200px;
+  padding: 200px;
+  right: -200px;
+  top: -200px;
+  transform: translateZ(0);
+  z-index: 999999999;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: slideUp 350ms cubic-bezier(.15,1.15,0.6,1.00), fadeIn 150ms ease;
+  max-width: 100vw;
+}

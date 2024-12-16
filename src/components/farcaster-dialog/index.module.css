@@ -1,0 +1,54 @@
+.body {
+  background-color: white;
+  font-family: Inter, sans-serif;
+  letter-spacing: -0.09px;
+  border-radius: 12px;
+  max-width: 330px;
+  position: relative;
+  padding: 40px 30px;
+  background-color: #202325;
+}
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+}
+
+.siwfHeading {
+  line-height: 32px;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #F8F5F7;
+}
+
+.instructions {
+  font-size: 14px;
+  line-height: 20px;
+  color: #A4A4A4;
+}
+
+.signUp {
+  text-decoration: none;
+  color: #7C65C1;
+}
+
+
+.createAccount {
+  margin-top: 8px;
+  font-size: 15.5px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.qrCodeImage {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  margin-bottom: 16px;
+  border-color: #DFDFDF1A;
+  padding: 15px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 12px;
+}
