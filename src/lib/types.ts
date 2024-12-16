@@ -38,3 +38,12 @@ export type Commitment = {
   sqrtPriceLimitX96: BigInt | number
   expired: BigInt | number
 }
+
+export type Trade = {
+  type: 0  | 1,
+  recipient: Address,
+  trueOrderSize: string,
+  totalSupply: string,
+  trueEth: string,
+  timestamp: number,
+}

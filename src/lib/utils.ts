@@ -2,6 +2,7 @@ import * as crypto from "crypto";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { BondingCurveConfig } from "./constant";
+import { Trade } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -78,4 +79,27 @@ export function getSqrtPriceLimitX96(sqrtPriceLimitX96: number | bigint, slippag
     return Number(sqrtPriceLimitX96) * (1 - slippage)
   }
   return Number(sqrtPriceLimitX96) * (1 + slippage)
+}
+
+
+
+export function getKChartData(history: Trade[], ethPrice: number) {
+  const kChartData = [];
+  let currentPrice = 0;
+  for (let i = 0; i < history.length; i++) {
+    const item = history[i];
+    const open = i === 0 ? 0 : (Number(getTokenSellQuote(+history[i - 1].totalSupply / 1e18, 1)) / 1e9) * ethPrice;
+
+    const close = (Number(getTokenSellQuote(+item.totalSupply / 1e18, 1)) / 1e9) * ethPrice;
+
+    kChartData.push({
+      time: item.timestamp,
+      open,
+      close,
+      low: Math.min(open, close),
+      high: Math.max(open, close),
+    });
+    currentPrice = close;
+  }
+  return kChartData;
 }

@@ -7,17 +7,17 @@ import { mainChain } from '@/lib/constant';
 const connectors = connectorsForWallets(
   [
     {
-      groupName: 'Recommended',
-      wallets: [binanceWallet],
+      groupName: "Recommended",
+      wallets: [metaMaskWallet, binanceWallet],
     },
     {
-      groupName: 'Popular',
+      groupName: "Popular",
       wallets: [metaMaskWallet, trustWallet, okxWallet],
-    }
+    },
   ],
   {
-    appName: 'Hares',
-    projectId: 'c995ef9d5ebc2b418a9aad43a22a27dc',
+    appName: "Hares",
+    projectId: "c995ef9d5ebc2b418a9aad43a22a27dc",
   }
 );
 

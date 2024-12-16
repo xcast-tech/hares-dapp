@@ -5,15 +5,16 @@ import { Info } from "@/components/info";
 import { TVChart } from "@/components/tvchart";
 import { getHistoryApi, tokenApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
-import { Address, IToken } from "@/lib/types";
+import { Address, IToken, Trade } from "@/lib/types";
 import dayjs from "dayjs";
-import { formatNumber, formatThousandNumber } from "@/lib/utils";
+import { formatNumber, formatThousandNumber, getKChartData } from "@/lib/utils";
 import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
 import { useAccount } from "wagmi";
 import Decimal from "decimal.js";
 import { set } from "lodash-es";
+import { useAppContext } from "@/context/useAppContext";
 
 const TabKeys = {
   buy: "buy",
@@ -21,6 +22,7 @@ const TabKeys = {
 };
 
 export default function Token() {
+  const { ethPrice } = useAppContext();
   const { login } = useFarcasterContext();
   const { buy, sell, getTokenBalance } = useContract();
   const { message, signature } = useSignInMessage();
@@ -31,6 +33,7 @@ export default function Token() {
 
   const [slippage, setSlippage] = useState("20");
   const [editSlippage, setEditSlippage] = useState("");
+  const [historyList, setHistoryList] = useState<Trade[]>([]);
 
   console.log("ca", ca);
 
@@ -88,8 +91,9 @@ export default function Token() {
   ];
 
   async function fetchHistory(ca: Address) {
-    const history = await getHistoryApi({ address: ca})
-    console.log('getHistoryApi', history)
+    const res = await getHistoryApi({ address: ca });
+    console.log("getHistoryApi", res);
+    setHistoryList(res?.data ?? []);
   }
 
   async function fetchToken(ca: string) {
@@ -185,7 +189,7 @@ export default function Token() {
               <div className="text-green-400">market cap: ${formatNumber(+(detail?.marketCap || ""), 0)}</div>
             </div>
           </div>
-          <TVChart />
+          {ethPrice && <TVChart data={getKChartData(historyList, ethPrice)} />}
         </div>
 
         <div>
