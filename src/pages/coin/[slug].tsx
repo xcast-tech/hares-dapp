@@ -1,13 +1,19 @@
-import { Tabs, Tab, Button, Input, Chip } from "@nextui-org/react";
+import { Tabs, Tab, Button, Input, Chip, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Info } from "@/components/info";
 import { TVChart } from "@/components/tvchart";
 import { tokenApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
-import { IToken } from "@/lib/types";
+import { Address, IToken } from "@/lib/types";
 import dayjs from "dayjs";
-import { formatThousandNumber } from "@/lib/utils";
+import { formatNumber, formatThousandNumber } from "@/lib/utils";
+import { useContract } from "@/hooks/useContract";
+import { toast } from "react-toastify";
+import { useSignInMessage } from "@farcaster/auth-kit";
+import { useAccount } from "wagmi";
+import Decimal from "decimal.js";
+import { set } from "lodash-es";
 
 const TabKeys = {
   buy: "buy",
@@ -16,8 +22,15 @@ const TabKeys = {
 
 export default function Token() {
   const { login } = useFarcasterContext();
+  const { buy, sell, getTokenBalance } = useContract();
+  const { message, signature } = useSignInMessage();
+  const [tokenBalance, setTokenBalance] = useState<number>(0);
   const router = useRouter();
-  const { slug: ca } = router.query as { slug: string };
+  const { slug: ca } = router.query as { slug: Address };
+  const { address } = useAccount();
+
+  const [slippage, setSlippage] = useState("20");
+  const [editSlippage, setEditSlippage] = useState("");
 
   console.log("ca", ca);
 
@@ -28,6 +41,8 @@ export default function Token() {
 
   const [tabKey, setTabKey] = useState<string | number>(TabKeys.buy);
 
+  const [slippageModalOpen, setSlippageModalOpen] = useState(false);
+
   const tabColor = tabKey === "buy" ? "success" : "danger";
 
   const buyOptions = [
@@ -36,16 +51,20 @@ export default function Token() {
       value: 0,
     },
     {
+      label: "0.01 ETH",
+      value: 0.01,
+    },
+    {
+      label: "0.02 ETH",
+      value: 0.02,
+    },
+    {
+      label: "0.05 ETH",
+      value: 0.05,
+    },
+    {
       label: "0.1 ETH",
       value: 0.1,
-    },
-    {
-      label: "0.5 ETH",
-      value: 0.5,
-    },
-    {
-      label: "1ETH",
-      value: 1,
     },
   ];
 
@@ -77,16 +96,75 @@ export default function Token() {
     setDetail(res?.data);
   }
 
-  function handleBuy() {
-    console.log("handleBuy");
-    login();
+  async function handleBuy() {
+    if (!address) {
+      toast("Please connect wallet first");
+      return;
+    }
+
+    const amount = +(buyInputValue || "");
+
+    if (amount <= 0) {
+      toast("Invalid amount");
+      return;
+    }
+
+    try {
+      const tx = await buy(ca, amount, +slippage / 100);
+      toast(`Buy success. tx: ${tx}`);
+    } catch (error: any) {
+      toast(error?.message);
+    } finally {
+      fetchTokenBalance(ca, address);
+    }
   }
+
+  async function handleSell() {
+    if (!address) {
+      toast("Please connect wallet first");
+      return;
+    }
+
+    const amount = +(sellInputValue || "");
+
+    if (amount <= 0) {
+      toast("Invalid amount");
+      return;
+    }
+
+    try {
+      const tx = await sell(ca, amount, +slippage / 100);
+      toast(`Sell success. tx: ${tx}`);
+    } catch (error: any) {
+      toast(error?.message);
+    } finally {
+      fetchTokenBalance(ca, address);
+    }
+  }
+
+  async function fetchTokenBalance(ca: Address, address: Address) {
+    const balance = await getTokenBalance(ca, address);
+    console.log("balance", balance);
+    setTokenBalance(balance);
+    return balance;
+  }
+
+  const onOpenChange = (open: boolean) => {
+    setSlippageModalOpen(open);
+  };
 
   useEffect(() => {
     if (ca) {
       fetchToken(ca);
     }
   }, [ca]);
+
+  useEffect(() => {
+    console.log("ca address", { ca, address });
+    if (ca && address) {
+      fetchTokenBalance(ca, address);
+    }
+  }, [ca, address]);
 
   return (
     <div>
@@ -98,7 +176,7 @@ export default function Token() {
                 {detail?.name} ({detail?.symbol})
               </div>
               <div>created {dayjs().to(dayjs(detail?.created_at))}</div>
-              <div className="text-green-400">market cap: ${formatThousandNumber(+(detail?.marketCap || ""))}</div>
+              <div className="text-green-400">market cap: ${formatNumber(+(detail?.marketCap || ""), 0)}</div>
             </div>
           </div>
           <TVChart />
@@ -110,6 +188,18 @@ export default function Token() {
               <Tab key={TabKeys.buy} title="Buy" />
               <Tab key={TabKeys.sell} title="Sell" />
             </Tabs>
+
+            <div className="w-full my-4 flex justify-end">
+              <Button
+                size="sm"
+                onPress={() => {
+                  setEditSlippage(slippage);
+                  setSlippageModalOpen(true);
+                }}
+              >
+                set max slippage
+              </Button>
+            </div>
 
             <div className="mt-4">
               {tabKey === TabKeys.buy && (
@@ -128,13 +218,13 @@ export default function Token() {
                     </div>
                   </div>
 
-                  <div className="mt-4 mb-2 flex gap-2">
+                  <div className="mt-4 mb-2 flex gap-1">
                     {buyOptions.map((option, i) => {
                       return (
                         <Chip
                           key={i}
                           size="sm"
-                          className="cursor-pointer"
+                          className="cursor-pointer text-xs"
                           onClick={() => {
                             setBuyInputValue(String(option.value));
                           }}
@@ -145,9 +235,15 @@ export default function Token() {
                     })}
                   </div>
 
-                  <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
-                    place trade
-                  </Button>
+                  {detail?.isGraduate || signature ? (
+                    <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
+                      place trade
+                    </Button>
+                  ) : (
+                    <Button fullWidth color="success" className="mt-2" onPress={login}>
+                      sign in first
+                    </Button>
+                  )}
                 </div>
               )}
 
@@ -155,7 +251,11 @@ export default function Token() {
                 <div>
                   <div>
                     <div>
-                      <div className="mb-1">amount ({detail?.symbol})</div>
+                      <div className="mb-1 flex items-center justify-between">
+                        <div>amount ({detail?.symbol})</div>
+
+                        <div>{formatNumber(tokenBalance)}</div>
+                      </div>
                       <div>
                         <Input
                           value={sellInputValue}
@@ -168,15 +268,22 @@ export default function Token() {
                       </div>
                     </div>
 
-                    <div className="mt-4 mb-2 flex gap-2">
+                    <div className="mt-4 mb-2 flex gap-1">
                       {sellOptions.map((option, i) => {
                         return (
                           <Chip
                             key={i}
                             size="sm"
-                            className="cursor-pointer"
-                            onClick={() => {
-                              // setSellInputValue(String(option.value));
+                            className="cursor-pointer text-xs"
+                            onClick={async () => {
+                              if (!address) {
+                                toast("Please connect wallet first");
+                                return;
+                              }
+
+                              const balance = await fetchTokenBalance(ca, address);
+
+                              setSellInputValue(String(Decimal.mul(balance, option.value)));
                             }}
                           >
                             {option.label}
@@ -186,7 +293,7 @@ export default function Token() {
                     </div>
                   </div>
 
-                  <Button fullWidth color="danger" className="mt-2">
+                  <Button fullWidth color="danger" className="mt-2" onPress={handleSell}>
                     place trade
                   </Button>
                 </div>
@@ -197,6 +304,49 @@ export default function Token() {
           <Info className="mt-4" detail={detail} />
         </div>
       </div>
+
+      <Modal isOpen={slippageModalOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">set max. slippage (%)</ModalHeader>
+              <ModalBody>
+                <div>
+                  <Input
+                    type="number"
+                    value={editSlippage}
+                    onChange={(event) => {
+                      setEditSlippage(event.target.value);
+                    }}
+                  />
+                  <div className="text-xs mt-1">this is the maximum amount of slippage you are willing to accept when placing trades.</div>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Close
+                </Button>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    const num = +editSlippage;
+                    if (num < 0 || num > 100) {
+                      toast("Invalid slippage");
+                      return;
+                    }
+
+                    setSlippage(editSlippage || "0");
+
+                    onClose();
+                  }}
+                >
+                  OK
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

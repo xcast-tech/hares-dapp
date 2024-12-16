@@ -50,6 +50,19 @@ export function useContract() {
     return res
   }
 
+  async function getTokenBalance(token: Address, adddress: Address) {
+    if (!publicClient) {
+      return 0;
+    }
+    const res = await publicClient?.readContract({
+      address: token,
+      abi: ABIs.HaresAbi,
+      functionName: "balanceOf",
+      args: [adddress],
+    });
+    return Number(res) / 1e18;
+  }
+
   async function buy(token: Address, eth: number, slipage: number) {
     if (!address) {
       return
@@ -74,10 +87,10 @@ export function useContract() {
       value: parseEther(eth.toString()),
       // gas,
     })
-    const res = await publicClient?.waitForTransactionReceipt({
-      hash: tx
-    })
-    return res
+    // const res = await publicClient?.waitForTransactionReceipt({
+    //   hash: tx
+    // })
+    return tx
   }
 
   async function sell(token: Address, tokenToSell: number, slipage: number) {
@@ -94,16 +107,17 @@ export function useContract() {
       args: [parseEther(tokenToSell.toString()), address, BigInt(Math.floor(sellQuote * (1 - slipage))), BigInt(0)],
       // gas,
     })
-    const res = await publicClient?.waitForTransactionReceipt({
-      hash: tx
-    })
-    return res
+    // const res = await publicClient?.waitForTransactionReceipt({
+    //   hash: tx
+    // })
+    return tx
   }
 
   return {
     createToken,
     getCurrentSupply,
     buy,
-    sell
+    sell,
+    getTokenBalance,
   }
 }

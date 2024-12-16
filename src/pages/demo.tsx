@@ -53,7 +53,7 @@ export default function Demo() {
   }
 
   const handleBuyToken = async () => {
-    await buy('0x1c392906d0ff47f28e51219830a11fa9da7cccc7', 1, 0.1)
+    await buy('0x1c392906d0ff47f28e51219830a11fa9da7cccc7', 0.001, 0.1)
   }
 
   const handleSellToken = async () => {

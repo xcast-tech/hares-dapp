@@ -24,23 +24,9 @@ export default function FarcasterProvider({
     setUserInfo(null);
   };
 
-  async function bindFacaster(message: string, signature: string) {
-    if (!message || !signature) {
-      return;
-    }
-    await fetch("/api/fcbind", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message, signature }),
-    }).then((res) => res.json());
-  }
-
   const handleSuccess = useCallback(async (response: StatusAPIResponse) => {
     setModalVisible(false);
     const { message, signature } = response;
-    bindFacaster(message!, signature!);
   }, []);
 
   const signInState = useSignIn({
