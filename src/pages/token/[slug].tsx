@@ -7,7 +7,7 @@ import { getHistoryApi, tokenApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken, Trade } from "@/lib/types";
 import dayjs from "dayjs";
-import { formatNumber, formatThousandNumber, getKChartData } from "@/lib/utils";
+import { formatNumber, formatThousandNumber, getHost, getKChartData } from "@/lib/utils";
 import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
@@ -180,7 +180,7 @@ export default function Token() {
     <div>
       <div className="flex gap-4">
         <div className="flex-1">
-          {!!ethPrice && detail?.symbol && <iframe className="w-full h-[500px]" src={`http://localhost:3001/chart?symbol=${detail?.symbol}&address=${ca}`}></iframe>}
+          {!!ethPrice && detail?.symbol && <iframe className="w-full h-[500px]" src={`${getHost()}/chart?symbol=${detail?.symbol}&address=${ca}`}></iframe>}
         </div>
 
         <div>

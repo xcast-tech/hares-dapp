@@ -102,3 +102,8 @@ export function getKChartData(history: Trade[], ethPrice: number, prev: number =
   }
   return kChartData;
 }
+
+export function getHost() {
+  if (process.env.LOCAL === 'true') return "http://127.0.0.1:3001"
+  return "https://hares.ai"
+}

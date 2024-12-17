@@ -1,3 +1,4 @@
+//@ts-nocheck
 import axios from "axios";
 import { getKChartData } from "../utils";
 import { makeApiRequest, generateSymbol, parseFullSymbol } from "./helpers";
