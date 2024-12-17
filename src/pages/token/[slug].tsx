@@ -180,16 +180,7 @@ export default function Token() {
     <div>
       <div className="flex gap-4">
         <div className="flex-1">
-          <div className="mb-4">
-            <div className="flex gap-2 items-center">
-              <div>
-                {detail?.name} ({detail?.symbol})
-              </div>
-              <div>created {dayjs().to(dayjs(detail?.created_at))}</div>
-              {/* <div className="text-green-400">market cap: ${formatNumber(+(detail?.marketCap || ""), 0)}</div> */}
-            </div>
-          </div>
-          {!!ethPrice && <TVChart data={getKChartData(historyList, ethPrice)} />}
+          {!!ethPrice && detail?.symbol && <iframe className="w-full h-[500px]" src={`http://localhost:3001/chart?symbol=${detail?.symbol}&address=${ca}`}></iframe>}
         </div>
 
         <div>

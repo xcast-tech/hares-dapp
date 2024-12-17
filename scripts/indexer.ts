@@ -23,23 +23,25 @@ async function syncDataWithRange(from: number, to: number) {
 }
 
 async function main() {
-  const config = await getConfig()
-  start = parseInt(config.indexer_progress)
-  step = parseInt(config.indexer_step)
-  while(true) {
-    totalBlock = Number(await publicClient.getBlockNumber()) - 20
-    const endBlock = Math.min(start + step, totalBlock)
-    try {
-      await syncDataWithRange(start, endBlock)
-      start = endBlock
-      await updateConfig('indexer_progress', start.toString())
-    } catch (e: any) {
-      console.log(e)
-      debugLog(e.toString(), 'error')
-    } finally {
-      await new Promise((resolve) => setTimeout(resolve, 10000))
-    }
-  }
+  await handleEvents()
+
+  // const config = await getConfig()
+  // start = parseInt(config.indexer_progress)
+  // step = parseInt(config.indexer_step)
+  // while(true) {
+  //   totalBlock = Number(await publicClient.getBlockNumber()) - 20
+  //   const endBlock = Math.min(start + step, totalBlock)
+  //   try {
+  //     await syncDataWithRange(start, endBlock)
+  //     start = endBlock
+  //     await updateConfig('indexer_progress', start.toString())
+  //   } catch (e: any) {
+  //     console.log(e)
+  //     debugLog(e.toString(), 'error')
+  //   } finally {
+  //     await new Promise((resolve) => setTimeout(resolve, 10000))
+  //   }
+  // }
 }
 
 main()

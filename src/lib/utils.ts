@@ -82,19 +82,17 @@ export function getSqrtPriceLimitX96(sqrtPriceLimitX96: number | bigint, slippag
   return Number(sqrtPriceLimitX96) * (1 + slippage)
 }
 
-
-
-export function getKChartData(history: Trade[], ethPrice: number) {
+export function getKChartData(history: Trade[], ethPrice: number, prev: number = 1) {
   const kChartData = [];
   let currentPrice = 0;
   for (let i = 0; i < history.length; i++) {
     const item = history[i];
-    const open = i === 0 ? 0 : (Number(getTokenSellQuote(+history[i - 1].totalSupply / 1e18, 1)) / 1e9) * ethPrice;
+    const open = i === 0 ? (Number(getTokenSellQuote(prev, 1)) / 1e18) * ethPrice : (Number(getTokenSellQuote(+history[i - 1].totalSupply / 1e18, 1)) / 1e18) * ethPrice;
 
-    const close = (Number(getTokenSellQuote(+item.totalSupply / 1e18, 1)) / 1e9) * ethPrice;
+    const close = (Number(getTokenSellQuote(+item.totalSupply / 1e18, 1)) / 1e18) * ethPrice;
 
     kChartData.push({
-      time: item.timestamp,
+      time: item.timestamp * 1000,
       open,
       close,
       low: Math.min(open, close),

@@ -73,6 +73,7 @@ export type Database = {
         Row: {
           address: string
           created_at: string
+          created_timestamp: number | null
           createEvent: number
           creatorAddress: string
           id: number
@@ -80,17 +81,14 @@ export type Database = {
           lpPositionId: string | null
           marketCap: string | null
           name: string | null
-          picture: string | null
           poolAddress: string | null
           symbol: string | null
-          telegram: string | null
           totalSupply: string | null
-          twitter: string | null
-          website: string | null
         }
         Insert: {
           address: string
           created_at?: string
+          created_timestamp?: number | null
           createEvent: number
           creatorAddress: string
           id?: number
@@ -98,17 +96,14 @@ export type Database = {
           lpPositionId?: string | null
           marketCap?: string | null
           name?: string | null
-          picture?: string | null
           poolAddress?: string | null
           symbol?: string | null
-          telegram?: string | null
           totalSupply?: string | null
-          twitter?: string | null
-          website?: string | null
         }
         Update: {
           address?: string
           created_at?: string
+          created_timestamp?: number | null
           createEvent?: number
           creatorAddress?: string
           id?: number
@@ -116,13 +111,9 @@ export type Database = {
           lpPositionId?: string | null
           marketCap?: string | null
           name?: string | null
-          picture?: string | null
           poolAddress?: string | null
           symbol?: string | null
-          telegram?: string | null
           totalSupply?: string | null
-          twitter?: string | null
-          website?: string | null
         }
         Relationships: []
       }
@@ -169,6 +160,7 @@ export type Database = {
           isGraduate: number
           operatorTokenBalance: string
           recipient: string
+          timestamp: number | null
           tokenAddress: string
           totalEth: string
           totalSupply: string
@@ -185,6 +177,7 @@ export type Database = {
           isGraduate: number
           operatorTokenBalance: string
           recipient: string
+          timestamp?: number | null
           tokenAddress: string
           totalEth: string
           totalSupply: string
@@ -201,6 +194,7 @@ export type Database = {
           isGraduate?: number
           operatorTokenBalance?: string
           recipient?: string
+          timestamp?: number | null
           tokenAddress?: string
           totalEth?: string
           totalSupply?: string
@@ -218,6 +212,7 @@ export type Database = {
           from: string
           fromTokenBalance: string
           id: number
+          timestamp: number | null
           to: string
           tokenAddress: string
           totalSupply: string
@@ -230,6 +225,7 @@ export type Database = {
           from: string
           fromTokenBalance: string
           id?: number
+          timestamp?: number | null
           to: string
           tokenAddress: string
           totalSupply: string
@@ -242,6 +238,7 @@ export type Database = {
           from?: string
           fromTokenBalance?: string
           id?: number
+          timestamp?: number | null
           to?: string
           tokenAddress?: string
           totalSupply?: string
@@ -259,6 +256,22 @@ export type Database = {
           p_address: string
         }
         Returns: {
+          type: number
+          recipient: string
+          trueOrderSize: string
+          totalSupply: string
+          trueEth: string
+          timestamp: number
+        }[]
+      }
+      get_trade_history2: {
+        Args: {
+          p_address: string
+          p_from: number
+          p_to: number
+        }
+        Returns: {
+          id: number
           type: number
           recipient: string
           trueOrderSize: string

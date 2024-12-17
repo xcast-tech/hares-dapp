@@ -5,6 +5,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { address } = req.query;
+  const finalAddress = (address as string).toLowerCase()
 
   if (!address) {
     res.json({
@@ -17,12 +18,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     supabaseClient
       .from("Token")
       .select("*")
-      .ilike("address", `%${address}%`)
+      .eq("address", finalAddress)
       .maybeSingle(),
     supabaseClient
       .from("TokenInfo")
       .select("*")
-      .ilike("address", `%${address}%`)
+      .eq("address", finalAddress)
       .maybeSingle(),
   ]);
 

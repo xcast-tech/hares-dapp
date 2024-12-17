@@ -87,6 +87,7 @@ async function handleTokenCreated(row: Database['public']['Tables']['Event']['Ro
     creatorAddress: creator.toLowerCase(),
     name,
     symbol,
+    created_timestamp: row.timestamp
   }, {
     onConflict: 'createEvent',
   })
@@ -139,6 +140,7 @@ async function handleTokenTransfer(row: Database['public']['Tables']['Event']['R
     fromTokenBalance: args.fromTokenBalance,
     totalSupply: args.totalSupply,
     toTokenBalance: args.toTokenBalance,
+    timestamp: row.timestamp
   }, {
     onConflict: 'event',
   })
@@ -180,6 +182,7 @@ async function handleTokenBuy(row: Database['public']['Tables']['Event']['Row'],
     trueEth: args.ethSold,
     trueOrderSize: args.tokensBought,
     type: 0,
+    timestamp: row.timestamp
   }, {
     onConflict: 'event',
   })
@@ -223,6 +226,7 @@ async function handleTokenSell(row: Database['public']['Tables']['Event']['Row']
     trueEth: args.ethBought,
     trueOrderSize: args.tokensSold,
     type: 1,
+    timestamp: row.timestamp
   }, {
     onConflict: 'event',
   })
