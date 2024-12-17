@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { parseFullSymbol, apiKey } from './helpers';
 
 // const socket = new WebSocket(
