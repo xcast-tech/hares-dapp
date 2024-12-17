@@ -1,5 +1,6 @@
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import type { NextPage } from 'next'
 import { Header } from "@/components/header";
 import Providers from "@/lib/provider";
 import "@/styles/globals.css";
@@ -12,13 +13,21 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import FarcasterProvider from "@/hooks/farcaster";
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import { AppProvider } from "@/context/useAppContext";
+import { ReactElement, ReactNode } from "react";
 
 dayjs.extend(relativeTime);
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
 };
 
-export default function App({ Component, pageProps }: AppProps) {
+type NextPageWithLayout = NextPage & {
+  GetLayout?: (page: ReactElement, props?: any) => ReactNode
+}
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout
+}
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <AppProvider>
       <AuthKitProvider
@@ -31,12 +40,20 @@ export default function App({ Component, pageProps }: AppProps) {
           <NextUIProvider>
             <NextThemesProvider attribute="class" defaultTheme="dark">
               <Providers>
-                <div className="mt-[80px] h-[calc(100vh-80px)] pt-8 overflow-auto">
-                  <Component {...pageProps} />
-                </div>
-
-                <Header />
-                <ToastContainer theme="dark" position="bottom-right" pauseOnFocusLoss={false} />
+              {Component.GetLayout ? (
+                Component.GetLayout(
+                  <Component {...pageProps} />,
+                  pageProps
+                )
+              ) : (
+                <>
+                  <div className="mt-[80px] h-[calc(100vh-80px)] pt-8 overflow-auto">
+                    <Component {...pageProps} />
+                  </div>
+                  <Header />
+                  <ToastContainer theme="dark" position="bottom-right" pauseOnFocusLoss={false} />
+                </>
+              )}
               </Providers>
             </NextThemesProvider>
           </NextUIProvider>

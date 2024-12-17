@@ -1,0 +1,1 @@
+wget https://charting-library.tradingview-widget.com/charting_library/bundles/context-menu-renderer.675c5481bf59e3dd2e1b.js
