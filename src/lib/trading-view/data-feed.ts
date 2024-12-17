@@ -38,7 +38,7 @@ export default (symbol: string, address: string) => ({
       type: "crypto",
       session: "24x7",
       timezone: "Etc/UTC",
-      exchange: "Pump",
+      exchange: "USDT",
       minmov: 1,
       pricescale: 1e10,
       has_intraday: true,
