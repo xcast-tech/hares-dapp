@@ -18,17 +18,10 @@ export const TVChart = ({ data }) => {
 
     const chart = createChart(container, chartOptions);
 
-    const series = chart.addCandlestickSeries({
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderVisible: false,
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
-    });
+    const series = chart.addCandlestickSeries({});
 
     series.setData(chartData);
     chart.timeScale().fitContent();
-    chart.timeScale().scrollToPosition(5);
 
     // // simulate real-time data
     // function* getNextRealtimeUpdate(realtimeData) {
