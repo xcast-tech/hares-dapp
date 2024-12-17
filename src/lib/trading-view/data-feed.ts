@@ -1,9 +1,6 @@
-//@ts-nocheck
+// @ts-nocheck
 import axios from "axios";
 import { getKChartData } from "../utils";
-import { makeApiRequest, generateSymbol, parseFullSymbol } from "./helpers";
-import { subscribeOnStream, unsubscribeFromStream } from "./streaming";
-import { request } from "../apis/request";
 
 const lastBarsCache = new Map();
 
@@ -102,6 +99,6 @@ export default (symbol: string, address: string) => ({
       "[unsubscribeBars]: Method call with subscriberUID:",
       subscriberUID
     );
-    // unsubscribeFromStream(subscriberUID);
+    // (subscriberUID);
   },
 });
