@@ -24,7 +24,7 @@ export function useContract() {
     const res = await publicClient?.waitForTransactionReceipt({
       hash: tx
     })
-    const tokenCreatedEvent = res?.logs?.find(log => log.topics[0] === EventTopic.TokenCreated)
+    const tokenCreatedEvent = res?.logs?.find(log => log.topics[0] === EventTopic.HaresTokenCreated)
     if (tokenCreatedEvent) {
       const event = decodeEventLog({
         abi: ABIs.HaresFactoryAbi,

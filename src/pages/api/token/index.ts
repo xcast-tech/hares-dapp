@@ -17,12 +17,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     supabaseClient
       .from("Token")
       .select("*")
-      .eq("address", address as string)
+      .ilike("address", `%${address}%`)
       .maybeSingle(),
     supabaseClient
       .from("TokenInfo")
       .select("*")
-      .eq("address", address as string)
+      .ilike("address", `%${address}%`)
       .maybeSingle(),
   ]);
 

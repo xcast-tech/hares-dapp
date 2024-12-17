@@ -6,6 +6,7 @@ import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
 import { ABIs, EventTopic } from "@/lib/constant";
 import { useRouter } from "next/router";
+import { decodeEventLog } from "viem";
 
 const Create = () => {
   const router = useRouter();
@@ -37,9 +38,7 @@ const Create = () => {
     try {
       const res = await createToken(name, symbol);
       console.log(res);
-      const tx = res?.transactionHash ?? "";
-
-      const tokenCreatedEvent = res?.logs?.find((log) => log.topics[0] === EventTopic.TokenCreated);
+      const tokenCreatedEvent = res?.logs?.find?.((item) => item?.topics?.[0] === EventTopic.HaresTokenCreated);
       if (tokenCreatedEvent) {
         const event: any = decodeEventLog({
           abi: ABIs.HaresFactoryAbi,
@@ -57,8 +56,8 @@ const Create = () => {
 
   async function loopToken({ address }: { address: string }) {
     const res = await tokenApi({ address });
-    if (res?.data) {
-      router.push(`/coin/${address}`);
+    if (res?.data?.picture) {
+      router.push(`/token/${address}`);
     } else {
       setTimeout(() => {
         loopToken({ address });
@@ -89,9 +88,9 @@ const Create = () => {
           telegram: telegram.trim(),
           desc: desc.trim(),
         });
-      }
 
-      loopToken({ address });
+        loopToken({ address });
+      }
     } catch (error) {
     } finally {
       setLoading(false);
@@ -208,6 +207,3 @@ const Create = () => {
 };
 
 export default Create;
-function decodeEventLog(arg0: unknown) {
-  throw new Error("Function not implemented.");
-}
