@@ -1,16 +1,14 @@
-// @ts-nocheck
-import axios from "axios";
-import { getKChartData } from "../utils";
+import { convertTradesToBar, convertTradeToBars, getKChartData } from "../utils";
+import { Trade } from "../types";
 
-const lastBarsCache = new Map();
-
-// DatafeedConfiguration implementation
+const subsriberCache: Record<string, any> = {}
+let historyTrades: Trade[] | null = null
+let cacheStartTime = Date.now()
 const configurationData = {
-  // Represents the resolutions for bars supported by your datafeed
   supported_resolutions: ["1", "5", "15", "30", "60", "1D", "1W", "1M"],
 };
 
-export default (symbol: string, address: string) => ({
+export default (symbol: string, address: string, ethPrice: number) => ({
   onReady: (callback: Function) => {
     console.log("[onReady]: Method call");
     setTimeout(() => callback(configurationData));
@@ -59,46 +57,54 @@ export default (symbol: string, address: string) => ({
     onHistoryCallback: Function,
     onErrorCallback: Function
   ) => {
-    const { from, to, firstDataRequest } = periodParams;
-    console.log("[getBars]: Method call", symbolInfo, resolution, from, to);
-    const res = await fetch(`/api/trade/history2?from=${from}&to=${to}&resolution=${resolution}&address=${address}`).then(res => res.json())
-    console.log(res)
-    if (res.code !== 0) {
-      return onErrorCallback(res.message);
+    const { from, to } = periodParams;
+    console.log("[getBars]: Method call", symbolInfo, resolution, periodParams);
+    if (!historyTrades) {
+      const res = await fetch(`/api/trade/history?address=${address}`).then(res => res.json())
+      if (res.code !== 0) {
+        return onErrorCallback(res.message);
+      }
+      historyTrades = res.data as Trade[]
     }
-    const { list, prev } = res.data
-    console.log(getKChartData(list, 4000, prev && prev.totalSupply / 1e18))
-    onHistoryCallback(getKChartData(list, 4000, prev && prev.totalSupply / 1e18), {
-      noData: !prev
-    });
+    const bars = convertTradeToBars(historyTrades, from, to, resolution, ethPrice);
+    onHistoryCallback(bars || [], {
+      noData: !bars
+    })
   },
 
   subscribeBars: (
-    symbolInfo,
-    resolution,
-    onRealtimeCallback,
-    subscriberUID,
-    onResetCacheNeededCallback
+    symbolInfo: any,
+    resolution: any,
+    onRealtimeCallback: any,
+    subscriberUID: any,
+    onResetCacheNeededCallback: any
   ) => {
     console.log(
       "[subscribeBars]: Method call with subscriberUID:",
       subscriberUID
     );
-		// let price = 30 + (Math.random() - 0.5)* 10;
-    // onRealtimeCallback({
-		// 	open: price,
-		// 	high: price,
-		// 	low: price,
-		// 	close: price,
-		// 	time: Date.now()
-		// })
+    cacheStartTime = Date.now()
+    Object.keys(subsriberCache).forEach(key => {
+      clearInterval(subsriberCache[key])
+    })
+    subsriberCache[subscriberUID] = setInterval(async () => {
+      const res = await fetch(`/api/trade/history?address=${address}&from=${cacheStartTime}`).then(res => res.json())
+      if (res.code !== 0 || res.data.length === 0) {
+        return
+      }
+      const bar = convertTradesToBar(res.data, ethPrice)
+      onRealtimeCallback(bar)
+      if (Date.now() - cacheStartTime > resolution * 60 * 1000) {
+        cacheStartTime = Date.now()
+      }
+    }, 5000);
   },
 
-  unsubscribeBars: (subscriberUID) => {
+  unsubscribeBars: (subscriberUID: any) => {
     console.log(
       "[unsubscribeBars]: Method call with subscriberUID:",
       subscriberUID
     );
-    // (subscriberUID);
+    // clearInterval(subsriberCache[subscriberUID]);
   },
 });

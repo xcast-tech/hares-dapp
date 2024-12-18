@@ -15,6 +15,8 @@ import { useAccount } from "wagmi";
 import Decimal from "decimal.js";
 import { set } from "lodash-es";
 import { useAppContext } from "@/context/useAppContext";
+import Script from "next/script";
+import TradingView from "@/components/tradingview";
 
 const TabKeys = {
   buy: "buy",
@@ -34,8 +36,6 @@ export default function Token() {
   const [slippage, setSlippage] = useState("20");
   const [editSlippage, setEditSlippage] = useState("");
   const [historyList, setHistoryList] = useState<Trade[]>([]);
-
-  console.log("ca", ca);
 
   const [detail, setDetail] = useState<IToken>();
 
@@ -178,9 +178,10 @@ export default function Token() {
 
   return (
     <div>
+      <Script strategy="beforeInteractive" src="/scripts/charting_library.standalone.js"></Script>
       <div className="flex gap-4">
         <div className="flex-1">
-          {!!ethPrice && detail?.symbol && <iframe className="w-full h-[500px]" src={`${getHost()}/chart?symbol=${detail?.symbol}&address=${ca}`}></iframe>}
+          {!!ethPrice && detail?.symbol && <TradingView className="w-full h-[600px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}
         </div>
 
         <div>

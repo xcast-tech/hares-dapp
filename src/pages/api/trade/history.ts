@@ -7,11 +7,15 @@ export default async function handler (
   res: NextApiResponse,
 ) {
 
-  const { address } = req.query
+  const { address, from } = req.query
+  const numberFrom = Number(from)
 
-  const { data, error } = await supabaseClient.rpc('get_trade_history', {
-    p_address: address as string
-  })
+  const { data, error } = await supabaseClient
+  .from('Trade')
+  .select('type,recipient,trueOrderSize,totalSupply,trueEth,timestamp')
+  .eq('tokenAddress', address as string)
+  .gt('timestamp', from ? Math.floor(numberFrom / 1000) : 0)
+  .order('id', { ascending: true })
 
   if (error) {
     res.json({
