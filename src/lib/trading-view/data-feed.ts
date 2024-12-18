@@ -47,6 +47,7 @@ export default (symbol: string, address: string, ethPrice: number) => ({
     };
 
     console.log("[resolveSymbol]: Symbol resolved", symbolName);
+    historyTrades = null;
     onSymbolResolvedCallback(symbolInfo);
   },
 
