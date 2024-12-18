@@ -31,7 +31,7 @@ export default function Token() {
   const [tokenBalance, setTokenBalance] = useState<number>(0);
   const router = useRouter();
   const { slug } = router.query as { slug: Address };
-  const ca = (slug || '').toLocaleLowerCase() as Address;
+  const ca = (slug || "").toLocaleLowerCase() as Address;
   const { address } = useAccount();
 
   const [slippage, setSlippage] = useState("20");
@@ -181,12 +181,10 @@ export default function Token() {
     <div>
       <Script strategy="beforeInteractive" src="/scripts/charting_library.standalone.js"></Script>
       <div className="flex gap-4">
-        <div className="flex-1">
-          {!!ethPrice && detail?.symbol && <TradingView className="w-full h-[60vh]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}
-        </div>
+        <div className="flex-1">{!!ethPrice && detail?.symbol && <TradingView className="w-full h-[60vh]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}</div>
 
-        <div>
-          <div className="w-[350px] bg-[#333] rounded-md p-2">
+        <div className="w-[350px]">
+          <div className="bg-[#333] rounded-md p-2">
             <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
               <Tab key={TabKeys.buy} title="Buy" />
               <Tab key={TabKeys.sell} title="Sell" />

@@ -21,11 +21,11 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
   return (
     <div className={twMerge(className)}>
       <div className={twMerge("flex gap-2")}>
-        <div className="w-[100px] h-[100px] relative">{detail?.picture && <Image fill alt="" src={detail?.picture} />}</div>
+        <div className="w-[100px] min-w-[100px] h-[100px] relative">{detail?.picture && <Image fill alt="" src={detail?.picture} />}</div>
 
         <div>
           <div className="font-bold">{detail?.name}</div>
-          <div className="text-[12px]">{detail?.desc}</div>
+          <div className="text-[12px] break-all">{detail?.desc}</div>
         </div>
       </div>
 
