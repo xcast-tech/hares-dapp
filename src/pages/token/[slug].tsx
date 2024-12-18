@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
 import { useAccount } from "wagmi";
 import Decimal from "decimal.js";
-import { set } from "lodash-es";
 import { useAppContext } from "@/context/useAppContext";
 import Script from "next/script";
 import TradingView from "@/components/tradingview";
