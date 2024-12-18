@@ -59,9 +59,6 @@ export const Header = () => {
                 </div>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
                 <Button color="primary" onPress={onClose}>
                   OK
                 </Button>

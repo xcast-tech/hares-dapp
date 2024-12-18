@@ -17,7 +17,7 @@ function Token({ detail }: TokenProps) {
           <div className="w-[100px] h-[100px] relative">{detail?.picture && <Image fill alt="" src={detail?.picture} />}</div>
         </div>
         <div>
-          <div>created {dayjs().to(dayjs(detail?.created_at))}</div>
+          <div>created {dayjs().to(dayjs(detail?.created_timestamp * 1000))}</div>
           {/* <div className="text-green-400">market cap: ${formatThousandNumber(+detail?.marketCap)}</div> */}
           <div>
             <span className="font-bold mr-1">{detail?.name}:</span>

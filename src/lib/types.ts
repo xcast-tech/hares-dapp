@@ -14,6 +14,7 @@ export interface IToken {
   address: string;
   createEvent: number;
   created_at: string;
+  created_timestamp: number;
   creatorAddress: string;
   id: number;
   isGraduate: number;
