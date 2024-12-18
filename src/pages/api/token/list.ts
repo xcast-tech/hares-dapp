@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     data: tokenList,
     error: tokenListError,
     count: tokenCount,
-  } = await supabaseClient.from("Token").select("*", { count: "exact" }).like("name", `%${name}%`).range(from, to).order("id", { ascending: false });
+  } = await supabaseClient.from("Token").select("*", { count: "exact" }).like("name", `%${name}%`).range(from, to).order("created_timestamp", { ascending: false });
 
   const addressList = (tokenList || []).map((item) => item.address);
 

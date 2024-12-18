@@ -11,7 +11,7 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const pageSize = 10;
+  const pageSize = 12;
 
   async function fetchList(data: TokenListApiData) {
     const res = await tokenListApi(data);
