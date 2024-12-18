@@ -2,9 +2,20 @@ import React from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Logo from "@/../public/logo.svg";
 import Link from "next/link";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
+import { Avatar, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
+import { Twitter } from "../twitter";
+import { Warpcast } from "../wrapcast";
+import { useProfile } from "@farcaster/auth-kit";
+import { useFarcasterContext } from "@/hooks/farcaster";
 
 export const Header = () => {
+  const {
+    isAuthenticated,
+    profile: { username, fid, bio, displayName, pfpUrl },
+  } = useProfile();
+
+  const { login, logout } = useFarcasterContext();
+
   const [isAboutOpen, setIsAboutOpen] = React.useState(false);
 
   const onOpenChange = (open: boolean) => {
@@ -20,7 +31,7 @@ export const Header = () => {
         </div>
       </Link>
 
-      <div className="flex-1">
+      <div className="flex-1 flex items-center gap-4">
         <Button
           color="primary"
           variant="light"
@@ -30,9 +41,31 @@ export const Header = () => {
         >
           About Hares
         </Button>
+
+        <div className="flex gap-2 items-center">
+          <Link href={"/"} target="_blank">
+            <Twitter height={40} />
+          </Link>
+
+          <Link href={"/"} target="_blank">
+            <Warpcast height={20} />
+          </Link>
+        </div>
       </div>
 
-      <div>
+      <div className="flex items-center gap-2">
+        <div>
+          {isAuthenticated ? (
+            <Button startContent={<Avatar src={pfpUrl} className="w-6 h-6" />} variant="bordered" onPress={logout}>
+              {username}
+            </Button>
+          ) : (
+            <Button onPress={login} size="sm">
+              sign in
+            </Button>
+          )}
+        </div>
+
         <ConnectButton />
       </div>
 
