@@ -181,7 +181,7 @@ export default function Token() {
       <Script strategy="beforeInteractive" src="/scripts/charting_library.standalone.js"></Script>
       <div className="flex gap-4">
         <div className="flex-1">
-          {!!ethPrice && detail?.symbol && <TradingView className="w-full h-[600px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}
+          {!!ethPrice && detail?.symbol && <TradingView className="w-full h-[60vh]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}
         </div>
 
         <div>
