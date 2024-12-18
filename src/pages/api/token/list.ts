@@ -1,6 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { supabaseClient } from "@/lib/supabase";
-import { pick } from "lodash-es";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -20,11 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     data: tokenList,
     error: tokenListError,
     count: tokenCount,
-  } = await supabaseClient.from("Token").select("*", { count: "exact" }).ilike("name", `%${name}%`).range(from, to).order("id", { ascending: true });
+  } = await supabaseClient.from("Token").select("*", { count: "exact" }).like("name", `%${name}%`).range(from, to).order("id", { ascending: false });
 
   const addressList = (tokenList || []).map((item) => item.address);
 
-  const { data: infoList, error: infoError } = await supabaseClient.from("TokenInfo").select("*").containedBy("", addressList);
+  const { data: infoList, error: infoError } = await supabaseClient.from("TokenInfo").select("address,picture,twitter,telegram,website,desc").in('address', addressList);
 
   const error = tokenListError || infoError;
 
@@ -35,14 +34,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  const list = (tokenList || []).map((token) => {
-    const target = (infoList || []).find((info) => info.address === token.address);
+  const tokenInfoMap = (infoList || []).reduce((acc: Record<string, any>, token) => {
+    acc[token.address] = token;
+    return acc;
+  }, {});
 
-    return {
-      ...token,
-      ...pick(target, ["picture", "twitter", "telegram", "website", "desc"]),
-    };
-  });
+  const list = (tokenList || []).map((token) => ({
+    ...token,
+    ...tokenInfoMap[token.address],
+  }));
 
   res.json({
     code: 0,
