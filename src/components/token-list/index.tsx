@@ -21,7 +21,7 @@ function Token({ detail }: TokenProps) {
           {/* <div className="text-green-400">market cap: ${formatThousandNumber(+detail?.marketCap)}</div> */}
           <div>
             <span className="font-bold mr-1">{detail?.name}:</span>
-            <span>{detail?.desc || "-"}</span>
+            <span className="break-all">{detail?.desc || "-"}</span>
           </div>
         </div>
       </div>

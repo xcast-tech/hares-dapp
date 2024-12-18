@@ -10,7 +10,7 @@ export default async function handler (
   const { address, picture, website, twitter, telegram, desc } = req.body
 
   const { error } = await supabaseClient.from('TokenInfo').upsert({
-    address,
+    address: address.toLowerCase(),
     picture,
     website,
     twitter,

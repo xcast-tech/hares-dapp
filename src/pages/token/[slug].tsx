@@ -30,7 +30,8 @@ export default function Token() {
   const { message, signature } = useSignInMessage();
   const [tokenBalance, setTokenBalance] = useState<number>(0);
   const router = useRouter();
-  const { slug: ca } = router.query as { slug: Address };
+  const { slug } = router.query as { slug: Address };
+  const ca = (slug || '').toLocaleLowerCase() as Address;
   const { address } = useAccount();
 
   const [slippage, setSlippage] = useState("20");
