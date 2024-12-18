@@ -3,8 +3,8 @@ import { supabaseClient } from "@/lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { name = "" } = req.query as {
-    name?: string;
+  const { search = "" } = req.query as {
+    search?: string;
     page: string;
     pageSize: string;
   };
@@ -19,11 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     data: tokenList,
     error: tokenListError,
     count: tokenCount,
-  } = await supabaseClient.from("Token").select("*", { count: "exact" }).like("name", `%${name}%`).range(from, to).order("created_timestamp", { ascending: false });
+  } = await supabaseClient.from("Token").select("*", { count: "exact" }).or(`name.ilike.%${search}%,address.ilike.%${search}%`).range(from, to).order("created_timestamp", { ascending: false });
 
   const addressList = (tokenList || []).map((item) => item.address);
 
-  const { data: infoList, error: infoError } = await supabaseClient.from("TokenInfo").select("address,picture,twitter,telegram,website,desc").in('address', addressList);
+  const { data: infoList, error: infoError } = await supabaseClient.from("TokenInfo").select("address,picture,twitter,telegram,website,desc").in("address", addressList);
 
   const error = tokenListError || infoError;
 

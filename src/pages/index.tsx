@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ChangeEventHandler, useEffect, useState } from "react";
 
 export default function Home() {
-  const [name, setName] = useState("");
+  const [search, setSearch] = useState("");
   const [list, setList] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -25,11 +25,11 @@ export default function Home() {
   }
 
   const handleNameChange: InputProps["onChange"] = (e) => {
-    const name = e.target.value;
-    setName(name);
+    const search = e.target.value;
+    setSearch(search);
 
     fetchList({
-      name,
+      search,
       page: 1,
       pageSize,
     });
@@ -39,7 +39,7 @@ export default function Home() {
 
   const handlePageChange = (page: number) => {
     fetchList({
-      name,
+      search,
       page,
       pageSize,
     });

@@ -21,7 +21,7 @@ export const tokenApi = async (data: { address: string }) => {
 };
 
 export interface TokenListApiData {
-  name?: string;
+  search?: string;
   page: number;
   pageSize: number;
 }
@@ -48,11 +48,11 @@ export const getSignatureApi = async (fcMessage: string, fcSignature: string, co
     data: {
       fcMessage,
       fcSignature,
-      ...commitment
-    }
+      ...commitment,
+    },
   });
   return res?.data;
-}
+};
 
 export interface HistoryApiData {
   address: Address;
