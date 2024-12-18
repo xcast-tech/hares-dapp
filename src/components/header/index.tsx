@@ -56,7 +56,7 @@ export const Header = () => {
       <div className="flex items-center gap-2">
         <div>
           {isAuthenticated ? (
-            <Button startContent={<Avatar src={pfpUrl} className="w-6 h-6" />} variant="bordered" onPress={logout}>
+            <Button startContent={<Avatar className="w-6 h-6 text-tiny" {...(pfpUrl ? { src: pfpUrl } : { name: displayName })} />} variant="bordered" onPress={logout}>
               {username}
             </Button>
           ) : (
