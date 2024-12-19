@@ -1,11 +1,15 @@
-import { convertTradesToBar, convertTradeToBars, getKChartData } from "../utils";
+import {
+  convertTradesToBar,
+  convertTradeToBars,
+  getKChartData,
+} from "../utils";
 import { Trade } from "../types";
 
-const subsriberCache: Record<string, any> = {}
-let historyTrades: Trade[] | null = null
-let cacheStartTime = Date.now()
+const subsriberCache: Record<string, any> = {};
+let historyTrades: Trade[] | null = null;
+let cacheStartTime = Date.now();
 const configurationData = {
-  supported_resolutions: ["1", "5", "15", "30", "60", "1D", "1W", "1M"],
+  supported_resolutions: ["1s", "1", "5", "15", "30", "60", "1D", "1W", "1M"],
 };
 
 export default (symbol: string, address: string, ethPrice: number) => ({
@@ -25,7 +29,7 @@ export default (symbol: string, address: string, ethPrice: number) => ({
 
   resolveSymbol: async (
     symbolName: string,
-    onSymbolResolvedCallback: Function,
+    onSymbolResolvedCallback: Function
   ) => {
     console.log("[resolveSymbol]: Method call", symbolName);
     // Symbol information object
@@ -42,8 +46,18 @@ export default (symbol: string, address: string, ethPrice: number) => ({
       has_intraday: true,
       has_daily: true,
       has_weekly_and_monthly: false,
-      supported_resolutions: ["1", "5", "15", "30"],
-      data_status: "endofday"
+      supported_resolutions: [
+        "1s",
+        "1",
+        "5",
+        "15",
+        "30",
+        "60",
+        "1D",
+        "1W",
+        "1M",
+      ],
+      data_status: "endofday",
     };
 
     console.log("[resolveSymbol]: Symbol resolved", symbolName);
@@ -61,16 +75,24 @@ export default (symbol: string, address: string, ethPrice: number) => ({
     const { from, to } = periodParams;
     console.log("[getBars]: Method call", symbolInfo, resolution, periodParams);
     if (!historyTrades) {
-      const res = await fetch(`/api/trade/history?address=${address}`).then(res => res.json())
+      const res = await fetch(`/api/trade/history?address=${address}`).then(
+        (res) => res.json()
+      );
       if (res.code !== 0) {
         return onErrorCallback(res.message);
       }
-      historyTrades = res.data as Trade[]
+      historyTrades = res.data as Trade[];
     }
-    const bars = convertTradeToBars(historyTrades, from, to, resolution, ethPrice);
+    const bars = convertTradeToBars(
+      historyTrades,
+      from,
+      to,
+      resolution,
+      ethPrice
+    );
     onHistoryCallback(bars || [], {
-      noData: !bars
-    })
+      noData: !bars,
+    });
   },
 
   subscribeBars: (
@@ -84,19 +106,21 @@ export default (symbol: string, address: string, ethPrice: number) => ({
       "[subscribeBars]: Method call with subscriberUID:",
       subscriberUID
     );
-    cacheStartTime = Date.now()
-    Object.keys(subsriberCache).forEach(key => {
-      clearInterval(subsriberCache[key])
-    })
+    cacheStartTime = Date.now();
+    Object.keys(subsriberCache).forEach((key) => {
+      clearInterval(subsriberCache[key]);
+    });
     subsriberCache[subscriberUID] = setInterval(async () => {
-      const res = await fetch(`/api/trade/history?address=${address}&from=${cacheStartTime}`).then(res => res.json())
+      const res = await fetch(
+        `/api/trade/history?address=${address}&from=${cacheStartTime}`
+      ).then((res) => res.json());
       if (res.code !== 0 || res.data.length === 0) {
-        return
+        return;
       }
-      const bar = convertTradesToBar(res.data, ethPrice)
-      onRealtimeCallback(bar)
+      const bar = convertTradesToBar(res.data, ethPrice);
+      onRealtimeCallback(bar);
       if (Date.now() - cacheStartTime > resolution * 60 * 1000) {
-        cacheStartTime = Date.now()
+        cacheStartTime = Date.now();
       }
     }, 5000);
   },

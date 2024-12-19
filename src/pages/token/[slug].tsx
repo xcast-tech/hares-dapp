@@ -234,8 +234,10 @@ export default function Token() {
                       );
                     })}
                   </div>
-
-                  {detail?.isGraduate || signature ? (
+                  <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
+                    place trade
+                  </Button>
+                  {/* {detail?.isGraduate || signature ? (
                     <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
                       place trade
                     </Button>
@@ -243,7 +245,7 @@ export default function Token() {
                     <Button fullWidth color="success" className="mt-2" onPress={login}>
                       sign in first
                     </Button>
-                  )}
+                  )} */}
                 </div>
               )}
 
