@@ -47,7 +47,7 @@ export const Header = () => {
             <Twitter height={40} />
           </Link>
 
-          <Link href={"/"} target="_blank">
+          <Link href="https://warpcast.com/hares-ai" target="_blank">
             <Warpcast height={20} />
           </Link>
         </div>

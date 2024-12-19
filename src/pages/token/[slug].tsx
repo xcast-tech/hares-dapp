@@ -7,7 +7,7 @@ import { getHistoryApi, tokenApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken, Trade } from "@/lib/types";
 import dayjs from "dayjs";
-import { formatNumber, formatThousandNumber, getHost, getKChartData } from "@/lib/utils";
+import { formatNumber, formatThousandNumber, getEthBuyQuote, getHost, getKChartData, getTokenSellQuote } from "@/lib/utils";
 import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
@@ -16,6 +16,7 @@ import Decimal from "decimal.js";
 import { useAppContext } from "@/context/useAppContext";
 import Script from "next/script";
 import TradingView from "@/components/tradingview";
+import Head from "next/head";
 
 const TabKeys = {
   buy: "buy",
@@ -177,10 +178,15 @@ export default function Token() {
   }, [ca, address]);
 
   return (
-    <div>
+    <div className="px-[7vw]">
+      <Head>
+        <title>{detail?.symbol} | hares.ai</title>
+      </Head>
       <Script strategy="beforeInteractive" src="/scripts/charting_library.standalone.js"></Script>
+      { detail && <h1 className="text-lg py-2 font-bold">{detail?.symbol}: {ca}</h1> }
+      { detail && detail.isGraduate && <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> }
       <div className="flex gap-4">
-        <div className="flex-1">{!!ethPrice && detail?.symbol && <TradingView className="w-full h-[60vh]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}</div>
+        <div className="flex-1">{!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}</div>
 
         <div className="w-[350px]">
           <div className="bg-[#333] rounded-md p-2">
@@ -234,6 +240,7 @@ export default function Token() {
                       );
                     })}
                   </div>
+                  {buyInputValue && Number(detail?.totalSupply) < 8e26 && <p className="text-xs text-gray-500">{detail?.symbol} received: {Number(getEthBuyQuote(Number(detail?.totalSupply) / 1e18, Number(buyInputValue))) / 1e18}</p>}
                   <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
                     place trade
                   </Button>
@@ -294,6 +301,7 @@ export default function Token() {
                       })}
                     </div>
                   </div>
+                  {sellInputValue && Number(detail?.totalSupply) < 8e26 && <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>}
 
                   <Button fullWidth color="danger" className="mt-2" onPress={handleSell}>
                     place trade

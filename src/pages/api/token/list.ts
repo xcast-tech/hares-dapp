@@ -2,7 +2,10 @@
 import { supabaseClient } from "@/lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { search = "" } = req.query as {
     search?: string;
     page: string;
@@ -19,11 +22,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     data: tokenList,
     error: tokenListError,
     count: tokenCount,
-  } = await supabaseClient.from("Token").select("*", { count: "exact" }).or(`name.ilike.%${search}%,address.ilike.%${search}%`).range(from, to).order("created_timestamp", { ascending: false });
+  } = await supabaseClient
+    .from("Token")
+    .select("*", { count: "exact" })
+    .or(`name.ilike.%${search}%,address.ilike.%${search}%`)
+    .range(from, to)
+    .order("created_timestamp", { ascending: false });
 
   const addressList = (tokenList || []).map((item) => item.address);
 
-  const { data: infoList, error: infoError } = await supabaseClient.from("TokenInfo").select("address,picture,twitter,telegram,website,desc").in("address", addressList);
+  const { data: infoList, error: infoError } = await supabaseClient
+    .from("TokenInfo")
+    .select("address,picture,twitter,telegram,website,desc")
+    .in("address", addressList);
 
   const error = tokenListError || infoError;
 
@@ -34,13 +45,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  const tokenInfoMap = (infoList || []).reduce((acc: Record<string, any>, token) => {
-    acc[token.address] = token;
-    return acc;
-  }, {});
+  const tokenInfoMap = (infoList || []).reduce(
+    (acc: Record<string, any>, token) => {
+      acc[token.address] = token;
+      return acc;
+    },
+    {}
+  );
 
   const list = (tokenList || []).map((token) => ({
     ...token,
+    created_at: new Date(Number(token.created_timestamp ?? 0) * 1000),
     ...tokenInfoMap[token.address],
   }));
 

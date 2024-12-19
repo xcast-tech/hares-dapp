@@ -32,7 +32,7 @@ export default function TradingView(props: Props) {
           "paneProperties.backgroundType": "solid",  // 背景类型
           "paneProperties.borderColor": "#333",     // 边框颜色
           "scalesProperties.textColor": "#FFFFFF",  // 刻度文字颜色
-          "scalesProperties.lineColor": "#AAAAAA",  // 刻度线颜色
+          "scalesProperties.lineColor": "#aaaaaa",  // 刻度线颜色
           "chart.backgroundColor": "#020024",       // 设置背景颜色
           "chart.crosshairColor": "#555",           // 十字线颜色
         },
@@ -44,7 +44,7 @@ export default function TradingView(props: Props) {
           "paneProperties.backgroundType": "solid",  // 背景类型
           "paneProperties.borderColor": "#333",     // 边框颜色
           "scalesProperties.textColor": "#FFFFFF",  // 刻度文字颜色
-          "scalesProperties.lineColor": "#AAAAAA",  // 刻度线颜色
+          "scalesProperties.lineColor": "#aaaaaa",  // 刻度线颜色
           "chart.backgroundColor": "#020024",       // 设置背景颜色
           "chart.crosshairColor": "#555",           // 十字线颜色
         })
@@ -52,7 +52,7 @@ export default function TradingView(props: Props) {
         widget.chart().removeAllStudies();  // 移除所有默认的指标
   
         // 如果你希望移除 Volume 等相关指标，可以通过这个方法显式移除
-        widget.chart().removeStudy("volume");  // 移除 volume 指标
+        // widget.chart().removeStudy("volume");  // 移除 volume 指标
       });
     }
     
