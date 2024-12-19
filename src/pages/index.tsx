@@ -47,7 +47,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchList({
-      name: "",
+      search: "",
       page: 1,
       pageSize,
     });
