@@ -184,7 +184,7 @@ export default function Token() {
       </Head>
       <Script strategy="beforeInteractive" src="/scripts/charting_library.standalone.js"></Script>
       { detail && <h1 className="text-lg py-2 font-bold">{detail?.symbol}: {ca}</h1> }
-      { detail && detail.isGraduate && <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> }
+      { detail && detail.isGraduate ? <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null }
       <div className="flex gap-4">
         <div className="flex-1">{!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}</div>
 
