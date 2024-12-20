@@ -1,9 +1,9 @@
 import { Trade } from "@/lib/types";
-import { cn, formatNumber, formatThousandNumber, maskAddress } from "@/lib/utils";
-import { getKeyValue, Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import { cn, formatTokenBalance, maskAddress } from "@/lib/utils";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import dayjs from "dayjs";
 import React from "react";
-import { formatEther, parseEther } from "viem";
+import { formatEther } from "viem";
 
 interface TradeListProps {
   list: Trade[];
@@ -27,7 +27,7 @@ export const TradeList = ({ list, symbol }: TradeListProps) => {
         return formatEther(BigInt(cellValue), "wei");
 
       case "trueOrderSize":
-        return formatNumber(+cellValue / 1e18);
+        return formatTokenBalance(cellValue);
 
       case "timestamp":
         return dayjs().to(dayjs((cellValue as number) * 1000));

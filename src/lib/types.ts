@@ -52,3 +52,5 @@ export type Trade = {
   trueEth: string;
   timestamp: number;
 };
+
+export type TopHolder = Database["public"]["Functions"]["get_top_holders"]["Returns"][0];

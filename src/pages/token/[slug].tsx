@@ -1,10 +1,10 @@
 import { Tabs, Tab, Button, Input, Chip, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Info } from "@/components/info";
-import { getHistoryApi, getHistoryListApi, tokenApi } from "@/lib/apis";
+import { getTokenTopHoldersApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
-import { Address, IToken, Trade, TradeItem } from "@/lib/types";
-import { formatNumber, formatThousandNumber, getEthBuyQuote, getHost, getKChartData, getTokenSellQuote } from "@/lib/utils";
+import { Address, IToken, TopHolder, Trade } from "@/lib/types";
+import { formatNumber, formatTokenBalance, getEthBuyQuote, getTokenSellQuote } from "@/lib/utils";
 import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
@@ -14,8 +14,8 @@ import { useAppContext } from "@/context/useAppContext";
 import TradingView from "@/components/tradingview";
 import Head from "next/head";
 import { getTokenDetail } from "@/lib/model";
-import { useAsyncList } from "@react-stately/data";
 import { TradeList } from "@/components/trade-list";
+import { TopHolders } from "@/components/top-holders";
 
 const TabKeys = {
   buy: "buy",
@@ -71,6 +71,8 @@ export default function Token(props: IToken) {
   const [tabKey, setTabKey] = useState<string | number>(TabKeys.buy);
   const [slippageModalOpen, setSlippageModalOpen] = useState(false);
   const [trading, setTrading] = useState(false);
+
+  const [topHolders, setTopHolders] = useState<TopHolder[]>([]);
 
   const tabColor = tabKey === "buy" ? "success" : "danger";
 
@@ -182,12 +184,23 @@ export default function Token(props: IToken) {
     setSlippageModalOpen(open);
   };
 
+  async function fetchTopHolders(address: Address) {
+    const res = await getTokenTopHoldersApi({ address });
+    setTopHolders(res?.data?.list ?? []);
+  }
+
   useEffect(() => {
     console.log("ca address", { ca, address });
     if (ca && address) {
       fetchTokenBalance(ca, address);
     }
   }, [ca, address]);
+
+  useEffect(() => {
+    if (ca) {
+      fetchTopHolders(ca);
+    }
+  }, [ca]);
 
   return (
     <div className="px-[7vw]">
@@ -279,7 +292,7 @@ export default function Token(props: IToken) {
                     <div>
                       <div className="mb-1 flex items-center justify-between">
                         <div>amount ({detail?.symbol})</div>
-                        <div>{formatNumber(tokenBalance)}</div>
+                        <div>{formatTokenBalance(tokenBalance)}</div>
                       </div>
                       <div>
                         <Input
@@ -327,6 +340,8 @@ export default function Token(props: IToken) {
           </div>
 
           <Info className="mt-4" detail={detail} />
+
+          <TopHolders list={topHolders} className="mt-4" />
         </div>
       </div>
 

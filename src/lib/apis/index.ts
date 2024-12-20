@@ -77,3 +77,15 @@ export const getHistoryListApi = async (data: HistoryListApiData) => {
   });
   return res?.data;
 };
+
+export interface HistoryListApiData {
+  address: Address;
+}
+
+export const getTokenTopHoldersApi = async (data: HistoryListApiData) => {
+  const res = await request("/api/token/top-holders", {
+    method: "get",
+    params: data,
+  });
+  return res?.data;
+};
