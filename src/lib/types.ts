@@ -1,4 +1,7 @@
+import { Database } from "./supabase/supabase";
+
 export type Address = `0x${string}`;
+export type Token = Database['public']['Tables']['Token']['Row']
 
 export type ContractEvent<T> = {
   address: string;
@@ -41,7 +44,7 @@ export type Commitment = {
 }
 
 export type Trade = {
-  type: 0  | 1,
+  type: 0 | 1,
   recipient: Address,
   trueOrderSize: string,
   totalSupply: string,

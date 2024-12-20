@@ -25,3 +25,30 @@ export async function setEventHandled(id: number) {
     throw error.message
   }
 }
+
+export async function getTokenDetail(address: string) {
+  const [{ data: token, error: tokenError }, { data: tokenInfo, error: tokenInfoError }] = await Promise.all([
+    supabaseClient
+      .from("Token")
+      .select("*")
+      .eq("address", address)
+      .maybeSingle(),
+    supabaseClient
+      .from("TokenInfo")
+      .select("picture,desc,twitter,telegram,website")
+      .eq("address", address)
+      .maybeSingle(),
+  ]);
+
+  if (tokenError) {
+    return null
+  }
+  if (tokenInfoError) {
+    return null
+  }
+
+  return {
+    ...token,
+    ...tokenInfo
+  }
+}

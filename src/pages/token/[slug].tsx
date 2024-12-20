@@ -1,12 +1,9 @@
 import { Tabs, Tab, Button, Input, Chip, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
-import { useRouter } from "next/router";
 import { use, useEffect, useState } from "react";
 import { Info } from "@/components/info";
-import { TVChart } from "@/components/tvchart";
 import { getHistoryApi, tokenApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken, Trade } from "@/lib/types";
-import dayjs from "dayjs";
 import { formatNumber, formatThousandNumber, getEthBuyQuote, getHost, getKChartData, getTokenSellQuote } from "@/lib/utils";
 import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
@@ -17,35 +14,62 @@ import { useAppContext } from "@/context/useAppContext";
 import Script from "next/script";
 import TradingView from "@/components/tradingview";
 import Head from "next/head";
+import { getTokenDetail } from "@/lib/model";
 
 const TabKeys = {
   buy: "buy",
   sell: "sell",
 };
 
-export default function Token() {
+
+export async function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: 'blocking',
+  };
+}
+
+export async function getStaticProps({ params }: { params: { slug: string } }) {
+  try {
+    const { slug } = params
+    const data = await getTokenDetail(slug.toLowerCase())
+    if (data) {
+      return {
+        props: data,
+        revalidate: 10
+      }
+    } else {
+      return {
+        notFound: true,
+      }
+    }
+  } catch (err: any) {
+    return {
+      notFound: true,
+    };
+  }
+}
+
+export default function Token(props: IToken) {
+  const detail = props
   const { ethPrice } = useAppContext();
   const { login } = useFarcasterContext();
   const { buy, sell, getTokenBalance } = useContract();
   const { message, signature } = useSignInMessage();
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
-  const router = useRouter();
-  const { slug } = router.query as { slug: Address };
-  const ca = (slug || "").toLocaleLowerCase() as Address;
   const { address } = useAccount();
 
+  const ca = detail.address as Address;
+
+  const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [slippage, setSlippage] = useState("20");
   const [editSlippage, setEditSlippage] = useState("");
   const [historyList, setHistoryList] = useState<Trade[]>([]);
 
-  const [detail, setDetail] = useState<IToken>();
-
   const [buyInputValue, setBuyInputValue] = useState<string>();
   const [sellInputValue, setSellInputValue] = useState<string>();
-
   const [tabKey, setTabKey] = useState<string | number>(TabKeys.buy);
-
   const [slippageModalOpen, setSlippageModalOpen] = useState(false);
+  const [trading, setTrading] = useState(false);
 
   const tabColor = tabKey === "buy" ? "success" : "danger";
 
@@ -97,34 +121,26 @@ export default function Token() {
     setHistoryList(res?.data ?? []);
   }
 
-  async function fetchToken(ca: string) {
-    const res = await tokenApi({
-      address: ca,
-    });
-
-    console.log(res);
-    setDetail(res?.data);
-  }
-
   async function handleBuy() {
     if (!address) {
       toast("Please connect wallet first");
       return;
     }
-
     const amount = +(buyInputValue || "");
-
     if (amount <= 0) {
       toast("Invalid amount");
       return;
     }
-
     try {
-      const tx = await buy(ca, amount, +slippage / 100);
+      setTrading(true);
+      const tx = await buy(ca, amount, +slippage / 100, () => {
+        setTrading(true);
+      });
       toast(`Buy success. tx: ${tx}`);
     } catch (error: any) {
       toast(error?.message);
     } finally {
+      setTrading(false);
       fetchTokenBalance(ca, address);
     }
   }
@@ -134,27 +150,27 @@ export default function Token() {
       toast("Please connect wallet first");
       return;
     }
-
     const amount = +(sellInputValue || "");
-
     if (amount <= 0) {
       toast("Invalid amount");
       return;
     }
-
     try {
-      const tx = await sell(ca, amount, +slippage / 100);
+      setTrading(true);
+      const tx = await sell(ca, amount, +slippage / 100, () => {
+        setTrading(false);
+      });
       toast(`Sell success. tx: ${tx}`);
     } catch (error: any) {
       toast(error?.message);
     } finally {
+      setTrading(false);
       fetchTokenBalance(ca, address);
     }
   }
 
   async function fetchTokenBalance(ca: Address, address: Address) {
     const balance = await getTokenBalance(ca, address);
-    console.log("balance", balance);
     setTokenBalance(balance);
     return balance;
   }
@@ -165,7 +181,6 @@ export default function Token() {
 
   useEffect(() => {
     if (ca) {
-      fetchToken(ca);
       fetchHistory(ca);
     }
   }, [ca]);
@@ -183,18 +198,16 @@ export default function Token() {
         <title>{detail?.symbol} | hares.ai</title>
       </Head>
       <Script strategy="beforeInteractive" src="/scripts/charting_library.standalone.js"></Script>
-      { detail && <h1 className="text-lg py-2 font-bold">{detail?.symbol}: {ca}</h1> }
-      { detail && detail.isGraduate ? <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null }
+      <h1 className="text-lg py-2 font-bold">{detail?.symbol}: {ca}</h1>
+      {detail.isGraduate ? <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
       <div className="flex gap-4">
         <div className="flex-1">{!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}</div>
-
         <div className="w-[350px]">
           <div className="bg-[#333] rounded-md p-2">
             <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
               <Tab key={TabKeys.buy} title="Buy" />
               <Tab key={TabKeys.sell} title="Sell" />
             </Tabs>
-
             <div className="w-full my-4 flex justify-end">
               <Button
                 size="sm"
@@ -206,7 +219,6 @@ export default function Token() {
                 set max slippage
               </Button>
             </div>
-
             <div className="mt-4">
               {tabKey === TabKeys.buy && (
                 <div>
@@ -241,8 +253,8 @@ export default function Token() {
                     })}
                   </div>
                   {buyInputValue && Number(detail?.totalSupply) < 8e26 && <p className="text-xs text-gray-500">{detail?.symbol} received: {Number(getEthBuyQuote(Number(detail?.totalSupply) / 1e18, Number(buyInputValue))) / 1e18}</p>}
-                  <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
-                    place trade
+                  <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
+                    {trading ? 'Trading...' : 'Place trade'}
                   </Button>
                   {/* {detail?.isGraduate || signature ? (
                     <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
@@ -262,7 +274,6 @@ export default function Token() {
                     <div>
                       <div className="mb-1 flex items-center justify-between">
                         <div>amount ({detail?.symbol})</div>
-
                         <div>{formatNumber(tokenBalance)}</div>
                       </div>
                       <div>
@@ -289,9 +300,7 @@ export default function Token() {
                                 toast("Please connect wallet first");
                                 return;
                               }
-
                               const balance = await fetchTokenBalance(ca, address);
-
                               setSellInputValue(String(Decimal.mul(balance, option.value)));
                             }}
                           >
@@ -302,9 +311,8 @@ export default function Token() {
                     </div>
                   </div>
                   {sellInputValue && Number(detail?.totalSupply) < 8e26 && <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>}
-
-                  <Button fullWidth color="danger" className="mt-2" onPress={handleSell}>
-                    place trade
+                  <Button fullWidth color="danger" className="mt-2" onPress={handleSell} isLoading={trading}>
+                    {trading ? 'Trading...' : 'Place trade'}
                   </Button>
                 </div>
               )}
@@ -344,9 +352,7 @@ export default function Token() {
                       toast("Invalid slippage");
                       return;
                     }
-
                     setSlippage(editSlippage || "0");
-
                     onClose();
                   }}
                 >

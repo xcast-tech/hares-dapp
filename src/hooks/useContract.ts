@@ -96,7 +96,7 @@ export function useContract() {
     return res[0];
   }
 
-  async function buy(token: Address, eth: number, slipage: number) {
+  async function buy(token: Address, eth: number, slipage: number, onTxSend: (tx: string) => void) {
     if (!address) {
       return;
     }
@@ -137,13 +137,14 @@ export function useContract() {
       value: parseEther(eth.toString()),
       gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
     });
+    onTxSend(tx);
     await publicClient?.waitForTransactionReceipt({
       hash: tx,
     });
     return tx;
   }
 
-  async function sell(token: Address, tokenToSell: number, slipage: number) {
+  async function sell(token: Address, tokenToSell: number, slipage: number, onTxSend: (tx: string) => void) {
     if (!address) {
       return;
     }
@@ -177,6 +178,7 @@ export function useContract() {
       ],
       gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
     });
+    onTxSend(tx);
     await publicClient?.waitForTransactionReceipt({
       hash: tx,
     });
