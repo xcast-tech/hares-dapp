@@ -96,7 +96,7 @@ export function useContract() {
     return res[0];
   }
 
-  async function buy(token: Address, eth: number, slipage: number, onTxSend: (tx: string) => void) {
+  async function buy(token: Address, eth: number, slipage: number, onTxSend: (tx: string) => void = () => { }) {
     if (!address) {
       return;
     }
@@ -144,7 +144,7 @@ export function useContract() {
     return tx;
   }
 
-  async function sell(token: Address, tokenToSell: number, slipage: number, onTxSend: (tx: string) => void) {
+  async function sell(token: Address, tokenToSell: number, slipage: number, onTxSend: (tx: string) => void = () => { }) {
     if (!address) {
       return;
     }
