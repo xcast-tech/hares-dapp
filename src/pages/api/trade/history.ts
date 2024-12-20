@@ -2,7 +2,7 @@
 import { supabaseClient } from "@/lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler (
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
@@ -11,11 +11,11 @@ export default async function handler (
   const numberFrom = Number(from)
 
   const { data, error } = await supabaseClient
-  .from('Trade')
-  .select('type,recipient,trueOrderSize,totalSupply,trueEth,timestamp')
-  .eq('tokenAddress', address as string)
-  .gt('timestamp', from ? Math.floor(numberFrom / 1000) : 0)
-  .order('id', { ascending: true })
+    .from('Trade')
+    .select('type,recipient,trueOrderSize,totalSupply,trueEth,timestamp')
+    .eq('tokenAddress', address as string)
+    .gt('timestamp', from ? Math.floor(numberFrom / 1000) : 0)
+    .order('timestamp', { ascending: true })
 
   if (error) {
     res.json({
@@ -23,7 +23,7 @@ export default async function handler (
       data: error.message
     });
   }
-  
+
   res.json({
     code: 0,
     data
