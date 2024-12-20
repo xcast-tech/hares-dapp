@@ -1,7 +1,7 @@
 import { Database } from "./supabase/supabase";
 
 export type Address = `0x${string}`;
-export type Token = Database['public']['Tables']['Token']['Row']
+export type Token = Database["public"]["Tables"]["Token"]["Row"];
 
 export type ContractEvent<T> = {
   address: string;
@@ -35,19 +35,20 @@ export interface IToken {
 }
 
 export type Commitment = {
-  value: BigInt | number
-  recipient: Address
-  refundRecipient: Address
-  minOrderSize: BigInt | number
-  sqrtPriceLimitX96: BigInt | number
-  expired: BigInt | number
-}
+  value: BigInt | number;
+  recipient: Address;
+  refundRecipient: Address;
+  minOrderSize: BigInt | number;
+  sqrtPriceLimitX96: BigInt | number;
+  expired: BigInt | number;
+};
 
 export type Trade = {
-  type: 0 | 1,
-  recipient: Address,
-  trueOrderSize: string,
-  totalSupply: string,
-  trueEth: string,
-  timestamp: number,
-}
+  from: Address;
+  type: 0 | 1;
+  recipient: Address;
+  trueOrderSize: string;
+  totalSupply: string;
+  trueEth: string;
+  timestamp: number;
+};

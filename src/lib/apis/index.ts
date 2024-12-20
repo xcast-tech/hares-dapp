@@ -65,3 +65,15 @@ export const getHistoryApi = async (data: HistoryApiData) => {
   });
   return res?.data;
 };
+
+export interface HistoryListApiData {
+  address: Address;
+}
+
+export const getHistoryListApi = async (data: HistoryListApiData) => {
+  const res = await request("/api/trade/list", {
+    method: "post",
+    params: data,
+  });
+  return res?.data;
+};

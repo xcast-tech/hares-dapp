@@ -1,9 +1,9 @@
 import { Tabs, Tab, Button, Input, Chip, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { use, useEffect, useState } from "react";
 import { Info } from "@/components/info";
-import { getHistoryApi, tokenApi } from "@/lib/apis";
+import { getHistoryApi, getHistoryListApi, tokenApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
-import { Address, IToken, Trade } from "@/lib/types";
+import { Address, IToken, Trade, TradeItem } from "@/lib/types";
 import { formatNumber, formatThousandNumber, getEthBuyQuote, getHost, getKChartData, getTokenSellQuote } from "@/lib/utils";
 import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
@@ -14,33 +14,34 @@ import { useAppContext } from "@/context/useAppContext";
 import TradingView from "@/components/tradingview";
 import Head from "next/head";
 import { getTokenDetail } from "@/lib/model";
+import { useAsyncList } from "@react-stately/data";
+import { TradeList } from "@/components/trade-list";
 
 const TabKeys = {
   buy: "buy",
   sell: "sell",
 };
 
-
 export async function getStaticPaths() {
   return {
     paths: [],
-    fallback: 'blocking',
+    fallback: "blocking",
   };
 }
 
 export async function getStaticProps({ params }: { params: { slug: string } }) {
   try {
-    const { slug } = params
-    const data = await getTokenDetail(slug.toLowerCase())
+    const { slug } = params;
+    const data = await getTokenDetail(slug.toLowerCase());
     if (data) {
       return {
         props: data,
-        revalidate: 10
-      }
+        revalidate: 10,
+      };
     } else {
       return {
         notFound: true,
-      }
+      };
     }
   } catch (err: any) {
     return {
@@ -50,7 +51,7 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 }
 
 export default function Token(props: IToken) {
-  const detail = props
+  const detail = props;
   const { ethPrice } = useAppContext();
   const { login } = useFarcasterContext();
   const { buy, sell, getTokenBalance } = useContract();
@@ -58,7 +59,7 @@ export default function Token(props: IToken) {
   const { address } = useAccount();
 
   const ca = detail.address as Address;
-  const [totalSupply, setTotalSupply] = useState(detail.totalSupply)
+  const [totalSupply, setTotalSupply] = useState(detail.totalSupply);
 
   const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [slippage, setSlippage] = useState("20");
@@ -115,15 +116,12 @@ export default function Token(props: IToken) {
     },
   ];
 
-  async function fetchHistory(ca: Address) {
-    const res = await getHistoryApi({ address: ca.toLocaleLowerCase() as Address });
-    console.log("getHistoryApi", res);
-    setHistoryList(res?.data ?? []);
-  }
-
   function handleNewTrade(trades: any) {
-    // setTradeList([...trades, tradeList])
-    setTotalSupply(trades[trades.length - 1].totalSupply);
+    if (trades?.length > 0) {
+      const newTrade = trades[trades.length - 1];
+      setHistoryList([...trades.reverse(), ...historyList]);
+      setTotalSupply(newTrade.totalSupply);
+    }
   }
 
   async function handleBuy() {
@@ -185,12 +183,6 @@ export default function Token(props: IToken) {
   };
 
   useEffect(() => {
-    if (ca) {
-      fetchHistory(ca);
-    }
-  }, [ca]);
-
-  useEffect(() => {
     console.log("ca address", { ca, address });
     if (ca && address) {
       fetchTokenBalance(ca, address);
@@ -202,10 +194,15 @@ export default function Token(props: IToken) {
       <Head>
         <title>{detail?.symbol} | hares.ai</title>
       </Head>
-      <h1 className="text-lg py-2 font-bold">{detail?.symbol}: {ca}</h1>
+      <h1 className="text-lg py-2 font-bold">
+        {detail?.symbol}: {ca}
+      </h1>
       {detail.isGraduate ? <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
       <div className="flex gap-4">
-        <div className="flex-1">{!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade}/>}</div>
+        <div className="flex-1">
+          {!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade} />}
+          <TradeList list={historyList} symbol={detail.symbol} />
+        </div>
         <div className="w-[350px]">
           <div className="bg-[#333] rounded-md p-2">
             <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
@@ -256,9 +253,13 @@ export default function Token(props: IToken) {
                       );
                     })}
                   </div>
-                  {buyInputValue && Number(detail?.totalSupply) < 8e26 && <p className="text-xs text-gray-500">{detail?.symbol} received: {Number(getEthBuyQuote(Number(detail?.totalSupply) / 1e18, Number(buyInputValue))) / 1e18}</p>}
+                  {buyInputValue && Number(detail?.totalSupply) < 8e26 && (
+                    <p className="text-xs text-gray-500">
+                      {detail?.symbol} received: {Number(getEthBuyQuote(Number(detail?.totalSupply) / 1e18, Number(buyInputValue))) / 1e18}
+                    </p>
+                  )}
                   <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
-                    {trading ? 'Trading...' : 'Place trade'}
+                    {trading ? "Trading..." : "Place trade"}
                   </Button>
                   {/* {detail?.isGraduate || signature ? (
                     <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
@@ -314,9 +315,11 @@ export default function Token(props: IToken) {
                       })}
                     </div>
                   </div>
-                  {sellInputValue && Number(detail?.totalSupply) < 8e26 && <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>}
+                  {sellInputValue && Number(detail?.totalSupply) < 8e26 && (
+                    <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>
+                  )}
                   <Button fullWidth color="danger" className="mt-2" onPress={handleSell} isLoading={trading}>
-                    {trading ? 'Trading...' : 'Place trade'}
+                    {trading ? "Trading..." : "Place trade"}
                   </Button>
                 </div>
               )}

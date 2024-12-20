@@ -45,7 +45,7 @@ const Create = () => {
           data: tokenCreatedEvent.data,
           topics: tokenCreatedEvent.topics,
         });
-        const tokenAddress = (event.args as any).tokenAddress;
+        const tokenAddress = ((event.args as any).tokenAddress || "").toLowerCase();
         console.log(tokenAddress);
         return tokenAddress;
       }
