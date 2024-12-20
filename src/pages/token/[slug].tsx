@@ -11,7 +11,6 @@ import { useSignInMessage } from "@farcaster/auth-kit";
 import { useAccount } from "wagmi";
 import Decimal from "decimal.js";
 import { useAppContext } from "@/context/useAppContext";
-import Script from "next/script";
 import TradingView from "@/components/tradingview";
 import Head from "next/head";
 import { getTokenDetail } from "@/lib/model";
@@ -197,7 +196,6 @@ export default function Token(props: IToken) {
       <Head>
         <title>{detail?.symbol} | hares.ai</title>
       </Head>
-      <Script strategy="beforeInteractive" src="/scripts/charting_library.standalone.js"></Script>
       <h1 className="text-lg py-2 font-bold">{detail?.symbol}: {ca}</h1>
       {detail.isGraduate ? <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
       <div className="flex gap-4">

@@ -1,5 +1,6 @@
 import DataFeed from '@/lib/trading-view/data-feed';
-import { useEffect } from "react";
+import Script from 'next/script';
+import { useEffect, useState } from "react";
 
 type Props = {
   symbol: string;
@@ -9,11 +10,11 @@ type Props = {
 }
 
 export default function TradingView(props: Props) {
-
   const { symbol, address, ethPrice, className } = props
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
   useEffect(() => {
-    if (symbol && address) {
+    if (symbol && address && (isScriptLoaded || (window as any).TradingView)) {
       const widget = new (window as any).TradingView.widget({
         // library_path: "https://charting-library.tradingview-widget.com/charting_library/",
         library_path: '/scripts/charting_library/',
@@ -37,7 +38,7 @@ export default function TradingView(props: Props) {
           "chart.crosshairColor": "#555",           // 十字线颜色
         },
       });
-      widget.onChartReady(function() {
+      widget.onChartReady(function () {
         // 可以在这里再次尝试应用 overrides
         widget.applyOverrides({
           "paneProperties.background": "#000000",  // 图表背景色
@@ -50,16 +51,17 @@ export default function TradingView(props: Props) {
         })
         // 确保图表加载完成后再移除所有已加载的指标
         widget.chart().removeAllStudies();  // 移除所有默认的指标
-  
+
         // 如果你希望移除 Volume 等相关指标，可以通过这个方法显式移除
         // widget.chart().removeStudy("volume");  // 移除 volume 指标
       });
     }
-    
-  }, [symbol, address])
+
+  }, [symbol, address, isScriptLoaded])
 
   return (
     <div className={className}>
+      <Script onLoad={() => setIsScriptLoaded(true)} src='/scripts/charting_library.standalone.js'></Script>
       <div id="tv_chart_container" className='w-full h-full'></div>
     </div>
   );
