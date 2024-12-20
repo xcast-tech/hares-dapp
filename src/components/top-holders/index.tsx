@@ -10,7 +10,7 @@ interface TopHoldersProps {
 export const TopHolders = ({ list, className }: TopHoldersProps) => {
   return (
     <div className={cn(className)}>
-      <div className="font-bold mb-2">top 10 holders</div>
+      <div className="font-bold mb-2">Top 10 holders</div>
       <ol>
         {(list || [])?.map((item, index) => {
           return (
