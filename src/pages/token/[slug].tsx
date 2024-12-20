@@ -123,6 +123,8 @@ export default function Token(props: IToken) {
       const newTrade = trades[trades.length - 1];
       setHistoryList([...trades.reverse(), ...historyList]);
       setTotalSupply(newTrade.totalSupply);
+
+      fetchTopHolders(ca);
     }
   }
 
