@@ -134,7 +134,7 @@ export default function Token(props: IToken) {
     try {
       setTrading(true);
       const tx = await buy(ca, amount, +slippage / 100, () => {
-        setTrading(true);
+        setTrading(false);
       });
       toast(`Buy success. tx: ${tx}`);
     } catch (error: any) {
