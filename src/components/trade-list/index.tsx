@@ -38,29 +38,32 @@ export const TradeList = ({ list, symbol }: TradeListProps) => {
   };
 
   return (
-    <Table
-      className="mt-6"
-      classNames={{
-        base: "max-h-[500px]",
-      }}
-      isHeaderSticky
-    >
-      <TableHeader>
-        <TableColumn key="from">Account</TableColumn>
-        <TableColumn key="type">Type</TableColumn>
-        <TableColumn key="trueEth">ETH</TableColumn>
-        <TableColumn key="trueOrderSize">{symbol}</TableColumn>
-        <TableColumn key="timestamp">Date</TableColumn>
-      </TableHeader>
-      <TableBody>
-        {list.map((item) => {
-          return (
-            <TableRow key={item.recipient} className={cn(item.type === 1 ? "text-red-500" : "text-green-500")}>
-              {(columnKey) => <TableCell>{renderCell(item, columnKey as keyof Trade)}</TableCell>}
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="mt-6">
+      <div className="font-bold mb-2">Trades</div>
+
+      <Table
+        classNames={{
+          base: "max-h-[500px]",
+        }}
+        isHeaderSticky
+      >
+        <TableHeader>
+          <TableColumn key="from">Account</TableColumn>
+          <TableColumn key="type">Type</TableColumn>
+          <TableColumn key="trueEth">ETH</TableColumn>
+          <TableColumn key="trueOrderSize">{symbol}</TableColumn>
+          <TableColumn key="timestamp">Date</TableColumn>
+        </TableHeader>
+        <TableBody>
+          {list.map((item) => {
+            return (
+              <TableRow key={item.recipient} className={cn(item.type === 1 ? "text-red-500" : "text-green-500")}>
+                {(columnKey) => <TableCell>{renderCell(item, columnKey as keyof Trade)}</TableCell>}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
