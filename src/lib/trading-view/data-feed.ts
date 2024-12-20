@@ -72,7 +72,7 @@ export default (symbol: string, address: string, ethPrice: number) => ({
     onHistoryCallback: Function,
     onErrorCallback: Function
   ) => {
-    const { from, to } = periodParams;
+    const { from, to, firstDataRequest } = periodParams;
     console.log("[getBars]: Method call", symbolInfo, resolution, periodParams);
     if (!historyTrades) {
       const res = await fetch(`/api/trade/history?address=${address}`).then(
@@ -90,6 +90,9 @@ export default (symbol: string, address: string, ethPrice: number) => ({
       resolution,
       ethPrice
     );
+    if (firstDataRequest) {
+      cacheStartTime = to * 1000;
+    }
     onHistoryCallback(bars || [], {
       noData: !bars,
     });
@@ -106,7 +109,6 @@ export default (symbol: string, address: string, ethPrice: number) => ({
       "[subscribeBars]: Method call with subscriberUID:",
       subscriberUID
     );
-    cacheStartTime = Date.now();
     Object.keys(subsriberCache).forEach((key) => {
       clearInterval(subsriberCache[key]);
     });
