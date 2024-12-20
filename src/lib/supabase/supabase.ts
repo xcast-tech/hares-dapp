@@ -251,6 +251,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_top_holders: {
+        Args: {
+          p_address: string
+          p_limit: number
+        }
+        Returns: {
+          addrses: string
+          balance: string
+        }[]
+      }
       get_trade_history: {
         Args: {
           p_address: string
