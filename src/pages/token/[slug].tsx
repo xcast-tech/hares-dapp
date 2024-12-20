@@ -58,6 +58,7 @@ export default function Token(props: IToken) {
   const { address } = useAccount();
 
   const ca = detail.address as Address;
+  const [totalSupply, setTotalSupply] = useState(detail.totalSupply)
 
   const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [slippage, setSlippage] = useState("20");
@@ -118,6 +119,11 @@ export default function Token(props: IToken) {
     const res = await getHistoryApi({ address: ca.toLocaleLowerCase() as Address });
     console.log("getHistoryApi", res);
     setHistoryList(res?.data ?? []);
+  }
+
+  function handleNewTrade(trades: any) {
+    // setTradeList([...trades, tradeList])
+    setTotalSupply(trades[trades.length - 1].totalSupply);
   }
 
   async function handleBuy() {
@@ -199,7 +205,7 @@ export default function Token(props: IToken) {
       <h1 className="text-lg py-2 font-bold">{detail?.symbol}: {ca}</h1>
       {detail.isGraduate ? <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
       <div className="flex gap-4">
-        <div className="flex-1">{!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} />}</div>
+        <div className="flex-1">{!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade}/>}</div>
         <div className="w-[350px]">
           <div className="bg-[#333] rounded-md p-2">
             <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>

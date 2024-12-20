@@ -12,7 +12,12 @@ const configurationData = {
   supported_resolutions: ["1s", "1", "5", "15", "30", "60", "1D", "1W", "1M"],
 };
 
-export default (symbol: string, address: string, ethPrice: number) => ({
+export default (
+  symbol: string,
+  address: string,
+  ethPrice: number,
+  onNewTrade: Function
+) => ({
   onReady: (callback: Function) => {
     console.log("[onReady]: Method call");
     setTimeout(() => callback(configurationData));
@@ -119,6 +124,7 @@ export default (symbol: string, address: string, ethPrice: number) => ({
       if (res.code !== 0 || res.data.length === 0) {
         return;
       }
+      onNewTrade(res.data);
       const bar = convertTradesToBar(res.data, ethPrice);
       onRealtimeCallback(bar);
       if (Date.now() - cacheStartTime > resolution * 60 * 1000) {

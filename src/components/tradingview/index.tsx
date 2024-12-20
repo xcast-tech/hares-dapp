@@ -7,10 +7,11 @@ type Props = {
   address: string;
   ethPrice: number;
   className?: string;
+  onNewTrade: Function
 }
 
 export default function TradingView(props: Props) {
-  const { symbol, address, ethPrice, className } = props
+  const { symbol, address, ethPrice, className, onNewTrade } = props
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function TradingView(props: Props) {
         locale: "en",
         disabled_features: [],
         enabled_features: [],
-        datafeed: DataFeed(symbol, address, ethPrice),
+        datafeed: DataFeed(symbol, address, ethPrice, onNewTrade),
         theme: "dark",  // 暗色主题    
         overrides: {
           "paneProperties.background": "#000000",  // 图表背景色
