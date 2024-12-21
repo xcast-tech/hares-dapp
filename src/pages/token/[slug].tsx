@@ -53,9 +53,10 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 export default function Token(props: IToken) {
   const detail = props;
   const { ethPrice } = useAppContext();
-  const { login } = useFarcasterContext();
+  const { login, userInfo } = useFarcasterContext();
   const { buy, sell, getTokenBalance } = useContract();
-  const { message, signature } = useSignInMessage();
+  const { message, signature } = userInfo ?? {};
+
   const { address } = useAccount();
 
   const ca = detail.address as Address;
@@ -268,23 +269,21 @@ export default function Token(props: IToken) {
                       );
                     })}
                   </div>
-                  {buyInputValue && Number(detail?.totalSupply) < 8e26 && (
+                  {buyInputValue && Number(totalSupply) < 8e26 && (
                     <p className="text-xs text-gray-500">
-                      {detail?.symbol} received: {Number(getEthBuyQuote(Number(detail?.totalSupply) / 1e18, Number(buyInputValue))) / 1e18}
+                      {detail?.symbol} received: {Number(getEthBuyQuote(Number(totalSupply) / 1e18, Number(buyInputValue))) / 1e18}
                     </p>
                   )}
-                  <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
-                    {trading ? "Trading..." : "Place trade"}
-                  </Button>
-                  {/* {detail?.isGraduate || signature ? (
-                    <Button fullWidth color="success" className="mt-2" onPress={handleBuy}>
-                      place trade
+
+                  {detail?.isGraduate || signature ? (
+                    <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
+                      {trading ? "Trading..." : "Place trade"}
                     </Button>
                   ) : (
                     <Button fullWidth color="success" className="mt-2" onPress={login}>
                       sign in first
                     </Button>
-                  )} */}
+                  )}
                 </div>
               )}
 
@@ -330,8 +329,8 @@ export default function Token(props: IToken) {
                       })}
                     </div>
                   </div>
-                  {sellInputValue && Number(detail?.totalSupply) < 8e26 && (
-                    <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>
+                  {sellInputValue && Number(totalSupply) < 8e26 && (
+                    <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>
                   )}
                   <Button fullWidth color="danger" className="mt-2" onPress={handleSell} isLoading={trading}>
                     {trading ? "Trading..." : "Place trade"}

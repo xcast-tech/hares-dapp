@@ -45,6 +45,7 @@ export type Commitment = {
 };
 
 export type Trade = {
+  id: number;
   from: Address;
   type: 0 | 1;
   recipient: Address;
