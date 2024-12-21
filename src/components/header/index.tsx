@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Logo from "@/../public/logo.svg";
 import Link from "next/link";
@@ -9,10 +9,7 @@ import { useProfile } from "@farcaster/auth-kit";
 import { useFarcasterContext } from "@/hooks/farcaster";
 
 export const Header = () => {
-  const {
-    isAuthenticated,
-    profile: { username, fid, bio, displayName, pfpUrl },
-  } = useProfile();
+  const { userInfo } = useFarcasterContext();
 
   const { login, logout } = useFarcasterContext();
 
@@ -55,9 +52,9 @@ export const Header = () => {
 
       <div className="flex items-center gap-2">
         <div>
-          {isAuthenticated ? (
-            <Button startContent={<Avatar className="w-6 h-6 text-tiny" {...(pfpUrl ? { src: pfpUrl } : { name: displayName })} />} variant="bordered" onPress={logout}>
-              {username}
+          {userInfo ? (
+            <Button startContent={<Avatar className="w-6 h-6 text-tiny" {...(userInfo?.pfpUrl ? { src: userInfo?.pfpUrl } : { name: userInfo?.displayName })} />} variant="bordered" onPress={logout}>
+              {userInfo?.displayName}
             </Button>
           ) : (
             <Button onPress={login} size="sm">

@@ -2,13 +2,22 @@ import { QRCodeDialog } from "@/components/farcaster-dialog";
 import { StatusAPIResponse, useSignIn } from "@farcaster/auth-kit";
 import { redirect, usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { pick } from "lodash-es";
+import { FarcasterUserInfo } from "@/lib/types";
 
-const FarcasterContext = createContext({
+const FarcasterContext = createContext<{
+  login(): void;
+  logout(): void;
+  clearUserInfo(): void;
+  userInfo: FarcasterUserInfo | null;
+}>({
   login: () => {},
   logout: () => {},
   clearUserInfo: () => {},
-  userInfo: null as any,
+  userInfo: null,
 });
+
+const FarcasterUserInfoLocalKey = "haresai-farcaster-user-info";
 
 export const useFarcasterContext = () => useContext(FarcasterContext);
 
@@ -18,7 +27,7 @@ export default function FarcasterProvider({
   children: React.ReactNode;
 }>) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [userInfo, setUserInfo] = useState<any>(null);
+  const [userInfo, setUserInfo] = useState<FarcasterUserInfo | null>(null);
 
   const clearUserInfo = () => {
     setUserInfo(null);
@@ -26,7 +35,10 @@ export default function FarcasterProvider({
 
   const handleSuccess = useCallback(async (response: StatusAPIResponse) => {
     setModalVisible(false);
-    const { message, signature } = response;
+    // const { message, signature } = response;
+    const info = pick(response, ["fid", "displayName", "pfpUrl", "username", "message", "signature"]);
+    localStorage.setItem(FarcasterUserInfoLocalKey, JSON.stringify(info));
+    setUserInfo(info);
   }, []);
 
   const signInState = useSignIn({
@@ -80,7 +92,20 @@ export default function FarcasterProvider({
 
   const logout = useCallback(() => {
     signOut();
+    localStorage.removeItem(FarcasterUserInfoLocalKey);
+    setUserInfo(null);
   }, [signOut]);
+
+  useEffect(() => {
+    const farcasterUserInfoLocalJson = localStorage.getItem(FarcasterUserInfoLocalKey);
+    if (farcasterUserInfoLocalJson) {
+      try {
+        setUserInfo(JSON.parse(farcasterUserInfoLocalJson));
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, []);
 
   return (
     <>

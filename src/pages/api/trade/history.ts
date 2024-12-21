@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { data, error } = await supabaseClient
     .from("Trade")
-    .select("from,type,recipient,trueOrderSize,totalSupply,trueEth,timestamp")
+    .select("id,from,type,recipient,trueOrderSize,totalSupply,trueEth,timestamp")
     .eq("tokenAddress", address as string)
     .gt("timestamp", from ? Math.floor(numberFrom / 1000) : 0)
     .order("timestamp", { ascending: true });

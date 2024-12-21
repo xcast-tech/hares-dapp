@@ -1,3 +1,4 @@
+import { StatusAPIResponse } from "@farcaster/auth-client";
 import { Database } from "./supabase/supabase";
 
 export type Address = `0x${string}`;
@@ -54,3 +55,5 @@ export type Trade = {
 };
 
 export type TopHolder = Database["public"]["Functions"]["get_top_holders"]["Returns"][0];
+
+export type FarcasterUserInfo = Pick<StatusAPIResponse, "fid" | "displayName" | "pfpUrl" | "username" | "message" | "signature">;

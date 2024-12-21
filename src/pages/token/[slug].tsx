@@ -143,7 +143,7 @@ export default function Token(props: IToken) {
       const tx = await buy(ca, amount, +slippage / 100, () => {
         setTrading(false);
       });
-      toast(`Buy success. tx: ${tx}`);
+      toast(`Buy transaction send. tx: ${tx}`);
     } catch (error: any) {
       toast(error?.message);
     } finally {
@@ -167,7 +167,7 @@ export default function Token(props: IToken) {
       const tx = await sell(ca, amount, +slippage / 100, () => {
         setTrading(false);
       });
-      toast(`Sell success. tx: ${tx}`);
+      toast(`Sell transaction send. tx: ${tx}`);
     } catch (error: any) {
       toast(error?.message);
     } finally {
@@ -343,7 +343,7 @@ export default function Token(props: IToken) {
 
           <Info className="mt-4" detail={detail} />
 
-          <TopHolders list={topHolders} className="mt-4" />
+          <TopHolders list={topHolders} className="mt-4" devAddress={detail.creatorAddress} />
         </div>
       </div>
 
