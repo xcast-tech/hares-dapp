@@ -2,8 +2,8 @@ import React from "react";
 
 export const Twitter = (props: any) => {
   return (
-    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"></path>
+    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+      <path d="M15.225 3.22067H17.5251L12.5001 8.96396L18.4116 16.7793H13.7829L10.1576 12.0393L6.00931 16.7793H3.70783L9.0826 10.6362L3.41162 3.22067H8.15783L11.4348 7.55317L15.225 3.22067ZM14.4177 15.4026H15.6923L7.4653 4.52508H6.09762L14.4177 15.4026Z" fill="#999999"/>
     </svg>
   );
 };

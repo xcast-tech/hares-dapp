@@ -18,19 +18,19 @@ export const TradeList = ({ list, symbol }: TradeListProps) => {
 
     switch (columnKey) {
       case "from":
-        return maskAddress(cellValue as string);
+        return <span className="text-white" title={cellValue as string}>{maskAddress(cellValue as string)}</span>
 
       case "type":
         return cellValue === 0 ? "Buy" : "Sell";
 
       case "trueEth":
-        return formatEther(BigInt(cellValue), "wei");
+        return <span className="text-white">{Number(formatEther(BigInt(cellValue), "wei")).toFixed(4)}</span>
 
       case "trueOrderSize":
-        return formatTokenBalance(cellValue);
+        return <span className="text-white">{formatTokenBalance(cellValue)}</span>
 
       case "timestamp":
-        return dayjs().to(dayjs((cellValue as number) * 1000));
+        return <span className="text-white">{dayjs().to(dayjs((cellValue as number) * 1000))}</span>
 
       default:
         return cellValue;
@@ -38,14 +38,15 @@ export const TradeList = ({ list, symbol }: TradeListProps) => {
   };
 
   return (
-    <div className="mt-6">
-      <div className="font-bold mb-2">Trades</div>
-
+    <div className="mt-8">
+      <div className="font-bold mb-4">Trades</div>
       <Table
         classNames={{
-          base: "max-h-[500px]",
+          base: "max-h-[500px] p-4 border border-[#262626] rounded-large",
+          wrapper: 'p-0'
         }}
         isHeaderSticky
+        aria-label="Trade history"
       >
         <TableHeader>
           <TableColumn key="from">Account</TableColumn>
@@ -57,7 +58,7 @@ export const TradeList = ({ list, symbol }: TradeListProps) => {
         <TableBody>
           {list.map((item) => {
             return (
-              <TableRow key={item.recipient} className={cn(item.type === 1 ? "text-red-500" : "text-green-500")}>
+              <TableRow key={item.id} className={cn(item.type === 1 ? "text-[#F31260]" : "text-[#05DD6B]")}>
                 {(columnKey) => <TableCell>{renderCell(item, columnKey as keyof Trade)}</TableCell>}
               </TableRow>
             );

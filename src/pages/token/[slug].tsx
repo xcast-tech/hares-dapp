@@ -122,7 +122,7 @@ export default function Token(props: IToken) {
   function handleNewTrade(trades: any) {
     if (trades?.length > 0) {
       const newTrade = trades[trades.length - 1];
-      setHistoryList([...trades.reverse(), ...historyList]);
+      setHistoryList([...trades.slice(0).reverse(), ...historyList]);
       setTotalSupply(newTrade.totalSupply);
 
       fetchTopHolders(ca);
@@ -210,11 +210,12 @@ export default function Token(props: IToken) {
       <Head>
         <title>{detail?.symbol} | hares.ai</title>
       </Head>
-      <h1 className="text-lg py-2 font-bold">
-        {detail?.symbol}: {ca}
+      <h1 className="text-lg my-6">
+        <span className="font-bold">{detail?.symbol}: </span>
+        <span>{ca}</span>
       </h1>
       {detail.isGraduate ? <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
-      <div className="flex gap-4">
+      <div className="flex gap-6">
         <div className="flex-1">
           {!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade} />}
           <TradeList list={historyList} symbol={detail.symbol} />
@@ -341,7 +342,6 @@ export default function Token(props: IToken) {
           </div>
 
           <Info className="mt-4" detail={detail} />
-
           <TopHolders list={topHolders} className="mt-4" devAddress={detail.creatorAddress} />
         </div>
       </div>

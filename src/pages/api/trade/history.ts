@@ -2,13 +2,18 @@
 import { supabaseClient } from "@/lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { address, from } = req.query;
   const numberFrom = Number(from);
 
   const { data, error } = await supabaseClient
     .from("Trade")
-    .select("id,from,type,recipient,trueOrderSize,totalSupply,trueEth,timestamp")
+    .select(
+      "id,from,type,recipient,trueOrderSize,totalSupply,trueEth,timestamp"
+    )
     .eq("tokenAddress", address as string)
     .gt("timestamp", from ? Math.floor(numberFrom / 1000) : 0)
     .order("timestamp", { ascending: true });

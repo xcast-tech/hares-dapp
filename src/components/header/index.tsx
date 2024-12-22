@@ -1,11 +1,9 @@
 import React, { use } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import Logo from "@/../public/logo.svg";
 import Link from "next/link";
 import { Avatar, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { Twitter } from "../twitter";
 import { Warpcast } from "../wrapcast";
-import { useProfile } from "@farcaster/auth-kit";
 import { useFarcasterContext } from "@/hooks/farcaster";
 
 export const Header = () => {
@@ -20,31 +18,24 @@ export const Header = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 h-[80px] backdrop-blur px-4 z-10 flex justify-between items-center gap-4">
+    <div className="fixed top-0 left-0 right-0 h-[72px] backdrop-blur px-12 z-10 flex justify-between items-center gap-6">
       <Link href="/">
-        <div className="flex items-center gap-2">
-          <Logo height={32} />
-          <div className="font-semibold">hares.ai</div>
+        <div className="flex items-center gap-3">
+          <div className="bg-theme w-8 h-8 rounded-lg">
+            <img src="/logo.png" alt="Hares.ai" />
+          </div>
+          <img src="/logo-text.svg" alt="Hares.ai" />
         </div>
       </Link>
-
+      <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
+      <button onClick={() => {setIsAboutOpen(true)}} className="text-[#999] text-sm hover:text-white">About Hares</button>
+      <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
       <div className="flex-1 flex items-center gap-4">
-        <Button
-          color="primary"
-          variant="light"
-          onPress={() => {
-            setIsAboutOpen(true);
-          }}
-        >
-          About Hares
-        </Button>
-
         <div className="flex gap-2 items-center">
-          <Link href={"/"} target="_blank">
+          <Link href={"/"} target="_blank" className="p-2">
             <Twitter height={40} />
           </Link>
-
-          <Link href="https://warpcast.com/hares-ai" target="_blank">
+          <Link href="https://warpcast.com/hares-ai" target="_blank" className="p-2">
             <Warpcast height={20} />
           </Link>
         </div>
@@ -57,12 +48,11 @@ export const Header = () => {
               {userInfo?.displayName}
             </Button>
           ) : (
-            <Button onPress={login} size="sm">
-              sign in
-            </Button>
+            <button onClick={login} className="p-4 text-white">
+              Sign in
+            </button>
           )}
         </div>
-
         <ConnectButton />
       </div>
 

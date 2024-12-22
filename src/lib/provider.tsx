@@ -7,11 +7,15 @@ import { wagmiConfig } from './wagmi';
 
 const client = new QueryClient();
 
+const rainbowKitTheme = {
+  accentColor: '#6A3CD6',
+}
+
 function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <WagmiProvider config={wagmiConfig} >
       <QueryClientProvider client={client}>
-        <RainbowKitProvider locale='en-US' theme={darkTheme()}>
+        <RainbowKitProvider locale='en-US' theme={darkTheme(rainbowKitTheme)}>
           {children}
         </RainbowKitProvider>
       </QueryClientProvider>

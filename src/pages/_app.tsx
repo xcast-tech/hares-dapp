@@ -47,7 +47,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
                 )
               ) : (
                 <>
-                  <div className="mt-[80px] h-[calc(100vh-80px)] overflow-auto">
+                  <div className="mt-[72px] h-[calc(100vh-72px)] overflow-auto">
                     <Component {...pageProps} />
                   </div>
                   <Header />
