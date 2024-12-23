@@ -87,7 +87,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="w-[600px] mx-auto mb-4 flex justify-center gap-2 shadow-[0px_0px_0px_10px_#191919] rounded-[16px]">
+        <div className="-translate-y-1/2 w-[600px] mx-auto mb-4 flex justify-center gap-2 shadow-[0px_0px_0px_10px_#191919] rounded-[16px]">
           <Input type="text" placeholder="Search For Token" fullWidth onChange={handleNameChangeDebounce} classNames={{ inputWrapper: "h-[60px] text-[#666] text-[16px] !bg-[#141414]" }} />
         </div>
 
