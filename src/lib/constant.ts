@@ -11,7 +11,7 @@ export const mainChain = polygon;
 export const contractAddress = {
   BondingCurve: "0x329021C690a25217384BE9Cc5D7173Cdfc3A18Cb" as Address,
   HaresValidator: "0xDd6A3990FC4E39281daa1593c2Ca0AEC9525a130" as Address,
-  HaresFactory: "0x112b1380caBF694443A1A518DDad6AaDD11411AA" as Address,
+  HaresFactory: "0x802Ab1ffF0AA71e1f044203657BB8613DE3C6f9e" as Address,
   WETH: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270" as Address,
 };
 
@@ -25,7 +25,7 @@ export const ABIs = {
 
 export const EventTopic: Record<string, string> = {
   HaresTokenCreated:
-    "0x572a97193afd340c719f4e2a714a542f8f4d6d09d789c4042387668503300187",
+    "0xbfdfa7e444d771224fb47363ae2d9f73fff763bafcf0b63a2f38f75dc0fdafa8",
   HaresTokenTransfer:
     "0x1b8d7365dae3cd94c61c4353507a591533f5b24569ad4792690b605287eb3399",
   HaresTokenBuy:

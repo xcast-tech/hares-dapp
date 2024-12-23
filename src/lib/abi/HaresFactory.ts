@@ -34,9 +34,9 @@ export default [
             type: "address",
           },
           {
-            internalType: "uint24",
-            name: "lpFee",
-            type: "uint24",
+            internalType: "uint256",
+            name: "poolMode",
+            type: "uint256",
           },
           {
             internalType: "uint256",
@@ -149,9 +149,9 @@ export default [
             type: "address",
           },
           {
-            internalType: "uint24",
-            name: "lpFee",
-            type: "uint24",
+            internalType: "uint256",
+            name: "poolMode",
+            type: "uint256",
           },
           {
             internalType: "uint256",
@@ -263,9 +263,9 @@ export default [
             type: "address",
           },
           {
-            internalType: "uint24",
-            name: "lpFee",
-            type: "uint24",
+            internalType: "uint256",
+            name: "poolMode",
+            type: "uint256",
           },
           {
             internalType: "uint256",
@@ -351,9 +351,9 @@ export default [
             type: "address",
           },
           {
-            internalType: "uint24",
-            name: "lpFee",
-            type: "uint24",
+            internalType: "uint256",
+            name: "poolMode",
+            type: "uint256",
           },
           {
             internalType: "uint256",
