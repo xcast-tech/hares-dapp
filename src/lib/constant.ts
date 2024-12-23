@@ -25,7 +25,7 @@ export const ABIs = {
 
 export const EventTopic: Record<string, string> = {
   HaresTokenCreated:
-    "0x513260abbe38eb57e6cca56fe20a92384793c4d1192afba9e393d7c7b2ea5588",
+    "0x572a97193afd340c719f4e2a714a542f8f4d6d09d789c4042387668503300187",
   HaresTokenTransfer:
     "0x1b8d7365dae3cd94c61c4353507a591533f5b24569ad4792690b605287eb3399",
   HaresTokenBuy:
