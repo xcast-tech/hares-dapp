@@ -12,13 +12,14 @@ export function useContract() {
   const publicClient = usePublicClient();
   const { data: hash, writeContract, writeContractAsync } = useWriteContract();
 
-  async function createToken(name: string, symbol: string) {
+  async function createToken(name: string, symbol: string, value: string) {
     const tx = await writeContractAsync({
       address: contractAddress.HaresFactory,
       abi: ABIs.HaresFactoryAbi,
       functionName: "createToken",
       args: [name, symbol],
       // gas,
+      value: parseEther(value),
     });
     const res = await publicClient?.waitForTransactionReceipt({
       hash: tx,

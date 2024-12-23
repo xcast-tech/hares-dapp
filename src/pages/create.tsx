@@ -39,6 +39,8 @@ const Create = () => {
   const [telegram, setTelegram] = useState("");
   const [website, setWebsite] = useState("");
 
+  const [devBuyAmount, setDevBuyAmount] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   console.log("Create", {
@@ -55,7 +57,7 @@ const Create = () => {
     }
 
     try {
-      const res = await createToken(name, symbol);
+      const res = await createToken(name, symbol, devBuyAmount);
       console.log(res);
       const tokenCreatedEvent = res?.logs?.find?.((item) => item?.topics?.[0] === EventTopic.HaresTokenCreated);
       if (tokenCreatedEvent) {
@@ -272,7 +274,11 @@ const Create = () => {
                     isRequired
                     label="dev buy"
                     name="devBuy"
-                    type="text"
+                    type="number"
+                    endContent="ETH"
+                    placeholder="Amount in ETH"
+                    value={devBuyAmount}
+                    onChange={(e) => setDevBuyAmount(e.target.value)}
                   />
                 </div>
               </div>
