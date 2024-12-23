@@ -1,3 +1,4 @@
+import { mainChain } from "@/lib/constant";
 import { Trade } from "@/lib/types";
 import { cn, formatTokenBalance, maskAddress } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
@@ -18,7 +19,12 @@ export const TradeList = ({ list, symbol }: TradeListProps) => {
 
     switch (columnKey) {
       case "from":
-        return <span className="text-white" title={cellValue as string}>{maskAddress(cellValue as string)}</span>
+        return <a
+          className="text-white"
+          title={cellValue as string}
+          href={`${mainChain.blockExplorers.default.url}/address/${cellValue}`}
+          target="_blank"
+        >{maskAddress(cellValue as string)}</a>
 
       case "type":
         return cellValue === 0 ? "Buy" : "Sell";
