@@ -15,6 +15,7 @@ export default async function handler(
       "id,from,type,recipient,trueOrderSize,totalSupply,trueEth,timestamp"
     )
     .eq("tokenAddress", address as string)
+    .eq('isGraduate', 0)
     .gt("timestamp", from ? Math.floor(numberFrom / 1000) : 0)
     .order("timestamp", { ascending: true });
 

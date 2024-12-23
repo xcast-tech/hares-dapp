@@ -1,6 +1,6 @@
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import { metaMaskWallet, okxWallet, trustWallet, coinbaseWallet, rainbowWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
-import { createClient, http } from "viem";
+import { createClient, createPublicClient, http } from "viem";
 import { createConfig } from "wagmi";
 import { mainChain } from "@/lib/constant";
 
@@ -30,4 +30,4 @@ export const wagmiConfig = createConfig({
   ssr: true,
 });
 
-export const publicClient = createClient({ chain: mainChain, transport: http() });
+export const publicClient = createPublicClient({ chain: mainChain, transport: http() });

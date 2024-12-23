@@ -119,10 +119,14 @@ export default function Token(props: IToken) {
     },
   ];
 
-  function handleNewTrade(trades: any) {
+  function handleNewTrade(trades: Trade[]) {
     if (trades?.length > 0) {
       const newTrade = trades[trades.length - 1];
-      setHistoryList([...trades.slice(0).reverse(), ...historyList]);
+      if (trades.length === 1) {
+        setHistoryList(v => [...trades, ...v]);
+      } else {
+        setHistoryList(v => [...v, ...trades].sort((a, b) => b.id - a.id));
+      }
       setTotalSupply(newTrade.totalSupply);
 
       fetchTopHolders(ca);
@@ -321,7 +325,7 @@ export default function Token(props: IToken) {
                                 return;
                               }
                               const balance = await fetchTokenBalance(ca, address);
-                              setSellInputValue(String(Decimal.mul(balance, option.value)));
+                              setSellInputValue(String(Number(balance) / 1e18 * option.value));
                             }}
                           >
                             {option.label}

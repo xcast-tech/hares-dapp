@@ -46,7 +46,7 @@ export async function syncEvents(from: number, to: number) {
   })), {
     onConflict: 'topic,hash,data',
   })
-  
+
   if (error) {
     throw error.message
   }
@@ -118,11 +118,11 @@ async function cacheToken(row: Database['public']['Tables']['Event']['Row'], tok
 
 async function handleTokenTransfer(row: Database['public']['Tables']['Event']['Row'], tokenCache: Record<string, boolean>) {
   debugLog(`Handling TokenTransfer event ${row.id}`)
-  
+
   if (!await cacheToken(row, tokenCache)) {
     return
   }
-  
+
   const args = JSON.parse(row.data ?? '') as {
     from: string
     to: string
@@ -153,7 +153,7 @@ async function handleTokenTransfer(row: Database['public']['Tables']['Event']['R
 
 async function handleTokenBuy(row: Database['public']['Tables']['Event']['Row'], tokenCache: Record<string, boolean>) {
   debugLog(`Handling TokenBuy event ${row.id}`)
-  
+
   if (!await cacheToken(row, tokenCache)) {
     return
   }
@@ -198,7 +198,7 @@ async function handleTokenBuy(row: Database['public']['Tables']['Event']['Row'],
 
 async function handleTokenSell(row: Database['public']['Tables']['Event']['Row'], tokenCache: Record<string, boolean>) {
   debugLog(`Handling TokenSell event ${row.id}`)
-  
+
   if (!await cacheToken(row, tokenCache)) {
     return
   }
@@ -242,11 +242,11 @@ async function handleTokenSell(row: Database['public']['Tables']['Event']['Row']
 
 async function handleMarketGraduated(row: Database['public']['Tables']['Event']['Row'], tokenCache: Record<string, boolean>) {
   debugLog(`Handling MarketGraduated event ${row.id}`)
-  
+
   if (!await cacheToken(row, tokenCache)) {
     return
   }
- 
+
   const args = JSON.parse(row.data ?? '') as {
     tokenAddress: string
     poolAddress: string
