@@ -119,7 +119,7 @@ const Create = () => {
   return (
     <div className="pt-8">
       <Card className="mx-auto p-8 flex justify-center max-w-full w-[600px] shadow-[0px_0px_0px_8px_#262626]">
-        <Form className="w-full grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
+        <Form className="w-full grid grid-cols-1 gap-6" validationBehavior="native" onSubmit={handleSubmit}>
           <div>
             <Title required>Name</Title>
             <Input
@@ -130,6 +130,7 @@ const Create = () => {
               name="name"
               type="text"
               value={name}
+              errorMessage="This field is required"
               onChange={(e) => setName(e.target.value)}
             />
           </div>
@@ -144,6 +145,7 @@ const Create = () => {
               name="ticker"
               type="text"
               value={ticker}
+              errorMessage="This field is required"
               onChange={(e) => setTicker(e.target.value)}
             />
           </div>
@@ -170,7 +172,6 @@ const Create = () => {
               id="image-file"
               className="hidden"
               classNames={{ label: "hidden", mainWrapper: "flex-1", inputWrapper: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" }}
-              isRequired
               label="image"
               name="file"
               type="file"
@@ -200,6 +201,7 @@ const Create = () => {
             <AccordionItem key="1" indicator={<AnchorIcon />} title={<div className="text-[#6A3CD6] text-[14px] font-medium">Show More Options</div>}>
               <div className="grid gap-2">
                 <Input
+                  className="!mt-0"
                   classNames={{ label: "hidden", mainWrapper: "flex-1", inputWrapper: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" }}
                   labelPlacement="outside"
                   label="twitter link"
@@ -216,6 +218,7 @@ const Create = () => {
                 />
 
                 <Input
+                  className="!mt-0"
                   classNames={{ label: "hidden", mainWrapper: "flex-1", inputWrapper: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" }}
                   labelPlacement="outside"
                   label="telegram link"
@@ -238,6 +241,7 @@ const Create = () => {
                 />
 
                 <Input
+                  className="!mt-0"
                   classNames={{ label: "hidden", mainWrapper: "flex-1", inputWrapper: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" }}
                   labelPlacement="outside"
                   label="website"
@@ -258,13 +262,28 @@ const Create = () => {
                     </div>
                   }
                 />
+
+                <div className="mt-6">
+                  <Title>Dev Buy</Title>
+                  <Input
+                    className="!mt-0"
+                    classNames={{ label: "hidden", mainWrapper: "flex-1", inputWrapper: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" }}
+                    labelPlacement="outside"
+                    isRequired
+                    label="dev buy"
+                    name="devBuy"
+                    type="text"
+                  />
+                </div>
               </div>
             </AccordionItem>
           </Accordion>
 
-          <Button type="submit" className="w-full mt-4 bg-[#6A3CD6] h-[52px]" isLoading={loading}>
-            create coin
-          </Button>
+          <div className="px-2">
+            <Button type="submit" className="w-full bg-[#6A3CD6] h-[52px]" isLoading={loading}>
+              create coin
+            </Button>
+          </div>
         </Form>
       </Card>
     </div>
