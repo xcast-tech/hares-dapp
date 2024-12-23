@@ -185,27 +185,36 @@ export function convertTradeToBars(
     if (timestamp >= from && timestamp < to) {
       const group = groups[timestamp];
       const initialSupply =
-        Number(group[0].totalSupply) +
+        Math.min(Number(group[0].totalSupply), 8e26) +
         (group[0].type === 0 ? -1 : 1) * Number(group[0].trueOrderSize);
       const open =
         (Number(getTokenSellQuote(initialSupply / 1e18, 1)) / 1e18) * ethPrice;
       const close =
         (Number(
-          getTokenSellQuote(+group[group.length - 1].totalSupply / 1e18, 1)
+          getTokenSellQuote(
+            Math.min(+group[group.length - 1].totalSupply, 8e26) / 1e18,
+            1
+          )
         ) /
           1e18) *
         ethPrice;
       const low = Math.min(
         ...group.map(
           (t) =>
-            (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) *
+            (Number(
+              getTokenSellQuote(Math.min(+t.totalSupply, 8e26) / 1e18, 1)
+            ) /
+              1e18) *
             ethPrice
         )
       );
       const high = Math.max(
         ...group.map(
           (t) =>
-            (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) *
+            (Number(
+              getTokenSellQuote(Math.min(+t.totalSupply, 8e26) / 1e18, 1)
+            ) /
+              1e18) *
             ethPrice
         )
       );

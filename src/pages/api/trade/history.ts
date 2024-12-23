@@ -9,25 +9,37 @@ export default async function handler(
   const { address, from } = req.query;
   const numberFrom = Number(from);
 
-  const { data, error } = await supabaseClient
+  const { data, error: error1 } = await supabaseClient
     .from("Trade")
     .select(
       "id,from,type,recipient,trueOrderSize,totalSupply,trueEth,timestamp"
     )
     .eq("tokenAddress", address as string)
-    .eq('isGraduate', 0)
+    .eq("isGraduate", 0)
     .gt("timestamp", from ? Math.floor(numberFrom / 1000) : 0)
     .order("timestamp", { ascending: true });
 
-  if (error) {
+  const { data: graduateTrade, error: error2 } = await supabaseClient
+    .from("Trade")
+    .select(
+      "id,from,type,recipient,trueOrderSize,totalSupply,trueEth,timestamp"
+    )
+    .eq("tokenAddress", address as string)
+    .eq("isGraduate", 1)
+    .order("timestamp", { ascending: true })
+    .maybeSingle();
+
+  if (error1 || error2) {
     res.json({
       code: 501,
-      data: error.message,
+      data: [error1 && error1.message, error2 && error2.message],
     });
   }
 
+  const list = data ? (graduateTrade ? [...data, graduateTrade] : data) : [];
+
   res.json({
     code: 0,
-    data,
+    data: list,
   });
 }
