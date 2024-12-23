@@ -125,6 +125,7 @@ const Create = () => {
           <div>
             <Title required>Name</Title>
             <Input
+              className="!mt-0"
               classNames={{ label: "hidden", mainWrapper: "flex-1", inputWrapper: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" }}
               labelPlacement="outside"
               isRequired
@@ -140,6 +141,7 @@ const Create = () => {
           <div>
             <Title required>Ticker</Title>
             <Input
+              className="!mt-0"
               classNames={{ label: "hidden", mainWrapper: "flex-1", inputWrapper: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" }}
               labelPlacement="outside"
               isRequired
