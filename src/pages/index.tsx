@@ -70,13 +70,13 @@ export default function Home() {
         <title>hares.ai</title>
       </Head>
       <div className="">
-        <div className="w-full flex justify-center mt-5 h-[210px] relative">
+        <div className="w-full flex justify-center h-[210px] relative">
           <Image src="/left.png" fill className="object-left object-contain" alt={""} />
           <Image src="/right.png" fill className="object-right object-contain" alt={""} />
 
-          <div className="h-full flex justify-center items-center">
+          <div className="h-full flex items-center relative">
             <Link href="/create">
-              <Button className="bg-transparent h-[52px] rounded-[52px] w-[320px] border border-solid border-[#262626]">
+              <Button className="absolute top-[64px] left-0 -translate-x-1/2 bg-transparent h-[52px] rounded-[52px] w-[320px] border border-solid border-[#262626]">
                 <div className="flex items-center justify-center gap-2">
                   <Image src="/btn-star.svg" height={16} width={32} alt={""} />
                   <div className="text-[20px] font-bold">[start a new coin]</div>
