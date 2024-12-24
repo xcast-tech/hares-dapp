@@ -21,6 +21,7 @@ export const tokenApi = async (data: { address: string }) => {
 };
 
 export interface TokenListApiData {
+  sort?: string;
   search?: string;
   page: number;
   pageSize: number;

@@ -2,7 +2,7 @@ import { SkeletonTokenList } from "@/components/skeleton-token-list";
 import { TokenList } from "@/components/token-list";
 import { tokenListApi, TokenListApiData } from "@/lib/apis";
 import Image from "next/image";
-import { Button, Input, InputProps } from "@nextui-org/react";
+import { Button, Input, InputProps, Select, SelectItem, SelectProps } from "@nextui-org/react";
 import { debounce } from "lodash-es";
 import Head from "next/head";
 import Link from "next/link";
@@ -13,13 +13,28 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [list, setList] = useState<IToken[]>([]);
   const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const paginationDomRef = useRef<HTMLDivElement>(null);
   const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
   const [end, setEnd] = useState(false);
+  const [sort, setSort] = useState("latest_creation");
 
   const pageSize = 12;
+
+  const sortOptions = [
+    {
+      label: "Latest Trade",
+      value: "latest_trade",
+    },
+    {
+      label: "Latest Creation",
+      value: "latest_creation",
+    },
+    {
+      label: "Highest Marketcap",
+      value: "highest_marketcap",
+    },
+  ];
 
   async function fetchList(data: TokenListApiData) {
     setLoading(true);
@@ -33,9 +48,6 @@ export default function Home() {
       setList(newList);
       setPage(res?.data?.page);
 
-      const totalPage = Math.ceil(res?.data?.total / pageSize);
-      setTotal(totalPage);
-
       const end = currentPageList.length < pageSize;
       setEnd(end);
     } catch (error) {
@@ -48,35 +60,22 @@ export default function Home() {
     const search = e.target.value;
     setSearch(search);
 
-    fetchList({
-      search,
-      page: 1,
-      pageSize,
-    });
+    setList([]);
   };
 
   const handleNameChangeDebounce = debounce(handleNameChange, 500);
 
-  const handlePageChange = (page: number) => {
-    fetchList({
-      search,
-      page,
-      pageSize,
-    });
-  };
+  const handleSortChange: SelectProps["onSelectionChange"] = async (ev) => {
+    setSort(ev?.currentKey as string);
 
-  useEffect(() => {
-    fetchList({
-      search: "",
-      page: 1,
-      pageSize,
-    });
-  }, []);
+    setList([]);
+  };
 
   useEffect(() => {
     const callback = (entries: IntersectionObserverEntry[]) => {
       if (!end && !loading && entries[0].isIntersecting) {
         fetchList({
+          sort,
           search,
           page: page + 1,
           pageSize,
@@ -90,7 +89,17 @@ export default function Home() {
     return () => {
       intersectionObserverRef.current?.disconnect();
     };
-  }, [loading, end, list, page, pageSize]);
+  }, [loading, end, list, page, pageSize, sort, search]);
+
+  useEffect(() => {
+    setEnd(false);
+    fetchList({
+      sort,
+      search,
+      page: 1,
+      pageSize,
+    });
+  }, [sort, search]);
 
   return (
     <>
@@ -120,6 +129,14 @@ export default function Home() {
         </div>
 
         <div className="p-4 mt-10">
+          <div className="mb-4">
+            <Select className="w-[180px]" classNames={{ trigger: "!bg-[#1A1A1A] border border-solid border-[#262626]" }} label="Sort" selectedKeys={[sort]} onSelectionChange={handleSortChange}>
+              {sortOptions.map((opt) => (
+                <SelectItem key={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </Select>
+          </div>
+
           {list?.length ? (
             <TokenList list={list} />
           ) : (
