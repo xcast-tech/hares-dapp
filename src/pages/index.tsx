@@ -66,7 +66,13 @@ export default function Home() {
   const handleNameChangeDebounce = debounce(handleNameChange, 500);
 
   const handleSortChange: SelectProps["onSelectionChange"] = async (ev) => {
-    setSort(ev?.currentKey as string);
+    const newSort = ev?.currentKey as string;
+
+    if (!newSort) {
+      return;
+    }
+
+    setSort(newSort);
 
     setList([]);
   };
