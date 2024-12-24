@@ -6,65 +6,53 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { search = "" } = req.query as {
+  const {
+    search = "",
+    sort = "created_timestamp",
+    direction = "desc",
+  } = req.query as {
     search?: string;
     page: string;
     pageSize: string;
+    sort: string;
+    direction: string;
   };
 
   const page = +(req.query.page || 1);
   const pageSize = +(req.query.pageSize || 10);
-
   const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
 
-  const {
-    data: tokenList,
-    error: tokenListError,
-    count: tokenCount,
-  } = await supabaseClient
-    .from("Token")
-    .select("*", { count: "exact" })
-    .or(`name.ilike.%${search}%,address.ilike.%${search}%`)
-    .range(from, to)
-    .order("created_timestamp", { ascending: false });
-
-  const addressList = (tokenList || []).map((item) => item.address);
-
-  const { data: infoList, error: infoError } = await supabaseClient
-    .from("TokenInfo")
-    .select("address,picture,twitter,telegram,website,desc")
-    .in("address", addressList);
-
-  const error = tokenListError || infoError;
-
-  if (error) {
-    res.json({
-      code: 501,
-      data: error.message,
-    });
-  }
-
-  const tokenInfoMap = (infoList || []).reduce(
-    (acc: Record<string, any>, token) => {
-      acc[token.address] = token;
-      return acc;
-    },
-    {}
+  const { data: list, error: error1 } = await supabaseClient.rpc(
+    "get_token_list",
+    {
+      p_search: search,
+      p_offset: from,
+      p_limit: pageSize,
+      p_sort: sort,
+      p_direction: direction,
+    }
   );
 
-  const list = (tokenList || []).map((token) => ({
-    ...token,
-    created_at: new Date(Number(token.created_timestamp ?? 0) * 1000),
-    ...tokenInfoMap[token.address],
-  }));
+  const { error: error2, count } = await supabaseClient
+    .from("Token")
+    .select("*", { count: "exact", head: true })
+    .or(
+      `name.ilike.%${search}%,symbol.ilike.%${search}%,address.ilike.%${search}%`
+    );
+
+  if (error1 || error2) {
+    res.json({
+      code: 501,
+      message: JSON.stringify([error1?.message, error2?.message]),
+    });
+  }
 
   res.json({
     code: 0,
     data: {
       list,
       page,
-      total: tokenCount,
+      total: count,
     },
   });
 }

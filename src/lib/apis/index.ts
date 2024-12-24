@@ -35,7 +35,14 @@ export const tokenListApi = async (data: TokenListApiData) => {
   return res?.data;
 };
 
-export const setUpApi = async (data: { address: string; picture: string; website: string; twitter: string; telegram: string; desc: string }) => {
+export const setUpApi = async (data: {
+  address: string;
+  picture: string;
+  website: string;
+  twitter: string;
+  telegram: string;
+  desc: string;
+}) => {
   const res = await request("/api/token/setup", {
     method: "post",
     data,
@@ -43,7 +50,11 @@ export const setUpApi = async (data: { address: string; picture: string; website
   return res?.data;
 };
 
-export const getSignatureApi = async (fcMessage: string, fcSignature: string, commitment: Commitment) => {
+export const getSignatureApi = async (
+  fcMessage: string,
+  fcSignature: string,
+  commitment: Commitment
+) => {
   const res = await request("/api/signature", {
     method: "post",
     data: {

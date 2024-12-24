@@ -109,6 +109,7 @@ async function handleTokenCreated(
       name,
       symbol,
       created_timestamp: row.timestamp,
+      updated_timestamp: row.timestamp,
     },
     {
       onConflict: "createEvent",
@@ -197,6 +198,7 @@ async function handleTokenBuy(
     .from("Token")
     .update({
       totalSupply: args.totalSupply,
+      updated_timestamp: row.timestamp,
     })
     .eq("address", row.contractAddress.toLowerCase());
   if (error1 || error2) {
@@ -246,6 +248,7 @@ async function handleTokenSell(
     .from("Token")
     .update({
       totalSupply: args.totalSupply,
+      updated_timestamp: row.timestamp,
     })
     .eq("address", row.contractAddress.toLowerCase());
   if (error1 || error2) {

@@ -17,22 +17,22 @@ export default function Home() {
   const paginationDomRef = useRef<HTMLDivElement>(null);
   const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
   const [end, setEnd] = useState(false);
-  const [sort, setSort] = useState("latest_creation");
+  const [sort, setSort] = useState("created_timestamp");
 
   const pageSize = 12;
 
   const sortOptions = [
     {
       label: "Latest Trade",
-      value: "latest_trade",
+      value: "updated_timestamp",
     },
     {
       label: "Latest Creation",
-      value: "latest_creation",
+      value: "created_timestamp",
     },
     {
       label: "Highest Marketcap",
-      value: "highest_marketcap",
+      value: "totalSupply",
     },
   ];
 

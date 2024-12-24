@@ -84,6 +84,7 @@ export type Database = {
           poolAddress: string | null
           symbol: string | null
           totalSupply: string | null
+          updated_timestamp: number | null
         }
         Insert: {
           address: string
@@ -99,6 +100,7 @@ export type Database = {
           poolAddress?: string | null
           symbol?: string | null
           totalSupply?: string | null
+          updated_timestamp?: number | null
         }
         Update: {
           address?: string
@@ -114,6 +116,7 @@ export type Database = {
           poolAddress?: string | null
           symbol?: string | null
           totalSupply?: string | null
+          updated_timestamp?: number | null
         }
         Relationships: []
       }
@@ -251,6 +254,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_token_list: {
+        Args: {
+          p_search: string
+          p_offset: number
+          p_limit: number
+          p_sort: string
+          p_direction: string
+        }
+        Returns: {
+          id: number
+          name: string
+          symbol: string
+          totalSupply: string
+          address: string
+          creatorAddress: string
+          isGraduate: number
+          created_timestamp: number
+          updated_timestamp: number
+          picture: string
+          twitter: string
+          website: string
+          telegram: string
+          desc: string
+        }[]
+      }
       get_top_holders: {
         Args: {
           p_address: string
@@ -259,35 +287,6 @@ export type Database = {
         Returns: {
           address: string
           balance: string
-        }[]
-      }
-      get_trade_history: {
-        Args: {
-          p_address: string
-        }
-        Returns: {
-          type: number
-          recipient: string
-          trueOrderSize: string
-          totalSupply: string
-          trueEth: string
-          timestamp: number
-        }[]
-      }
-      get_trade_history2: {
-        Args: {
-          p_address: string
-          p_from: number
-          p_to: number
-        }
-        Returns: {
-          id: number
-          type: number
-          recipient: string
-          trueOrderSize: string
-          totalSupply: string
-          trueEth: string
-          timestamp: number
         }[]
       }
     }
