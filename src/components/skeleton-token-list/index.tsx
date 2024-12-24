@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Card, Skeleton } from "@nextui-org/react";
 import React, { FC } from "react";
 
@@ -29,11 +30,12 @@ function Token({}: TokenProps) {
 
 interface TokenListProps {
   list: any[];
+  className?: string;
 }
 
-export const SkeletonTokenList: FC<TokenListProps> = ({ list }) => {
+export const SkeletonTokenList: FC<TokenListProps> = ({ list, className }) => {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className={cn("grid grid-cols-3 gap-4", className)}>
       {list?.map((item, i) => {
         return <Token key={i} />;
       })}

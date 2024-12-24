@@ -2,18 +2,22 @@ import { SkeletonTokenList } from "@/components/skeleton-token-list";
 import { TokenList } from "@/components/token-list";
 import { tokenListApi, TokenListApiData } from "@/lib/apis";
 import Image from "next/image";
-import { Button, Input, InputProps, Pagination } from "@nextui-org/react";
-import { debounce, set } from "lodash-es";
+import { Button, Input, InputProps } from "@nextui-org/react";
+import { debounce } from "lodash-es";
 import Head from "next/head";
 import Link from "next/link";
-import { ChangeEventHandler, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { IToken } from "@/lib/types";
 
 export default function Home() {
   const [search, setSearch] = useState("");
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<IToken[]>([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const paginationDomRef = useRef<HTMLDivElement>(null);
+  const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
+  const [end, setEnd] = useState(false);
 
   const pageSize = 12;
 
@@ -23,12 +27,17 @@ export default function Home() {
     try {
       const res = await tokenListApi(data);
 
-      console.log("res", res);
-      setList(res?.data?.list ?? []);
+      const currentPageList = res?.data?.list ?? [];
+
+      const newList = [...list, ...currentPageList];
+      setList(newList);
       setPage(res?.data?.page);
 
       const totalPage = Math.ceil(res?.data?.total / pageSize);
       setTotal(totalPage);
+
+      const end = currentPageList.length < pageSize;
+      setEnd(end);
     } catch (error) {
     } finally {
       setLoading(false);
@@ -64,12 +73,31 @@ export default function Home() {
     });
   }, []);
 
+  useEffect(() => {
+    const callback = (entries: IntersectionObserverEntry[]) => {
+      if (!end && !loading && entries[0].isIntersecting) {
+        fetchList({
+          search,
+          page: page + 1,
+          pageSize,
+        });
+      }
+    };
+
+    intersectionObserverRef.current = new IntersectionObserver(callback);
+    intersectionObserverRef.current.observe(paginationDomRef.current!);
+
+    return () => {
+      intersectionObserverRef.current?.disconnect();
+    };
+  }, [loading, end, list, page, pageSize]);
+
   return (
     <>
       <Head>
         <title>hares.ai</title>
       </Head>
-      <div className="">
+      <div className="pb-[80px]">
         <div className="w-full flex justify-center h-[210px] relative">
           <Image src="/left.png" fill className="object-left object-contain" alt={""} />
           <Image src="/right.png" fill className="object-right object-contain" alt={""} />
@@ -92,21 +120,19 @@ export default function Home() {
         </div>
 
         <div className="p-4 mt-10">
-          {loading ? (
-            <SkeletonTokenList list={Array(pageSize).fill({})} />
-          ) : list?.length ? (
+          {list?.length ? (
             <TokenList list={list} />
           ) : (
-            <div className="pt-[160px] flex justify-center">
-              <Image width={120} height={120} src="search.svg" alt="" />
-            </div>
+            end && (
+              <div className="pt-[160px] flex justify-center">
+                <Image width={120} height={120} src="search.svg" alt="" />
+              </div>
+            )
           )}
 
-          {total > 0 && (
-            <div className="flex justify-center mt-4">
-              <Pagination page={page} total={total} onChange={handlePageChange} />
-            </div>
-          )}
+          {loading && <SkeletonTokenList list={Array(pageSize).fill({})} className="mt-4" />}
+
+          <div ref={paginationDomRef}></div>
         </div>
       </div>
     </>
