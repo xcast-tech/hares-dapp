@@ -11,7 +11,7 @@ export const mainChain = polygon;
 export const contractAddress = {
   BondingCurve: "0x329021C690a25217384BE9Cc5D7173Cdfc3A18Cb" as Address,
   HaresValidator: "0xDd6A3990FC4E39281daa1593c2Ca0AEC9525a130" as Address,
-  HaresFactory: "0x802Ab1ffF0AA71e1f044203657BB8613DE3C6f9e" as Address,
+  HaresFactory: "0x6Ba426C47e999CA678702cC73b91A43Bbc6deFE7" as Address,
   WETH: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270" as Address,
 };
 
