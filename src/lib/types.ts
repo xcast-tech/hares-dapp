@@ -52,6 +52,7 @@ export type Trade = {
   trueOrderSize: string;
   totalSupply: string;
   trueEth: string;
+  isGraduate: boolean;
   timestamp: number;
 };
 

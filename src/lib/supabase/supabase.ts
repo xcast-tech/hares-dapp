@@ -257,7 +257,7 @@ export type Database = {
           p_limit: number
         }
         Returns: {
-          addrses: string
+          address: string
           balance: string
         }[]
       }

@@ -9,7 +9,6 @@ import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
 import { useAccount } from "wagmi";
-import Decimal from "decimal.js";
 import { useAppContext } from "@/context/useAppContext";
 import TradingView from "@/components/tradingview";
 import Head from "next/head";
@@ -61,6 +60,7 @@ export default function Token(props: IToken) {
 
   const ca = detail.address as Address;
   const [totalSupply, setTotalSupply] = useState(detail.totalSupply);
+  const [isGraduate, setIsGraduate] = useState(detail.isGraduate);
 
   const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [slippage, setSlippage] = useState("20");
@@ -123,6 +123,9 @@ export default function Token(props: IToken) {
     if (trades?.length > 0) {
       const newTrade = trades[trades.length - 1];
       if (trades.length === 1) {
+        if (Number(trades[0].totalSupply) > 8e26) {
+          setIsGraduate(1);
+        }
         setHistoryList(v => [...trades, ...v]);
       } else {
         setHistoryList(v => [...v, ...trades].sort((a, b) => b.id - a.id));
@@ -214,38 +217,41 @@ export default function Token(props: IToken) {
       <Head>
         <title>{detail?.symbol} | hares.ai</title>
       </Head>
-      <h1 className="text-lg my-6">
-        <span className="font-bold">{detail?.symbol}: </span>
-        <span>{ca}</span>
-      </h1>
-      {detail.isGraduate ? <p className="text-green-400 mb-2 font-bold">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
+      <div className="my-6">
+        <h1 className="text-lg">
+          <span className="font-bold">{detail?.symbol}: </span>
+          <span>{ca}</span>
+        </h1>
+        {isGraduate ? <p className="text-green-400 mb-2">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
+      </div>
       <div className="flex gap-6">
         <div className="flex-1">
-          {!!ethPrice && detail?.symbol && <TradingView className="w-full h-[500px]" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade} />}
+          <TradingView className="w-full h-[500px] bg-black" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade} />
           <TradeList list={historyList} symbol={detail.symbol} />
         </div>
-        <div className="w-[350px]">
+        <div className="w-[400px]">
           <div className="bg-[#333] rounded-md p-2">
             <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
               <Tab key={TabKeys.buy} title="Buy" />
               <Tab key={TabKeys.sell} title="Sell" />
             </Tabs>
-            <div className="w-full my-4 flex justify-end">
-              <Button
-                size="sm"
-                onPress={() => {
-                  setEditSlippage(slippage);
-                  setSlippageModalOpen(true);
-                }}
-              >
-                set max slippage
-              </Button>
-            </div>
             <div className="mt-4">
               {tabKey === TabKeys.buy && (
                 <div>
                   <div>
-                    <div className="mb-1">amount (ETH)</div>
+                    <div className="mb-3 flex justify-between items-center">
+                      <span className="text-sm">Amount (ETH)</span>
+                      <Button
+                        size="sm"
+                        className="text-[#999] h-[26px]"
+                        onPress={() => {
+                          setEditSlippage(slippage);
+                          setSlippageModalOpen(true);
+                        }}
+                      >
+                        set max slippage
+                      </Button>
+                    </div>
                     <div>
                       <Input
                         value={buyInputValue}
@@ -274,19 +280,18 @@ export default function Token(props: IToken) {
                       );
                     })}
                   </div>
-                  {buyInputValue && Number(totalSupply) < 8e26 && (
+                  {buyInputValue && !isGraduate && (
                     <p className="text-xs text-gray-500">
                       {detail?.symbol} received: {Number(getEthBuyQuote(Number(totalSupply) / 1e18, Number(buyInputValue))) / 1e18}
                     </p>
                   )}
-
-                  {detail?.isGraduate || signature ? (
+                  {isGraduate || signature ? (
                     <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
                       {trading ? "Trading..." : "Place trade"}
                     </Button>
                   ) : (
                     <Button fullWidth color="success" className="mt-2" onPress={login}>
-                      sign in first
+                      Sign in with Farcaster to buy
                     </Button>
                   )}
                 </div>
@@ -296,9 +301,21 @@ export default function Token(props: IToken) {
                 <div>
                   <div>
                     <div>
-                      <div className="mb-1 flex items-center justify-between">
-                        <div>amount ({detail?.symbol})</div>
-                        <div>{formatTokenBalance(tokenBalance)}</div>
+                      <div className="mb-3 flex items-center justify-between">
+                        <div className="text-sm">Amount ({detail?.symbol})</div>
+                        <div className="flex gap-2 items-center">
+                          <div className="text-gray-300 text-sm">{formatTokenBalance(tokenBalance)}</div>
+                          <Button
+                            size="sm"
+                            className="text-[#999] h-[26px]"
+                            onPress={() => {
+                              setEditSlippage(slippage);
+                              setSlippageModalOpen(true);
+                            }}
+                          >
+                            set max slippage
+                          </Button>
+                        </div>
                       </div>
                       <div>
                         <Input
@@ -334,7 +351,7 @@ export default function Token(props: IToken) {
                       })}
                     </div>
                   </div>
-                  {sellInputValue && Number(totalSupply) < 8e26 && (
+                  {sellInputValue && !isGraduate && (
                     <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>
                   )}
                   <Button fullWidth color="danger" className="mt-2" onPress={handleSell} isLoading={trading}>
@@ -345,7 +362,7 @@ export default function Token(props: IToken) {
             </div>
           </div>
 
-          <Info className="mt-4" detail={detail} />
+          <Info className="mt-8" detail={detail} />
           <TopHolders list={topHolders} className="mt-4" devAddress={detail.creatorAddress} />
         </div>
       </div>

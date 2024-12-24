@@ -33,7 +33,7 @@ export const TradeList = ({ list, symbol }: TradeListProps) => {
         return <span className="text-white">{Number(formatEther(BigInt(cellValue), "wei")).toFixed(4)}</span>
 
       case "trueOrderSize":
-        return <span className="text-white">{formatTokenBalance(cellValue)}</span>
+        return <span className="text-white">{formatTokenBalance(cellValue as string)}</span>
 
       case "timestamp":
         return <span className="text-white">{dayjs().to(dayjs((cellValue as number) * 1000))}</span>
@@ -61,7 +61,7 @@ export const TradeList = ({ list, symbol }: TradeListProps) => {
           <TableColumn key="trueOrderSize">{symbol}</TableColumn>
           <TableColumn key="timestamp">Date</TableColumn>
         </TableHeader>
-        <TableBody>
+        <TableBody emptyContent="No transaction data.">
           {list.map((item) => {
             return (
               <TableRow key={item.id} className={cn(item.type === 1 ? "text-[#F31260]" : "text-[#05DD6B]")}>

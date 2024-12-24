@@ -8,7 +8,7 @@ import { publicClient } from "../wagmi";
 import { ABIs, EventTopic } from "../constant";
 import { decodeEventLog } from "viem";
 
-const subsriberCache: Function[] = [];
+let subsriberCache: Function[] = [];
 let historyTrades: Trade[] | null = null;
 let cacheStartTime = Date.now();
 const configurationData = {
@@ -122,6 +122,7 @@ export default (
     subsriberCache.forEach((unwatch) => {
       unwatch();
     });
+    subsriberCache = []
 
     const unwatch = publicClient.watchEvent({
       address: address as Address,
@@ -152,6 +153,9 @@ export default (
             } as Trade;
             onNewTrade([trade]);
             tradesInCurrentBar.push(trade);
+            if (Number(trade.totalSupply) > 8e26) {
+              unwatch();
+            }
           }
           if (eventName === "HaresTokenSell") {
             const trade = {

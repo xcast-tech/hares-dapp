@@ -11,6 +11,7 @@ import { Copy } from "../copy";
 import { getTokenSellQuote, maskAddress } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { IToken } from "@/lib/types";
+import dayjs from "dayjs";
 
 interface InfoProps {
   className?: string;
@@ -21,12 +22,12 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
   const currentEth = detail ? (detail?.isGraduate ? 4.4 : Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(detail?.totalSupply) / 1e18)) / 1e18) : 0
   return (
     <div className={twMerge(className)}>
-      <div className={twMerge("flex gap-2")}>
-        <div className="w-[100px] min-w-[100px] h-[100px] relative">{detail?.picture && <Image fill alt="" src={detail?.picture} />}</div>
-
-        <div>
+      <div className="flex gap-2.5">
+        <div className="w-[120px] min-w-[120px] h-[120px] relative">{detail?.picture && <Image fill alt="" src={detail?.picture} />}</div>
+        <div className="flex flex-col gap-1">
           <div className="font-bold">{detail?.name}</div>
-          <div className="text-[12px] break-all">{detail?.desc}</div>
+          <div className="text-xs text-[#999]">Created at {dayjs().to(dayjs((detail?.created_timestamp ?? 0) * 1000))}</div>
+          <div className="text-xs break-all">{detail?.desc}</div>
         </div>
       </div>
 
@@ -68,10 +69,10 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
       >
         <div className="flex-1">contract address: {maskAddress(detail?.address)}</div>
       </Button>
-      {detail && 
+      {detail &&
         <>
           <div className="h-1 w-full bg-gray-500 mt-3 rounded-sm">
-            <div className="h-full w-full bg-green-400 rounded-sm" style={{width: `${currentEth / 4.4 * 100}%`}}></div>
+            <div className="h-full w-full bg-green-400 rounded-sm" style={{ width: `${currentEth / 4.4 * 100}%` }}></div>
           </div>
           <p className="text-xs mt-1">Bonding curve progress: {currentEth.toFixed(2)} / 4.4 ETH</p>
         </>

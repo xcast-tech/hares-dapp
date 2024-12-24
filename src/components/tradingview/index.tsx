@@ -15,7 +15,7 @@ export default function TradingView(props: Props) {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
   useEffect(() => {
-    if (symbol && address && (isScriptLoaded || (window as any).TradingView)) {
+    if (symbol && address && ethPrice && (isScriptLoaded || (window as any).TradingView)) {
       const widget = new (window as any).TradingView.widget({
         // library_path: "https://charting-library.tradingview-widget.com/charting_library/",
         library_path: '/scripts/charting_library/',
@@ -58,7 +58,7 @@ export default function TradingView(props: Props) {
       });
     }
 
-  }, [symbol, address, isScriptLoaded])
+  }, [symbol, address, isScriptLoaded, ethPrice])
 
   return (
     <div className={className}>
