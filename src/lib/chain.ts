@@ -1,5 +1,6 @@
 import { createPublicClient, http } from "viem";
-import { ABIs, Address, mainChain } from "./constant";
+import { ABIs, mainChain } from "./constant";
+import { Address } from "./types";
 
 export async function getTokenInfo(address: Address) {
   const publicClient = createPublicClient({
