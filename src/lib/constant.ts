@@ -5,6 +5,7 @@ import HaresFactoryAbi from "./abi/HaresFactory";
 import HaresAbi from "./abi/Hares";
 import HaresValidatorAbi from "./abi/HaresValidator";
 import UniswapV3Pool from "./abi/UniswapV3Pool";
+import { Address } from "./types";
 
 export const mainChain = base;
 export const contractAddress = {
