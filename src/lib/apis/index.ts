@@ -1,5 +1,4 @@
-import { Address } from "../constant";
-import { Commitment } from "../types";
+import { Address, Commitment } from "../types";
 import { request } from "./request";
 
 export const uploadFile = async (file: File) => {

@@ -1,10 +1,21 @@
 import React, { use } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
-import { Avatar, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
+import { Avatar, Button, ButtonGroup, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { Twitter } from "../twitter";
 import { Warpcast } from "../wrapcast";
 import { useFarcasterContext } from "@/hooks/farcaster";
+
+const ChevronDownIcon = () => {
+  return (
+    <svg fill="none" height="14" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M17.9188 8.17969H11.6888H6.07877C5.11877 8.17969 4.63877 9.33969 5.31877 10.0197L10.4988 15.1997C11.3288 16.0297 12.6788 16.0297 13.5088 15.1997L15.4788 13.2297L18.6888 10.0197C19.3588 9.33969 18.8788 8.17969 17.9188 8.17969Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+};
 
 export const Header = () => {
   const { userInfo } = useFarcasterContext();
@@ -28,7 +39,7 @@ export const Header = () => {
         </div>
       </Link>
       <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
-      <button onClick={() => {setIsAboutOpen(true)}} className="text-[#999] text-sm hover:text-white">About Hares</button>
+      <button onClick={() => { setIsAboutOpen(true) }} className="text-[#999] text-sm hover:text-white">About Hares</button>
       <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
       <div className="flex-1 flex items-center gap-4">
         <div className="flex gap-2 items-center">
@@ -44,12 +55,28 @@ export const Header = () => {
       <div className="flex items-center gap-2">
         <div>
           {userInfo ? (
-            <Button startContent={<Avatar className="w-6 h-6 text-tiny" {...(userInfo?.pfpUrl ? { src: userInfo?.pfpUrl } : { name: userInfo?.displayName })} />} variant="bordered" onPress={logout}>
-              {userInfo?.displayName}
-            </Button>
+            <ButtonGroup variant="flat">
+              <Dropdown placement="bottom-end">
+                <DropdownTrigger>
+                  <Button startContent={<Avatar className="w-6 h-6 text-tiny" {...(userInfo?.pfpUrl ? { src: userInfo?.pfpUrl } : { name: userInfo?.displayName })} />} variant="bordered">
+                    {userInfo?.displayName}
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  disallowEmptySelection
+                  aria-label="Merge options"
+                  className="max-w-[300px]"
+                  selectionMode="single"
+                >
+                  <DropdownItem key="merge" onPress={logout}>
+                    Sign out
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </ButtonGroup>
           ) : (
             <button onClick={login} className="p-4 text-white">
-              Sign in
+              Connect Facaster
             </button>
           )}
         </div>
