@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { Address, contractAddress, mainChain } from "@/lib/constant";
+import { mainChain } from "@/lib/constant";
 import { getConfig, updateConfig } from "@/lib/model";
 import { handleEvents, syncEvents } from "@/lib/sync";
 import type { NextApiRequest, NextApiResponse } from "next";
