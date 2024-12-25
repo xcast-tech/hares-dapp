@@ -3,7 +3,7 @@ dotenv.config();
 import { ABIs, mainChain } from '@/lib/constant';
 import { getConfig, updateConfig } from '@/lib/model';
 import { debugLog, handleEvents, syncEvents } from '@/lib/sync';
-import { createPublicClient, decodeErrorResult, http } from 'viem';
+import { createPublicClient, http } from 'viem';
 
 (BigInt.prototype as any).toJSON = function () { return this.toString() }
 

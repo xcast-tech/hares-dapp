@@ -215,7 +215,7 @@ export default function Token(props: IToken) {
   return (
     <div className="px-[7vw]">
       <Head>
-        <title>{detail?.symbol} | hares.ai</title>
+        <title>{`${detail?.symbol} | hares.ai`}</title>
       </Head>
       <div className="my-6">
         <h1 className="text-lg">

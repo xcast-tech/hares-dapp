@@ -30,4 +30,4 @@ export const wagmiConfig = createConfig({
   ssr: true,
 });
 
-export const publicClient = createPublicClient({ chain: mainChain, transport: http() });
+export const publicClient = createPublicClient({ chain: mainChain, transport: http('https://base-mainnet.g.alchemy.com/v2/bzN2BAfDGirwFXA3a392zz-aHCYkrLo1') });

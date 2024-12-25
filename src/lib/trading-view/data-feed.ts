@@ -126,6 +126,7 @@ export default (
 
     const unwatch = publicClient.watchEvent({
       address: address as Address,
+      pollingInterval: 5000,
       onLogs: async (logs) => {
         console.log(logs);
         if (Date.now() - cacheStartTime > resolution * 60 * 1000) {
