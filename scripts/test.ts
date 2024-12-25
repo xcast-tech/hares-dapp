@@ -10,7 +10,7 @@ async function main() {
 
   const err = decodeErrorResult({
     abi: ABIs.HaresAbi,
-    data: '0x8baa579f'
+    data: '0x675cae38'
   })
   console.log(err)
 }

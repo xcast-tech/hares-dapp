@@ -1,10 +1,9 @@
 import {
   convertTradesToBar,
   convertTradeToBars,
-  getKChartData,
 } from "../utils";
 import { Address, Trade } from "../types";
-import { publicClient } from "../wagmi";
+import { publicWsClient } from "../wagmi";
 import { ABIs, EventTopic } from "../constant";
 import { decodeEventLog } from "viem";
 
@@ -124,7 +123,7 @@ export default (
     });
     subsriberCache = []
 
-    const unwatch = publicClient.watchEvent({
+    const unwatch = publicWsClient.watchEvent({
       address: address as Address,
       pollingInterval: 5000,
       onLogs: async (logs) => {
@@ -133,6 +132,7 @@ export default (
           cacheStartTime = Date.now();
           tradesInCurrentBar = [];
         }
+        let hasNewEvent = false
         for (let i = 0; i < logs.length; i++) {
           const { topics, data, blockNumber, transactionIndex } = logs[i];
           const event = decodeEventLog({
@@ -154,6 +154,7 @@ export default (
             } as Trade;
             onNewTrade([trade]);
             tradesInCurrentBar.push(trade);
+            hasNewEvent = true
             if (Number(trade.totalSupply) > 8e26) {
               unwatch();
             }
@@ -170,16 +171,21 @@ export default (
               timestamp: Math.floor(Date.now() / 1000),
             } as Trade;
             onNewTrade([trade]);
+            hasNewEvent = true
             tradesInCurrentBar.push(trade);
           }
         }
-        const bar = convertTradesToBar(
-          tradesInCurrentBar.sort((a, b) => a.id - b.id),
-          ethPrice
-        );
-        onRealtimeCallback(bar);
+        if (hasNewEvent) {
+          const bar = convertTradesToBar(
+            tradesInCurrentBar.sort((a, b) => a.id - b.id),
+            ethPrice
+          );
+          onRealtimeCallback(bar);
+        }
       },
     });
+
+
     subsriberCache.push(unwatch);
   },
 
