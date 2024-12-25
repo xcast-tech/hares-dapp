@@ -2,8 +2,9 @@ import { getSignatureApi } from "@/lib/apis";
 import { ABIs, contractAddress, EventTopic } from "@/lib/constant";
 import { Address } from "@/lib/types";
 import { getEthBuyQuote, getSqrtPriceLimitX96, getTokenSellQuote } from "@/lib/utils";
+import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
-import { decodeEventLog, parseEther, parseGwei } from "viem";
+import { decodeEventLog, parseEther } from "viem";
 import { useAccount, usePublicClient, useWriteContract } from "wagmi";
 
 export function useContract() {
@@ -91,7 +92,7 @@ export function useContract() {
     return res[0];
   }
 
-  async function buy(token: Address, eth: number, slipage: number, onTxSend: (tx: string) => void = () => {}) {
+  async function buy(token: Address, eth: number, slipage: number, onTxSend: (tx: string) => void = () => { }) {
     if (!address) {
       return;
     }
@@ -116,6 +117,10 @@ export function useContract() {
       expired: BigInt(Math.floor(Date.now()) + 60 * 100),
     };
     const buySignatureRes = await getSignatureApi(message!, signature!, commitment);
+    if (buySignatureRes.code !== 0) {
+      toast(buySignatureRes.message);
+      return
+    }
     const buySignature = buySignatureRes.data;
     const gasPrice = await publicClient?.getGasPrice();
     const tx = await writeContractAsync({
@@ -133,7 +138,7 @@ export function useContract() {
     return tx;
   }
 
-  async function sell(token: Address, tokenToSell: number, slipage: number, onTxSend: (tx: string) => void = () => {}) {
+  async function sell(token: Address, tokenToSell: number, slipage: number, onTxSend: (tx: string) => void = () => { }) {
     if (!address) {
       return;
     }

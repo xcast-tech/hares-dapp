@@ -6,7 +6,6 @@ import HaresAbi from "./abi/Hares";
 import HaresValidatorAbi from "./abi/HaresValidator";
 import UniswapV3Pool from "./abi/UniswapV3Pool";
 
-export type Address = `0x${string}`;
 export const mainChain = base;
 export const contractAddress = {
   BondingCurve: "0x124ce4caBd15A5D359a69Ca5902d428148E8527B" as Address,

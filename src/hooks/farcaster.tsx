@@ -11,9 +11,9 @@ const FarcasterContext = createContext<{
   clearUserInfo(): void;
   userInfo: FarcasterUserInfo | null;
 }>({
-  login: () => {},
-  logout: () => {},
-  clearUserInfo: () => {},
+  login: () => { },
+  logout: () => { },
+  clearUserInfo: () => { },
   userInfo: null,
 });
 

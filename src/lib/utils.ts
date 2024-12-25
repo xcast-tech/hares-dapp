@@ -12,6 +12,11 @@ export function maskAddress(address: string = "") {
   return `${address.slice(0, 5)}...${address.slice(-4)}`;
 }
 
+export function getDomain() {
+  if (process.env.LOCAL === 'true') return "127.0.0.1:3001"
+  return "www.hares.ai"
+}
+
 export function formatNumber(value: string | number): string {
   let num: number;
   if (typeof value === "string") {
@@ -141,8 +146,8 @@ export function getKChartData(
       i === 0
         ? (Number(getTokenSellQuote(prev, 1)) / 1e18) * ethPrice
         : (Number(getTokenSellQuote(+history[i - 1].totalSupply / 1e18, 1)) /
-            1e18) *
-          ethPrice;
+          1e18) *
+        ethPrice;
 
     const close =
       (Number(getTokenSellQuote(+item.totalSupply / 1e18, 1)) / 1e18) *

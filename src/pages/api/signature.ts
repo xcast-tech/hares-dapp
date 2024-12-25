@@ -1,17 +1,38 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { Address, contractAddress, mainChain } from "@/lib/constant";
-import { Commitment } from "@/lib/types";
+import { contractAddress, mainChain } from "@/lib/constant";
+import { createAppClient, viemConnector } from '@farcaster/auth-client';
 import type { NextApiRequest, NextApiResponse } from "next";
-import { signTypedData, toAccount } from 'viem/accounts'
+import { signTypedData } from 'viem/accounts'
+import { Address, Commitment } from "@/lib/types";
+import { getDomain } from "@/lib/utils";
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
 };
 
-export default async function handler (
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { value, recipient, refundRecipient, minOrderSize, sqrtPriceLimitX96, expired } = req.body as Commitment
+  const { fcMessage, fcSignature, value, recipient, refundRecipient, minOrderSize, sqrtPriceLimitX96, expired } = req.body as Commitment & { fcMessage: string, fcSignature: string };
+
+  const appClient = createAppClient({
+    relay: 'https://relay.farcaster.xyz',
+    ethereum: viemConnector(),
+  });
+  const { data, success, fid } = await appClient.verifySignInMessage({
+    nonce: process.env.NEXT_PUBLIC_FARCASTER_NONCE!,
+    domain: getDomain(),
+    message: fcMessage,
+    signature: fcSignature as Address,
+  });
+
+  if (!success || !fid) {
+    return res.json({
+      code: 1,
+      message: 'Invalid farcaster signature'
+    })
+  }
+
   const signature = await signTypedData({
     privateKey: process.env.PRIVATE_KEY as Address,
     domain: {
@@ -40,7 +61,7 @@ export default async function handler (
       expired: BigInt(expired.toString()),
     }
   })
-  
+
   res.json({
     code: 0,
     data: signature

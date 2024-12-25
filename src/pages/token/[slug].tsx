@@ -7,7 +7,6 @@ import { Address, IToken, TopHolder, Trade } from "@/lib/types";
 import { formatNumber, formatTokenBalance, getEthBuyQuote, getTokenSellQuote } from "@/lib/utils";
 import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
-import { useSignInMessage } from "@farcaster/auth-kit";
 import { useAccount } from "wagmi";
 import { useAppContext } from "@/context/useAppContext";
 import TradingView from "@/components/tradingview";
@@ -151,7 +150,9 @@ export default function Token(props: IToken) {
       const tx = await buy(ca, amount, +slippage / 100, () => {
         setTrading(false);
       });
-      toast(`Buy transaction send. tx: ${tx}`);
+      if (tx) {
+        toast(`Buy transaction send. tx: ${tx}`);
+      }
     } catch (error: any) {
       toast(error?.message);
     } finally {
