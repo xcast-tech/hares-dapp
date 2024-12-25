@@ -1,4 +1,4 @@
-import { polygon } from "viem/chains";
+import { base } from "viem/chains";
 
 import BondingCurveAbi from "./abi/BondingCurve";
 import HaresFactoryAbi from "./abi/HaresFactory";
@@ -7,12 +7,12 @@ import HaresValidatorAbi from "./abi/HaresValidator";
 import UniswapV3Pool from "./abi/UniswapV3Pool";
 
 export type Address = `0x${string}`;
-export const mainChain = polygon;
+export const mainChain = base;
 export const contractAddress = {
-  BondingCurve: "0x329021C690a25217384BE9Cc5D7173Cdfc3A18Cb" as Address,
-  HaresValidator: "0xDd6A3990FC4E39281daa1593c2Ca0AEC9525a130" as Address,
-  HaresFactory: "0x6Ba426C47e999CA678702cC73b91A43Bbc6deFE7" as Address,
-  WETH: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270" as Address,
+  BondingCurve: "0x124ce4caBd15A5D359a69Ca5902d428148E8527B" as Address,
+  HaresValidator: "0xF84AD05784192d7a40a1D098E8A4Ad86e55D4850" as Address,
+  HaresFactory: "0x2B0142aF95A06023A6A80c6B0667a21A4CFd0320" as Address,
+  WETH: "0x4200000000000000000000000000000000000006" as Address,
 };
 
 export const ABIs = {
