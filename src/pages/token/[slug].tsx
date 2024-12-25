@@ -292,7 +292,7 @@ export default function Token(props: IToken) {
                     </Button>
                   ) : (
                     <Button fullWidth color="success" className="mt-2" onPress={login}>
-                      Sign in with Farcaster to buy
+                      Connect to Farcaster to buy
                     </Button>
                   )}
                 </div>
