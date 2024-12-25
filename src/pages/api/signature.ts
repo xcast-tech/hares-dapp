@@ -15,23 +15,23 @@ export default async function handler(
 ) {
   const { fcMessage, fcSignature, value, recipient, refundRecipient, minOrderSize, sqrtPriceLimitX96, expired } = req.body as Commitment & { fcMessage: string, fcSignature: string };
 
-  const appClient = createAppClient({
-    relay: 'https://relay.farcaster.xyz',
-    ethereum: viemConnector(),
-  });
-  const { data, success, fid } = await appClient.verifySignInMessage({
-    nonce: process.env.NEXT_PUBLIC_FARCASTER_NONCE!,
-    domain: getDomain(),
-    message: fcMessage,
-    signature: fcSignature as Address,
-  });
+  // const appClient = createAppClient({
+  //   relay: 'https://relay.farcaster.xyz',
+  //   ethereum: viemConnector(),
+  // });
+  // const { data, success, fid } = await appClient.verifySignInMessage({
+  //   nonce: process.env.NEXT_PUBLIC_FARCASTER_NONCE!,
+  //   domain: getDomain(),
+  //   message: fcMessage,
+  //   signature: fcSignature as Address,
+  // });
 
-  if (!success || !fid) {
-    return res.json({
-      code: 1,
-      message: 'Invalid farcaster signature'
-    })
-  }
+  // if (!success || !fid) {
+  //   return res.json({
+  //     code: 1,
+  //     message: 'Invalid farcaster signature'
+  //   })
+  // }
 
   const signature = await signTypedData({
     privateKey: process.env.PRIVATE_KEY as Address,
