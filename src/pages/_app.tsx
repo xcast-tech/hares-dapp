@@ -14,6 +14,7 @@ import FarcasterProvider from "@/hooks/farcaster";
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import { AppProvider } from "@/context/useAppContext";
 import { ReactElement, ReactNode } from "react";
+import { getDomain } from "@/lib/utils";
 
 dayjs.extend(relativeTime);
 (BigInt.prototype as any).toJSON = function () {
@@ -33,6 +34,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       <AuthKitProvider
         config={{
           relay: "https://relay.farcaster.xyz",
+          domain: getDomain(),
           rpcUrl: "https://mainnet.optimism.io",
         }}
       >
@@ -40,20 +42,20 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           <NextUIProvider>
             <NextThemesProvider attribute="class" defaultTheme="dark">
               <Providers>
-              {Component.GetLayout ? (
-                Component.GetLayout(
-                  <Component {...pageProps} />,
-                  pageProps
-                )
-              ) : (
-                <>
-                  <div className="mt-[72px] h-[calc(100vh-72px)] overflow-auto">
-                    <Component {...pageProps} />
-                  </div>
-                  <Header />
-                  <ToastContainer theme="dark" position="bottom-right" pauseOnFocusLoss={false} />
-                </>
-              )}
+                {Component.GetLayout ? (
+                  Component.GetLayout(
+                    <Component {...pageProps} />,
+                    pageProps
+                  )
+                ) : (
+                  <>
+                    <div className="mt-[72px] h-[calc(100vh-72px)] overflow-auto">
+                      <Component {...pageProps} />
+                    </div>
+                    <Header />
+                    <ToastContainer theme="dark" position="bottom-right" pauseOnFocusLoss={false} />
+                  </>
+                )}
               </Providers>
             </NextThemesProvider>
           </NextUIProvider>
