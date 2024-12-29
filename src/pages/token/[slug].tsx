@@ -291,7 +291,7 @@ export default function Token(props: IToken) {
                       {trading ? "Trading..." : "Place trade"}
                     </Button>
                   ) : (
-                    <Button fullWidth color="success" className="mt-2" onPress={login}>
+                    <Button fullWidth color="primary" className="mt-2" onPress={login}>
                       Connect to Farcaster to buy
                     </Button>
                   )}
