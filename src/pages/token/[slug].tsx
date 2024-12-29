@@ -74,7 +74,7 @@ export default function Token(props: IToken) {
 
   const [topHolders, setTopHolders] = useState<TopHolder[]>([]);
 
-  const tabColor = tabKey === "buy" ? "success" : "danger";
+  const tabColor = tabKey === "buy" ? "primary" : "danger";
 
   const buyOptions = [
     {
@@ -125,9 +125,9 @@ export default function Token(props: IToken) {
         if (Number(trades[0].totalSupply) > 8e26) {
           setIsGraduate(1);
         }
-        setHistoryList(v => [...trades, ...v]);
+        setHistoryList((v) => [...trades, ...v]);
       } else {
-        setHistoryList(v => [...v, ...trades].sort((a, b) => b.id - a.id));
+        setHistoryList((v) => [...v, ...trades].sort((a, b) => b.id - a.id));
       }
       setTotalSupply(newTrade.totalSupply);
 
@@ -230,8 +230,8 @@ export default function Token(props: IToken) {
           <TradingView className="w-full h-[500px] bg-black" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade} />
           <TradeList list={historyList} symbol={detail.symbol} />
         </div>
-        <div className="w-[400px]">
-          <div className="bg-[#333] rounded-md p-2">
+        <div className="w-[400px] min-w-[400px]">
+          <div className="bg-[#333] rounded-[16px] p-2">
             <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
               <Tab key={TabKeys.buy} title="Buy" />
               <Tab key={TabKeys.sell} title="Sell" />
@@ -287,7 +287,7 @@ export default function Token(props: IToken) {
                     </p>
                   )}
                   {isGraduate || signature ? (
-                    <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
+                    <Button fullWidth color="primary" className="mt-2" onPress={handleBuy} isLoading={trading}>
                       {trading ? "Trading..." : "Place trade"}
                     </Button>
                   ) : (
@@ -343,7 +343,7 @@ export default function Token(props: IToken) {
                                 return;
                               }
                               const balance = await fetchTokenBalance(ca, address);
-                              setSellInputValue(String(Number(balance) / 1e18 * option.value));
+                              setSellInputValue(String((Number(balance) / 1e18) * option.value));
                             }}
                           >
                             {option.label}
@@ -352,9 +352,7 @@ export default function Token(props: IToken) {
                       })}
                     </div>
                   </div>
-                  {sellInputValue && !isGraduate && (
-                    <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>
-                  )}
+                  {sellInputValue && !isGraduate && <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>}
                   <Button fullWidth color="danger" className="mt-2" onPress={handleSell} isLoading={trading}>
                     {trading ? "Trading..." : "Place trade"}
                   </Button>

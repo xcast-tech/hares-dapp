@@ -19,7 +19,7 @@ interface InfoProps {
 }
 
 export const Info: FC<InfoProps> = ({ detail, className }) => {
-  const currentEth = detail ? (detail?.isGraduate ? 4.4 : Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(detail?.totalSupply) / 1e18)) / 1e18) : 0
+  const currentEth = detail ? (detail?.isGraduate ? 4.4 : Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(detail?.totalSupply) / 1e18)) / 1e18) : 0;
   return (
     <div className={twMerge(className)}>
       <div className="flex gap-2.5">
@@ -34,7 +34,7 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
       <div className="my-4 grid grid-cols-3 gap-2">
         {detail?.twitter && (
           <Link target="_blank" href={detail?.twitter || ""} className="w-full">
-            <Button fullWidth startContent={<Twitter />} size="sm">
+            <Button fullWidth startContent={<Twitter width={14} />} size="sm">
               twitter
             </Button>
           </Link>
@@ -69,14 +69,14 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
       >
         <div className="flex-1">contract address: {maskAddress(detail?.address)}</div>
       </Button>
-      {detail &&
+      {detail && (
         <>
-          <div className="h-1 w-full bg-gray-500 mt-3 rounded-sm">
-            <div className="h-full w-full bg-green-400 rounded-sm" style={{ width: `${currentEth / 4.4 * 100}%` }}></div>
+          <div className="h-1 w-full bg-gray-500 mt-3 rounded-[4px] overflow-hidden">
+            <div className="h-full w-full bg-green-400" style={{ width: `${(currentEth / 4.4) * 100}%` }}></div>
           </div>
           <p className="text-xs mt-1">Bonding curve progress: {currentEth.toFixed(2)} / 4.4 ETH</p>
         </>
-      }
+      )}
     </div>
   );
 };

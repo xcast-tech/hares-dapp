@@ -12,18 +12,13 @@ interface TopHoldersProps {
 
 export const TopHolders = ({ list, className, devAddress = "" }: TopHoldersProps) => {
   const renderCell = (item: TopHolder, columnKey: keyof TopHolder) => {
-    console.log(item, columnKey)
+    console.log(item, columnKey);
     const cellValue = item[columnKey] ?? "-";
     switch (columnKey) {
       case "address":
         return (
           <div className="flex items-center gap-2">
-            <a
-              className="text-white"
-              title={cellValue as string}
-              href={`${mainChain.blockExplorers.default.url}/address/${cellValue}`}
-              target="_blank"
-            >
+            <a className="text-white" title={cellValue as string} href={`${mainChain.blockExplorers.default.url}/address/${cellValue}`} target="_blank">
               {maskAddress(cellValue as string)}
             </a>
             {devAddress.toLowerCase() === cellValue.toLowerCase() && (
@@ -32,10 +27,10 @@ export const TopHolders = ({ list, className, devAddress = "" }: TopHoldersProps
               </Chip>
             )}
           </div>
-        )
+        );
 
       case "balance":
-        return <span className="text-white">{formatTokenBalance(cellValue)}</span>
+        return <span className="text-white">{formatTokenBalance(cellValue)}</span>;
 
       default:
         return cellValue;
@@ -44,11 +39,11 @@ export const TopHolders = ({ list, className, devAddress = "" }: TopHoldersProps
 
   return (
     <div className="mt-8">
-      <div className="font-bold mb-4">Top holders</div>
+      <div className="font-bold mb-4">Top hodlers</div>
       <Table
         classNames={{
           base: "max-h-[500px] border border-[#262626] rounded-large",
-          wrapper: 'p-0'
+          wrapper: "p-0",
         }}
         isHeaderSticky
         aria-label="Trade history"
@@ -59,11 +54,7 @@ export const TopHolders = ({ list, className, devAddress = "" }: TopHoldersProps
         </TableHeader>
         <TableBody emptyContent="No transaction data.">
           {list.map((item) => {
-            return (
-              <TableRow key={item.address}>
-                {(columnKey) => <TableCell>{renderCell(item, columnKey as keyof TopHolder)}</TableCell>}
-              </TableRow>
-            );
+            return <TableRow key={item.address}>{(columnKey) => <TableCell>{renderCell(item, columnKey as keyof TopHolder)}</TableCell>}</TableRow>;
           })}
         </TableBody>
       </Table>

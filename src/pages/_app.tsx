@@ -1,6 +1,6 @@
 import { NextUIProvider } from "@nextui-org/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import type { NextPage } from 'next'
+import type { NextPage } from "next";
 import { Header } from "@/components/header";
 import Providers from "@/lib/provider";
 import "@/styles/globals.css";
@@ -22,11 +22,11 @@ dayjs.extend(relativeTime);
 };
 
 type NextPageWithLayout = NextPage & {
-  GetLayout?: (page: ReactElement, props?: any) => ReactNode
-}
+  GetLayout?: (page: ReactElement, props?: any) => ReactNode;
+};
 type AppPropsWithLayout = AppProps & {
-  Component: NextPageWithLayout
-}
+  Component: NextPageWithLayout;
+};
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
@@ -43,13 +43,10 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
             <NextThemesProvider attribute="class" defaultTheme="dark">
               <Providers>
                 {Component.GetLayout ? (
-                  Component.GetLayout(
-                    <Component {...pageProps} />,
-                    pageProps
-                  )
+                  Component.GetLayout(<Component {...pageProps} />, pageProps)
                 ) : (
                   <>
-                    <div className="mt-[72px] h-[calc(100vh-72px)] overflow-auto">
+                    <div className="mt-[72px] h-[calc(100vh-72px)] pb-20 overflow-auto">
                       <Component {...pageProps} />
                     </div>
                     <Header />
