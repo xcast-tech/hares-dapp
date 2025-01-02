@@ -12,6 +12,7 @@ import { getTokenSellQuote, maskAddress } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { IToken } from "@/lib/types";
 import dayjs from "dayjs";
+import { Twitter2 } from "../twitter2";
 
 interface InfoProps {
   className?: string;
@@ -31,17 +32,17 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
         </div>
       </div>
 
-      <div className="my-4 grid grid-cols-3 gap-2">
+      <div className="my-4 flex items-center gap-2">
         {detail?.twitter && (
-          <Link target="_blank" href={detail?.twitter || ""} className="w-full">
-            <Button fullWidth startContent={<Twitter width={14} />} size="sm">
+          <Link target="_blank" href={detail?.twitter || ""} className="flex-1">
+            <Button fullWidth startContent={<Twitter2 />} size="sm">
               twitter
             </Button>
           </Link>
         )}
 
         {detail?.telegram && (
-          <Link target="_blank" href={detail?.telegram || ""} className="w-full">
+          <Link target="_blank" href={detail?.telegram || ""} className="flex-1">
             <Button fullWidth startContent={<Telegram />} size="sm">
               telegram
             </Button>
@@ -49,7 +50,7 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
         )}
 
         {detail?.website && (
-          <Link target="_blank" href={detail?.website || ""} className="w-full">
+          <Link target="_blank" href={detail?.website || ""} className="flex-1">
             <Button fullWidth startContent={<Website />} size="sm">
               website
             </Button>

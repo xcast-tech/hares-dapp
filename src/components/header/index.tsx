@@ -30,7 +30,7 @@ export const Header = () => {
 
   return (
     <div className="fixed top-0 left-0 right-0 h-[72px] backdrop-blur px-12 z-10 flex justify-between items-center gap-6">
-      <Link href="/">
+      <Link href="/" className="min-w-[124px]">
         <div className="flex items-center gap-3">
           <div className="bg-theme w-8 h-8 rounded-lg">
             <img src="/logo.png" alt="Hares.ai" />
@@ -38,17 +38,27 @@ export const Header = () => {
           <img src="/logo-text.svg" alt="Hares.ai" />
         </div>
       </Link>
-      <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
-      <button onClick={() => { setIsAboutOpen(true) }} className="text-[#999] text-sm hover:text-white">About Hares</button>
-      <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
-      <div className="flex-1 flex items-center gap-4">
-        <div className="flex gap-2 items-center">
-          <Link href={"/"} target="_blank" className="p-2">
-            <Twitter height={40} />
-          </Link>
-          <Link href="https://warpcast.com/hares-ai" target="_blank" className="p-2">
-            <Warpcast height={20} />
-          </Link>
+
+      <div className="hidden lg:flex-1 lg:flex lg:items-center lg:gap-6">
+        <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
+        <button
+          onClick={() => {
+            setIsAboutOpen(true);
+          }}
+          className="text-[#999] text-sm hover:text-white"
+        >
+          About Hares
+        </button>
+        <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
+        <div className="flex-1 flex items-center gap-4">
+          <div className="flex gap-2 items-center">
+            <Link href={"/"} target="_blank" className="p-2">
+              <Twitter height={20} />
+            </Link>
+            <Link href="https://warpcast.com/hares-ai" target="_blank" className="p-2">
+              <Warpcast height={20} />
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -62,12 +72,7 @@ export const Header = () => {
                     {userInfo?.displayName}
                   </Button>
                 </DropdownTrigger>
-                <DropdownMenu
-                  disallowEmptySelection
-                  aria-label="Merge options"
-                  className="max-w-[300px]"
-                  selectionMode="single"
-                >
+                <DropdownMenu disallowEmptySelection aria-label="Merge options" className="max-w-[300px]" selectionMode="single">
                   <DropdownItem key="merge" onPress={logout}>
                     Sign out
                   </DropdownItem>
