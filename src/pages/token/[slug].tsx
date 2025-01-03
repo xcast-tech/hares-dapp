@@ -74,7 +74,7 @@ export default function Token(props: IToken) {
 
   const [topHolders, setTopHolders] = useState<TopHolder[]>([]);
 
-  const tabColor = tabKey === "buy" ? "primary" : "danger";
+  const tabColor = tabKey === "buy" ? "success" : "danger";
 
   const buyOptions = [
     {
