@@ -287,11 +287,11 @@ export default function Token(props: IToken) {
                     </p>
                   )}
                   {isGraduate || signature ? (
-                    <Button fullWidth color="primary" className="mt-2" onPress={handleBuy} isLoading={trading}>
+                    <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
                       {trading ? "Trading..." : "Place trade"}
                     </Button>
                   ) : (
-                    <Button fullWidth color="primary" className="mt-2" onPress={login}>
+                    <Button fullWidth color="success" className="mt-2" onPress={login}>
                       Connect to Farcaster to buy
                     </Button>
                   )}
