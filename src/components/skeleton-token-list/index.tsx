@@ -35,7 +35,7 @@ interface TokenListProps {
 
 export const SkeletonTokenList: FC<TokenListProps> = ({ list, className }) => {
   return (
-    <div className={cn("grid grid-cols-3 gap-4", className)}>
+    <div className={cn("grid grid-cols-1 gap-4", "xl:grid-cols-3", className)}>
       {list?.map((item, i) => {
         return <Token key={i} />;
       })}
