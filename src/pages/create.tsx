@@ -119,8 +119,8 @@ const Create = () => {
   }
 
   return (
-    <div className="pt-8">
-      <Card className="mx-auto p-8 flex justify-center max-w-full w-[600px] shadow-[0px_0px_0px_8px_#262626]">
+    <div className="py-8">
+      <Card className={cn("mx-4 p-8 flex justify-center", "xl:mx-auto xl:w-[600px] xl:max-w-full xl:shadow-[0px_0px_0px_8px_#262626]")}>
         <Form className="w-full grid grid-cols-1 gap-6" validationBehavior="native" onSubmit={handleSubmit}>
           <div>
             <Title required>Name</Title>
