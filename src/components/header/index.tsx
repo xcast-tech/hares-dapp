@@ -106,7 +106,7 @@ export const Header = () => {
             block: expand,
           })}
         >
-          <div className="absolute z-0 inset-0 backdrop-blur-[20px]"></div>
+          <div className="absolute z-0 inset-0 backdrop-blur-xl bg-black/80"></div>
           <div className="relative z-10 p-4 bg-[#141414] rounded-b-[16px] border-solid border-b-1 border-[#262626]">
             <div className={style.connectBtn}>
               <ConnectButton />
