@@ -14,7 +14,7 @@ import FarcasterProvider from "@/hooks/farcaster";
 import { AuthKitProvider } from "@farcaster/auth-kit";
 import { AppProvider } from "@/context/useAppContext";
 import { ReactElement, ReactNode } from "react";
-import { getDomain } from "@/lib/utils";
+import { cn, getDomain } from "@/lib/utils";
 
 dayjs.extend(relativeTime);
 (BigInt.prototype as any).toJSON = function () {
@@ -46,7 +46,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
                   Component.GetLayout(<Component {...pageProps} />, pageProps)
                 ) : (
                   <>
-                    <div className="mt-[72px] h-[calc(100vh-72px)] pb-20 overflow-auto">
+                    <div className={cn("mt-[52px] h-[calc(100vh-52px)] ", "xl:mt-[72px] xl:h-[calc(100vh-72px)] xl:pb-20 overflow-auto")}>
                       <Component {...pageProps} />
                     </div>
                     <Header />
