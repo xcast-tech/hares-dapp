@@ -4,7 +4,7 @@ import { Info } from "@/components/info";
 import { getTokenTopHoldersApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken, TopHolder, Trade } from "@/lib/types";
-import { formatNumber, formatTokenBalance, getEthBuyQuote, getTokenSellQuote } from "@/lib/utils";
+import { cn, formatNumber, formatTokenBalance, getEthBuyQuote, getTokenSellQuote } from "@/lib/utils";
 import { useContract } from "@/hooks/useContract";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
@@ -73,6 +73,8 @@ export default function Token(props: IToken) {
   const [trading, setTrading] = useState(false);
 
   const [topHolders, setTopHolders] = useState<TopHolder[]>([]);
+
+  const [tradeModalOpen, setTradeModalOpen] = useState(false);
 
   const tabColor = tabKey === "buy" ? "success" : "danger";
 
@@ -200,6 +202,138 @@ export default function Token(props: IToken) {
     setTopHolders(res?.data?.list ?? []);
   }
 
+  const tradeComponent = (
+    <div>
+      <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
+        <Tab key={TabKeys.buy} title="Buy" />
+        <Tab key={TabKeys.sell} title="Sell" />
+      </Tabs>
+      <div className="mt-4">
+        {tabKey === TabKeys.buy && (
+          <div>
+            <div>
+              <div className="mb-3 flex justify-between items-center">
+                <span className="text-sm">Amount (ETH)</span>
+                <Button
+                  size="sm"
+                  className="text-[#999] h-[26px]"
+                  onPress={() => {
+                    setEditSlippage(slippage);
+                    setSlippageModalOpen(true);
+                  }}
+                >
+                  set max slippage
+                </Button>
+              </div>
+              <div>
+                <Input
+                  value={buyInputValue}
+                  onChange={(e) => {
+                    setBuyInputValue(e.target.value);
+                  }}
+                  type="number"
+                  endContent={"ETH"}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4 mb-2 flex gap-1">
+              {buyOptions.map((option, i) => {
+                return (
+                  <Chip
+                    key={i}
+                    size="sm"
+                    className="cursor-pointer text-xs"
+                    onClick={() => {
+                      setBuyInputValue(String(option.value));
+                    }}
+                  >
+                    {option.label}
+                  </Chip>
+                );
+              })}
+            </div>
+            {buyInputValue && !isGraduate && (
+              <p className="text-xs text-gray-500">
+                {detail?.symbol} received: {Number(getEthBuyQuote(Number(totalSupply) / 1e18, Number(buyInputValue))) / 1e18}
+              </p>
+            )}
+            {isGraduate || signature ? (
+              <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
+                {trading ? "Trading..." : "Place trade"}
+              </Button>
+            ) : (
+              <Button fullWidth color="success" className="mt-2" onPress={login}>
+                Connect to Farcaster to buy
+              </Button>
+            )}
+          </div>
+        )}
+
+        {tabKey === TabKeys.sell && (
+          <div>
+            <div>
+              <div>
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="text-sm">Amount ({detail?.symbol})</div>
+                  <div className="flex gap-2 items-center">
+                    <div className="text-gray-300 text-sm">{formatTokenBalance(tokenBalance)}</div>
+                    <Button
+                      size="sm"
+                      className="text-[#999] h-[26px]"
+                      onPress={() => {
+                        setEditSlippage(slippage);
+                        setSlippageModalOpen(true);
+                      }}
+                    >
+                      set max slippage
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <Input
+                    value={sellInputValue}
+                    onChange={(e) => {
+                      setSellInputValue(e.target.value);
+                    }}
+                    type="number"
+                    endContent={detail?.symbol}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 mb-2 flex gap-1">
+                {sellOptions.map((option, i) => {
+                  return (
+                    <Chip
+                      key={i}
+                      size="sm"
+                      className="cursor-pointer text-xs"
+                      onClick={async () => {
+                        if (!address) {
+                          toast("Please connect wallet first");
+                          return;
+                        }
+                        const balance = await fetchTokenBalance(ca, address);
+                        setSellInputValue(String((Number(balance) / 1e18) * option.value));
+                      }}
+                    >
+                      {option.label}
+                    </Chip>
+                  );
+                })}
+              </div>
+            </div>
+            {sellInputValue && !isGraduate && <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>}
+            <Button fullWidth color="danger" className="mt-2" onPress={handleSell} isLoading={trading}>
+              {trading ? "Trading..." : "Place trade"}
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     console.log("ca address", { ca, address });
     if (ca && address) {
@@ -214,155 +348,58 @@ export default function Token(props: IToken) {
   }, [ca]);
 
   return (
-    <div className="px-[7vw]">
+    <div className={cn("px-4 pb-8", "xl:px-[7vw]")}>
       <Head>
         <title>{`${detail?.symbol} | hares.ai`}</title>
       </Head>
       <div className="my-6">
-        <h1 className="text-lg">
+        <h1 className="text-medium break-all xl:text-lg">
           <span className="font-bold">{detail?.symbol}: </span>
           <span>{ca}</span>
         </h1>
         {isGraduate ? <p className="text-green-400 mb-2">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
       </div>
-      <div className="flex gap-6">
-        <div className="flex-1">
+      <div className={cn("flex flex-col gap-6", "xl:flex-row")}>
+        <div className="xl:flex-1">
           <TradingView className="w-full h-[500px] bg-black" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade} />
-          <TradeList list={historyList} symbol={detail.symbol} />
+          <TradeList list={historyList} symbol={detail.symbol} className="hidden xl:block" />
         </div>
-        <div className="w-[400px] min-w-[400px]">
-          <div className="bg-[#333] rounded-[16px] p-2">
-            <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
-              <Tab key={TabKeys.buy} title="Buy" />
-              <Tab key={TabKeys.sell} title="Sell" />
-            </Tabs>
-            <div className="mt-4">
-              {tabKey === TabKeys.buy && (
-                <div>
-                  <div>
-                    <div className="mb-3 flex justify-between items-center">
-                      <span className="text-sm">Amount (ETH)</span>
-                      <Button
-                        size="sm"
-                        className="text-[#999] h-[26px]"
-                        onPress={() => {
-                          setEditSlippage(slippage);
-                          setSlippageModalOpen(true);
-                        }}
-                      >
-                        set max slippage
-                      </Button>
-                    </div>
-                    <div>
-                      <Input
-                        value={buyInputValue}
-                        onChange={(e) => {
-                          setBuyInputValue(e.target.value);
-                        }}
-                        type="number"
-                        endContent={"ETH"}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-4 mb-2 flex gap-1">
-                    {buyOptions.map((option, i) => {
-                      return (
-                        <Chip
-                          key={i}
-                          size="sm"
-                          className="cursor-pointer text-xs"
-                          onClick={() => {
-                            setBuyInputValue(String(option.value));
-                          }}
-                        >
-                          {option.label}
-                        </Chip>
-                      );
-                    })}
-                  </div>
-                  {buyInputValue && !isGraduate && (
-                    <p className="text-xs text-gray-500">
-                      {detail?.symbol} received: {Number(getEthBuyQuote(Number(totalSupply) / 1e18, Number(buyInputValue))) / 1e18}
-                    </p>
-                  )}
-                  {isGraduate || signature ? (
-                    <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
-                      {trading ? "Trading..." : "Place trade"}
-                    </Button>
-                  ) : (
-                    <Button fullWidth color="success" className="mt-2" onPress={login}>
-                      Connect to Farcaster to buy
-                    </Button>
-                  )}
-                </div>
-              )}
-
-              {tabKey === TabKeys.sell && (
-                <div>
-                  <div>
-                    <div>
-                      <div className="mb-3 flex items-center justify-between">
-                        <div className="text-sm">Amount ({detail?.symbol})</div>
-                        <div className="flex gap-2 items-center">
-                          <div className="text-gray-300 text-sm">{formatTokenBalance(tokenBalance)}</div>
-                          <Button
-                            size="sm"
-                            className="text-[#999] h-[26px]"
-                            onPress={() => {
-                              setEditSlippage(slippage);
-                              setSlippageModalOpen(true);
-                            }}
-                          >
-                            set max slippage
-                          </Button>
-                        </div>
-                      </div>
-                      <div>
-                        <Input
-                          value={sellInputValue}
-                          onChange={(e) => {
-                            setSellInputValue(e.target.value);
-                          }}
-                          type="number"
-                          endContent={detail?.symbol}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="mt-4 mb-2 flex gap-1">
-                      {sellOptions.map((option, i) => {
-                        return (
-                          <Chip
-                            key={i}
-                            size="sm"
-                            className="cursor-pointer text-xs"
-                            onClick={async () => {
-                              if (!address) {
-                                toast("Please connect wallet first");
-                                return;
-                              }
-                              const balance = await fetchTokenBalance(ca, address);
-                              setSellInputValue(String((Number(balance) / 1e18) * option.value));
-                            }}
-                          >
-                            {option.label}
-                          </Chip>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  {sellInputValue && !isGraduate && <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>}
-                  <Button fullWidth color="danger" className="mt-2" onPress={handleSell} isLoading={trading}>
-                    {trading ? "Trading..." : "Place trade"}
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
+        <div className={cn("", "xl:w-[400px] xl:min-w-[400px]")}>
+          <div className={cn("hidden", "xl:block bg-[#333] rounded-[16px] p-2")}>{tradeComponent}</div>
 
           <Info className="mt-8" detail={detail} />
           <TopHolders list={topHolders} className="mt-4" devAddress={detail.creatorAddress} />
+        </div>
+
+        <TradeList list={historyList} symbol={detail.symbol} className="xl:hidden" />
+
+        <div className={cn("fixed z-10 left-0 right-0 bottom-4 px-4", "xl:hidden")}>
+          <Button
+            fullWidth
+            color="primary"
+            className="rounded-[40px]"
+            onPress={() => {
+              setTradeModalOpen(true);
+            }}
+          >
+            Trade
+          </Button>
+
+          <Modal
+            isOpen={tradeModalOpen}
+            onOpenChange={(open) => {
+              setTradeModalOpen(open);
+            }}
+          >
+            <ModalContent>
+              {(onClose) => (
+                <>
+                  <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                  <ModalBody>{tradeComponent}</ModalBody>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
         </div>
       </div>
 

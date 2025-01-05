@@ -1,4 +1,4 @@
-import { formatThousandNumber } from "@/lib/utils";
+import { cn, formatThousandNumber } from "@/lib/utils";
 import Image from "next/image";
 import dayjs from "dayjs";
 import React, { FC } from "react";
@@ -38,7 +38,7 @@ interface TokenListProps {
 
 export const TokenList: FC<TokenListProps> = ({ list }) => {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className={cn("grid grid-cols-1 gap-4", "xl:grid-cols-3")}>
       {list?.map((item, i) => {
         return <Token key={i} detail={item} />;
       })}
