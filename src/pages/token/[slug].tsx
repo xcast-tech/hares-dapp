@@ -233,6 +233,7 @@ export default function Token(props: IToken) {
                   }}
                   type="number"
                   endContent={"ETH"}
+                  autoFocus={false}
                 />
               </div>
             </div>
@@ -298,6 +299,7 @@ export default function Token(props: IToken) {
                     }}
                     type="number"
                     endContent={detail?.symbol}
+                    autoFocus={false}
                   />
                 </div>
               </div>
@@ -418,6 +420,7 @@ export default function Token(props: IToken) {
                     onChange={(event) => {
                       setEditSlippage(event.target.value);
                     }}
+                    autoFocus={false}
                   />
                   <div className="text-xs mt-1">this is the maximum amount of slippage you are willing to accept when placing trades.</div>
                 </div>
