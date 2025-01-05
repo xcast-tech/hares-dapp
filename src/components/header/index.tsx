@@ -86,7 +86,7 @@ export const Header = () => {
         </div>
       </div>
 
-      <div>
+      <div className={cn("xl:hidden")}>
         {!expand ? (
           <Expand
             onClick={() => {
@@ -116,18 +116,22 @@ export const Header = () => {
               {userInfo ? (
                 <Dropdown placement="bottom">
                   <DropdownTrigger>
-                    <Button fullWidth startContent={<Avatar className="w-6 h-6 text-tiny" {...(userInfo?.pfpUrl ? { src: userInfo?.pfpUrl } : { name: userInfo?.displayName })} />} variant="bordered">
+                    <Button
+                      fullWidth
+                      startContent={<Avatar className="w-6 h-6 text-tiny font-medium" {...(userInfo?.pfpUrl ? { src: userInfo?.pfpUrl } : { name: userInfo?.displayName })} />}
+                      variant="bordered"
+                    >
                       {userInfo?.displayName}
                     </Button>
                   </DropdownTrigger>
                   <DropdownMenu disallowEmptySelection aria-label="Merge options" className="max-w-[300px]" selectionMode="single">
-                    <DropdownItem key="merge" onPress={logout}>
+                    <DropdownItem key="merge" onPress={logout} className="font-medium">
                       Sign out
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               ) : (
-                <Button fullWidth variant="bordered" onPress={login}>
+                <Button fullWidth variant="bordered" onPress={login} className="font-medium">
                   Connect Facaster
                 </Button>
               )}
@@ -142,6 +146,7 @@ export const Header = () => {
                 onPress={() => {
                   setIsAboutOpen(true);
                 }}
+                className="font-medium"
               >
                 About Hares
               </Button>

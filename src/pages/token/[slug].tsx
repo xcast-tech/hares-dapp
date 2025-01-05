@@ -390,6 +390,7 @@ export default function Token(props: IToken) {
             onOpenChange={(open) => {
               setTradeModalOpen(open);
             }}
+            placement="bottom"
           >
             <ModalContent>
               {(onClose) => (
