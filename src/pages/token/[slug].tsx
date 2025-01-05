@@ -203,17 +203,17 @@ export default function Token(props: IToken) {
   }
 
   const tradeComponent = (
-    <div>
+    <div className="text-xs xl:text-sm">
       <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
         <Tab key={TabKeys.buy} title="Buy" />
         <Tab key={TabKeys.sell} title="Sell" />
       </Tabs>
-      <div className="mt-4">
+      <div className="mt-6">
         {tabKey === TabKeys.buy && (
           <div>
             <div>
               <div className="mb-3 flex justify-between items-center">
-                <span className="text-sm">Amount (ETH)</span>
+                <span>Amount (ETH)</span>
                 <Button
                   size="sm"
                   className="text-[#999] h-[26px]"
@@ -243,7 +243,7 @@ export default function Token(props: IToken) {
                   <Chip
                     key={i}
                     size="sm"
-                    className="cursor-pointer text-xs"
+                    className="cursor-pointer text-[10px] xl:text-xs"
                     onClick={() => {
                       setBuyInputValue(String(option.value));
                     }}
@@ -275,7 +275,7 @@ export default function Token(props: IToken) {
             <div>
               <div>
                 <div className="mb-3 flex items-center justify-between">
-                  <div className="text-sm">Amount ({detail?.symbol})</div>
+                  <div>Amount ({detail?.symbol})</div>
                   <div className="flex gap-2 items-center">
                     <div className="text-gray-300 text-sm">{formatTokenBalance(tokenBalance)}</div>
                     <Button
@@ -308,7 +308,7 @@ export default function Token(props: IToken) {
                     <Chip
                       key={i}
                       size="sm"
-                      className="cursor-pointer text-xs"
+                      className="cursor-pointer text-[10px] xl:text-xs"
                       onClick={async () => {
                         if (!address) {
                           toast("Please connect wallet first");
@@ -394,8 +394,9 @@ export default function Token(props: IToken) {
             <ModalContent>
               {(onClose) => (
                 <>
-                  <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
-                  <ModalBody>{tradeComponent}</ModalBody>
+                  <ModalBody>
+                    <div className="pt-8 pb-6">{tradeComponent}</div>
+                  </ModalBody>
                 </>
               )}
             </ModalContent>
