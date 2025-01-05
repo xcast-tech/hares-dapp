@@ -50,7 +50,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
                       <Component {...pageProps} />
                     </div>
                     <Header />
-                    <ToastContainer theme="dark" position="bottom-right" pauseOnFocusLoss={false} />
+                    <ToastContainer theme="dark" position="bottom-right" pauseOnFocusLoss={false} pauseOnHover={false} />
                   </>
                 )}
               </Providers>
