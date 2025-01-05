@@ -2,9 +2,7 @@ import React, { FC } from "react";
 import Image from "next/image";
 import copy from "copy-to-clipboard";
 import { twMerge } from "tailwind-merge";
-import { Twitter } from "../twitter";
 import { Button } from "@nextui-org/react";
-import Link from "next/link";
 import { Telegram } from "../telegram";
 import { Website } from "../website";
 import { Copy } from "../copy";
@@ -34,27 +32,42 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
 
       <div className="my-4 flex items-center gap-2">
         {detail?.twitter && (
-          <Link target="_blank" href={detail?.twitter || ""} className="flex-1">
-            <Button fullWidth startContent={<Twitter2 />} size="sm">
-              twitter
-            </Button>
-          </Link>
+          <Button
+            fullWidth
+            startContent={<Twitter2 />}
+            size="sm"
+            onPress={() => {
+              window.open(detail?.twitter ?? "", "_blank");
+            }}
+          >
+            twitter
+          </Button>
         )}
 
         {detail?.telegram && (
-          <Link target="_blank" href={detail?.telegram || ""} className="flex-1">
-            <Button fullWidth startContent={<Telegram />} size="sm">
-              telegram
-            </Button>
-          </Link>
+          <Button
+            fullWidth
+            startContent={<Telegram />}
+            size="sm"
+            onPress={() => {
+              window.open(detail?.telegram ?? "", "_blank");
+            }}
+          >
+            telegram
+          </Button>
         )}
 
         {detail?.website && (
-          <Link target="_blank" href={detail?.website || ""} className="flex-1">
-            <Button fullWidth startContent={<Website />} size="sm">
-              website
-            </Button>
-          </Link>
+          <Button
+            fullWidth
+            startContent={<Website />}
+            size="sm"
+            onPress={() => {
+              window.open(detail?.website ?? "", "_blank");
+            }}
+          >
+            website
+          </Button>
         )}
       </div>
 
