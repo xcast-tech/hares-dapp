@@ -8,7 +8,6 @@ import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { IToken } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -114,18 +113,13 @@ export default function Home() {
         <title>hares.ai</title>
       </Head>
       <div className="pb-[80px]">
-        <div className={cn("w-full flex justify-center h-[120px] relative", "xl:h-[210px]")}>
+        <div className="w-full flex justify-center h-[210px] relative">
           <Image src="/left.png" fill className="object-left object-contain" alt={""} />
           <Image src="/right.png" fill className="object-right object-contain" alt={""} />
 
           <div className="h-full flex items-center relative">
             <Link href="/create">
-              <Button
-                className={cn(
-                  "absolute top-[30px] left-0 -translate-x-1/2 bg-transparent w-[310px] h-[30px] rounded-[30px]",
-                  "xl:top-[64px] xl:w-[320px] xl:h-[52px] xl:rounded-[52px] xl:border xl:border-solid xl:border-[#262626]"
-                )}
-              >
+              <Button className="absolute top-[64px] left-0 -translate-x-1/2 bg-transparent h-[52px] rounded-[52px] w-[320px] border border-solid border-[#262626]">
                 <div className="flex items-center justify-center gap-2">
                   <Image src="/btn-star.svg" height={16} width={32} alt={""} />
                   <div className="text-[20px] font-bold">[start a new coin]</div>
@@ -136,17 +130,11 @@ export default function Home() {
           </div>
         </div>
 
-        <div className={cn("-translate-y-1/2 mx-6 mb-4 flex justify-center gap-2 shadow-[0px_0px_0px_10px_#191919] rounded-[16px]", "xl:w-[600px] xl:mx-auto")}>
-          <Input
-            type="text"
-            placeholder="Search For Token"
-            fullWidth
-            onChange={handleNameChangeDebounce}
-            classNames={{ inputWrapper: cn("h-[40px] text-[#666] text-[16px] !bg-[#141414]", "xl:h-[60px]") }}
-          />
+        <div className="-translate-y-1/2 w-[600px] mx-auto mb-4 flex justify-center gap-2 shadow-[0px_0px_0px_10px_#191919] rounded-[16px]">
+          <Input type="text" placeholder="Search For Token" fullWidth onChange={handleNameChangeDebounce} classNames={{ inputWrapper: "h-[60px] text-[#666] text-[16px] !bg-[#141414]" }} />
         </div>
 
-        <div className="p-4 mt-5 xl:mt-10">
+        <div className="p-4 mt-10">
           <div className="mb-4">
             <Select className="w-[180px]" classNames={{ trigger: "!bg-[#1A1A1A] border border-solid border-[#262626]" }} label="Sort" selectedKeys={[sort]} onSelectionChange={handleSortChange}>
               {sortOptions.map((opt) => (

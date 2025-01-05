@@ -1,32 +1,10 @@
-import React, { use, useState } from "react";
+import React, { use } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
-import {
-  Avatar,
-  Button,
-  ButtonGroup,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownSection,
-  DropdownTrigger,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@nextui-org/react";
+import { Avatar, Button, ButtonGroup, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
 import { Twitter } from "../twitter";
 import { Warpcast } from "../wrapcast";
 import { useFarcasterContext } from "@/hooks/farcaster";
-import { cn } from "@/lib/utils";
-import { Expand } from "../icons/expand";
-import { Close } from "../icons/close";
-import style from "./style.module.css";
-import { HaresAiTwitterLink, HaresAiWarpcastLink } from "@/lib/constant";
 
 const ChevronDownIcon = () => {
   return (
@@ -46,20 +24,18 @@ export const Header = () => {
 
   const [isAboutOpen, setIsAboutOpen] = React.useState(false);
 
-  const [expand, setExpand] = useState(false);
-
   const onOpenChange = (open: boolean) => {
     setIsAboutOpen(open);
   };
 
   return (
-    <div className={cn("fixed top-0 left-0 right-0 h-[52px] backdrop-blur px-4 z-10 flex justify-between items-center", "xl:h-[72px] lx:px-12 xl:gap-6")}>
-      <Link href="/">
+    <div className="fixed top-0 left-0 right-0 h-[72px] backdrop-blur px-12 z-10 flex justify-between items-center gap-6">
+      <Link href="/" className="min-w-[124px]">
         <div className="flex items-center gap-3">
-          <div className={cn("bg-theme overflow-hidden w-6 h-6 rounded-[6px]", "xl:w-8 xl:h-8 xl:rounded-[8px]")}>
+          <div className="bg-theme w-8 h-8 rounded-lg">
             <img src="/logo.png" alt="Hares.ai" />
           </div>
-          <img src="/logo-text.svg" alt="Hares.ai" className="h-[12px] xl:h-[18px]" />
+          <img src="/logo-text.svg" alt="Hares.ai" />
         </div>
       </Link>
 
@@ -76,103 +52,17 @@ export const Header = () => {
         <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
         <div className="flex-1 flex items-center gap-4">
           <div className="flex gap-2 items-center">
-            <Link href={HaresAiTwitterLink} target="_blank" className="p-2">
+            <Link href={"/"} target="_blank" className="p-2">
               <Twitter height={20} />
             </Link>
-            <Link href={HaresAiWarpcastLink} target="_blank" className="p-2">
+            <Link href="https://warpcast.com/hares-ai" target="_blank" className="p-2">
               <Warpcast height={20} />
             </Link>
           </div>
         </div>
       </div>
 
-      <div>
-        {!expand ? (
-          <Expand
-            onClick={() => {
-              setExpand(true);
-            }}
-          />
-        ) : (
-          <Close
-            onClick={() => {
-              setExpand(false);
-            }}
-          />
-        )}
-
-        <div
-          className={cn("hidden absolute z-[1000] top-[52px] left-0 right-0 h-[calc(100vh-52px)]", {
-            block: expand,
-          })}
-        >
-          <div className="absolute z-0 inset-0 backdrop-blur-xl bg-black/80"></div>
-          <div className="relative z-10 p-4 bg-[#141414] rounded-b-[16px] border-solid border-b-1 border-[#262626]">
-            <div className={style.connectBtn}>
-              <ConnectButton />
-            </div>
-
-            <div className="mt-2">
-              {userInfo ? (
-                <Dropdown placement="bottom">
-                  <DropdownTrigger>
-                    <Button fullWidth startContent={<Avatar className="w-6 h-6 text-tiny" {...(userInfo?.pfpUrl ? { src: userInfo?.pfpUrl } : { name: userInfo?.displayName })} />} variant="bordered">
-                      {userInfo?.displayName}
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu disallowEmptySelection aria-label="Merge options" className="max-w-[300px]" selectionMode="single">
-                    <DropdownItem key="merge" onPress={logout}>
-                      Sign out
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              ) : (
-                <Button fullWidth variant="bordered" onPress={login}>
-                  Connect Facaster
-                </Button>
-              )}
-            </div>
-
-            <div className="h-px bg-[#262626] my-4"></div>
-
-            <div>
-              <Button
-                fullWidth
-                variant="bordered"
-                onPress={() => {
-                  setIsAboutOpen(true);
-                }}
-              >
-                About Hares
-              </Button>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <Button
-                fullWidth
-                variant="bordered"
-                onPress={() => {
-                  window.open(HaresAiTwitterLink, "_blank");
-                }}
-              >
-                <Twitter height={20} />
-              </Button>
-
-              <Button
-                fullWidth
-                variant="bordered"
-                onPress={() => {
-                  window.open(HaresAiWarpcastLink, "_blank");
-                }}
-              >
-                <Warpcast height={16} />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={cn("hidden", "xl:flex items-center gap-2")}>
+      <div className="flex items-center gap-2">
         <div>
           {userInfo ? (
             <ButtonGroup variant="flat">
