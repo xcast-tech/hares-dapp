@@ -5,7 +5,7 @@ import { getTokenTopHoldersApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken, TopHolder, Trade } from "@/lib/types";
 import { cn, formatNumber, formatTokenBalance, getEthBuyQuote, getTokenSellQuote } from "@/lib/utils";
-import { useContract } from "@/hooks/useContract";
+import { useHaresContract } from "@/hooks/useHaresContract";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import { useAppContext } from "@/context/useAppContext";
@@ -52,7 +52,7 @@ export default function Token(props: IToken) {
   const detail = props;
   const { ethPrice } = useAppContext();
   const { login, userInfo } = useFarcasterContext();
-  const { buy, sell, getTokenBalance } = useContract();
+  const { buy, sell, getTokenBalance } = useHaresContract();
   const { message, signature } = userInfo ?? {};
 
   const { address } = useAccount();

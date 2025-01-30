@@ -1,8 +1,9 @@
 import { setUpApi, tokenApi, uploadFile } from "@/lib/apis";
-import { Form, Input, Button, Textarea, Accordion, AccordionItem, Card } from "@nextui-org/react";
+import { Form, Input, Button, Textarea, Accordion, AccordionItem, Card, Select, SelectItem } from "@nextui-org/react";
 import React, { FormEvent, PropsWithChildren, useRef, useState } from "react";
 import Image from "next/image";
-import { useContract } from "@/hooks/useContract";
+import { useHaresContract } from "@/hooks/useHaresContract";
+import { useHarespadContract } from "@/hooks/useHarespadContract";
 import { toast } from "react-toastify";
 import { ABIs, EventTopic } from "@/lib/constant";
 import { useRouter } from "next/router";
@@ -29,7 +30,8 @@ function AnchorIcon() {
 
 const Create = () => {
   const router = useRouter();
-  const { createToken } = useContract();
+  const { createToken: createBondingCurveToken } = useHaresContract();
+  const { createToken: createHarespadToken } = useHarespadContract();
   const [name, setName] = useState("");
   const [ticker, setTicker] = useState("");
   const [desc, setDesc] = useState("");
@@ -40,15 +42,9 @@ const Create = () => {
   const [website, setWebsite] = useState("");
 
   const [devBuyAmount, setDevBuyAmount] = useState("");
+  const [mode, setMode] = useState<"bonding-curve" | "launchpad">("bonding-curve");
 
   const [loading, setLoading] = useState(false);
-
-  console.log("Create", {
-    name,
-    ticker,
-    desc,
-    file,
-  });
 
   async function handleCreateToken(name: string, symbol: string) {
     if (!name || !symbol) {
@@ -57,22 +53,29 @@ const Create = () => {
     }
 
     try {
-      const res = await createToken(name, symbol, devBuyAmount);
-      console.log(res);
-      const tokenCreatedEvent = res?.logs?.find?.((item) => item?.topics?.[0] === EventTopic.HaresTokenCreated);
-      if (tokenCreatedEvent) {
-        const event: any = decodeEventLog({
-          abi: ABIs.HaresFactoryAbi,
-          data: tokenCreatedEvent.data,
-          topics: tokenCreatedEvent.topics,
-        });
-        const tokenAddress = ((event.args as any).tokenAddress || "").toLowerCase();
-        console.log(tokenAddress);
-        return tokenAddress;
+      let res;
+      if (mode === "bonding-curve") {
+        res = await createBondingCurveToken(name, symbol, devBuyAmount);
+        const tokenCreatedEvent = res?.logs?.find?.((item) => item?.topics?.[0] === EventTopic.HaresTokenCreated);
+        if (tokenCreatedEvent) {
+          const event: any = decodeEventLog({
+            abi: ABIs.HaresFactoryAbi,
+            data: tokenCreatedEvent.data,
+            topics: tokenCreatedEvent.topics,
+          });
+          const tokenAddress = ((event.args as any).tokenAddress || "").toLowerCase();
+          return tokenAddress;
+        }
+      } else {
+        // For launchpad mode, generate a random token ID
+        const tokenId = Math.floor(Math.random() * 1000000);
+        res = await createHarespadToken(name, symbol, tokenId);
+        return res || "";
       }
     } catch (error: any) {
       toast(error?.message);
     }
+    return "";
   }
 
   async function loopToken({ address }: { address: string }) {
@@ -88,7 +91,6 @@ const Create = () => {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    console.log("onSubmit");
 
     if (!file) {
       toast("Please upload image");
@@ -108,6 +110,7 @@ const Create = () => {
           twitter: twitter.trim(),
           telegram: telegram.trim(),
           desc: desc.trim(),
+          mode: mode,
         });
 
         loopToken({ address });
@@ -167,8 +170,29 @@ const Create = () => {
           </div>
 
           <div>
-            <Title required>Image</Title>
+            <Select
+              className="mt-2"
+              classNames={{ 
+                mainWrapper: "flex-1", 
+                trigger: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" 
+              }}
+              label="Select Mode"
+              labelPlacement="outside"
+              isRequired
+              selectedKeys={[mode]}
+              onChange={(e) => setMode(e.target.value as "bonding-curve" | "launchpad")}
+            >
+              <SelectItem key="bonding-curve" value="bonding-curve">
+                Bonding Curve
+              </SelectItem>
+              <SelectItem key="launchpad" value="launchpad">
+                Launchpad
+              </SelectItem>
+            </Select>
+          </div>
 
+          <div>
+            <Title required>Image</Title>
             <label htmlFor="image-file" className="cursor-pointer">
               <div className="flex items-center px-3 text-[14px] rounded-[12px] bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]">Please choose image</div>
             </label>
@@ -269,7 +293,6 @@ const Create = () => {
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
                             d="M1.71411 8.63164H5.17446C5.28753 10.6966 5.95153 12.6147 7.022 14.2417C4.20189 13.8034 1.99886 11.4997 1.71411 8.63164ZM1.71411 7.36826C1.99886 4.50025 4.20189 2.19653 7.022 1.7583C5.95153 3.38524 5.28753 5.3034 5.17446 7.36826H1.71411ZM14.2855 7.36826H10.8251C10.7121 5.3034 10.0481 3.38524 8.97764 1.7583C11.7978 2.19653 14.0008 4.50025 14.2855 7.36826ZM14.2855 8.63164C14.0008 11.4997 11.7978 13.8034 8.97764 14.2417C10.0481 12.6147 10.7121 10.6966 10.8251 8.63164H14.2855ZM6.44001 8.63164H9.55962C9.45122 10.3896 8.89344 12.0259 7.99979 13.4272C7.10614 12.0259 6.54841 10.3896 6.44001 8.63164ZM6.44001 7.36826C6.54841 5.61039 7.10614 3.97408 7.99979 2.57279C8.89344 3.97408 9.45122 5.61039 9.55962 7.36826H6.44001Z"
-                            fill="white"
                           />
                         </svg>
                       </div>

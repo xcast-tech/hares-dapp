@@ -41,6 +41,7 @@ export const setUpApi = async (data: {
   twitter: string;
   telegram: string;
   desc: string;
+  mode?: "bonding-curve" | "launchpad";
 }) => {
   const res = await request("/api/token/setup", {
     method: "post",

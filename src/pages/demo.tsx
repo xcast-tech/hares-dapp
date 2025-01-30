@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useState } from 'react';
-import { useContract } from '@/hooks/useContract';
+import { useHaresContract } from '@/hooks/useHaresContract';
 import { useAccount } from 'wagmi';
 import { Label } from '@/components/ui/label';
 import { Address } from '@/lib/types';
@@ -18,7 +18,7 @@ import { Address } from '@/lib/types';
 export default function Demo() {
 
   const { address } = useAccount()
-  const { createToken, buy, sell, getTokenPoolAddress, getCurrentSqrtPriceX96 } = useContract()
+  const { createToken, buy, sell, getTokenPoolAddress, getCurrentSqrtPriceX96 } = useHaresContract()
   const [name, setName] = useState('')
   const [symbol, setSymbol] = useState('')
   const [tx, setTx] = useState('')
