@@ -138,6 +138,48 @@ export function useHarespadContract() {
     }
   }
 
+  async function owner(harespadAddress: Address) {
+    if (!publicClient) {
+      return null;
+    }
+
+    try {
+      const tokenOwner = await publicClient.readContract({
+        address: harespadAddress,
+        abi: ABIs.Harespad,
+        functionName: "owner",
+        args: [],
+      });
+
+      return tokenOwner;
+    } catch (error: any) {
+      toast(error?.message);
+      return null;
+    }
+  }
+
+  async function graduate(harespadAddress: Address) {
+    if (!address) {
+      toast("Please connect wallet first");
+      return null;
+    }
+
+    try {
+      const tx = await writeContractAsync({
+        address: harespadAddress,
+        abi: ABIs.Harespad,
+        functionName: "graduate",
+        args: [],
+      });
+
+      await publicClient?.waitForTransactionReceipt({ hash: tx });
+      return tx;
+    } catch (error: any) {
+      toast(error?.message);
+      return null;
+    }
+  }
+
   async function uniswapBuy(
     harespadAddress: Address,
     recipient: Address,
@@ -201,6 +243,8 @@ export function useHarespadContract() {
     getClaim,
     claim,
     getIsGraduate,
+    owner,
+    graduate,
     uniswapBuy,
     uniswapSell,
   };

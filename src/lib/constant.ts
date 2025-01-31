@@ -1,4 +1,4 @@
-import { base } from "viem/chains";
+import { base, baseSepolia } from "viem/chains";
 
 import BondingCurveAbi from "./abi/BondingCurve";
 import HaresFactoryAbi from "./abi/HaresFactory";
@@ -9,13 +9,13 @@ import HarespadFactory from "./abi/HarespadFactory";
 import Harespad from "./abi/Harespad";
 import { Address } from "./types";
 
-export const mainChain = base;
+export const mainChain = baseSepolia;
 export const contractAddress = {
   BondingCurve: "0x124ce4caBd15A5D359a69Ca5902d428148E8527B" as Address,
   HaresValidator: "0xF84AD05784192d7a40a1D098E8A4Ad86e55D4850" as Address,
   HaresFactory: "0x2B0142aF95A06023A6A80c6B0667a21A4CFd0320" as Address,
   WETH: "0x4200000000000000000000000000000000000006" as Address,
-  HarespadFactory: "0x0000000000000000000000000000000000000000" as Address,
+  HarespadFactory: "0xE7080e6303a86156C683a44C89B456012Bd6aCfa" as Address,
 };
 
 export const ABIs = {

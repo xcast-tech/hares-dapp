@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Card, 
   CardHeader, 
@@ -16,72 +16,38 @@ import {
   ModalFooter,
   ModalHeader
 } from "@nextui-org/react";
-import Head from "next/head";
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-toastify';
-import { parseEther } from 'viem';
+import { parseEther, formatEther } from 'viem';
 import { useHarespadContract } from '@/hooks/useHarespadContract';
-import { isAddress } from 'viem';
-import { GetStaticPaths, GetStaticProps } from 'next';
 
 const TabKeys = {
   buy: "buy",
   sell: "sell",
 };
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: 'blocking'
-  };
-};
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const slug = params?.slug as string;
-
-  // Validate if slug is a valid Ethereum address
-  if (!slug || !isAddress(slug)) {
-    return {
-      notFound: true
-    };
-  }
-
-  return {
-    props: {
-      slug
-    },
-    revalidate: 10 // Revalidate every 10 seconds
-  };
-};
-
-export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
+export default function TokenLaunchpad() {
+  const router = useRouter();
+  const { slug } = router.query;
   const { address } = useAccount();
   const { 
     raise, 
     raisedOf, 
     getClaim, 
     getIsGraduate, 
+    owner,
+    graduate,
     uniswapBuy, 
     uniswapSell 
   } = useHarespadContract();
 
-  const [currentStage, setCurrentStage] = useState<'raising' | 'graduate'>('raising');
-  const [raiseAmount, setRaiseAmount] = useState('');
-  const [userRaiseInfo, setUserRaiseInfo] = useState({
-    totalRaised: 0,
-    maxClaimableTokens: 0,
-  });
-
-  const [tabKey, setTabKey] = useState<string | number>(TabKeys.buy);
-  const [buyInputValue, setBuyInputValue] = useState<string>();
-  const [sellInputValue, setSellInputValue] = useState<string>();
-  const [slippage, setSlippage] = useState("20");
-  const [editSlippage, setEditSlippage] = useState("");
-  const [slippageModalOpen, setSlippageModalOpen] = useState(false);
-  const [trading, setTrading] = useState(false);
-
-  const tabColor = tabKey === "buy" ? "success" : "danger";
+  const raiseOptions = [
+    { label: "reset", value: 0 },
+    { label: "0.1 ETH", value: 0.1 },
+    { label: "0.5 ETH", value: 0.5 },
+    { label: "1 ETH", value: 1 },
+  ];
 
   const buyOptions = [
     { label: "reset", value: 0 },
@@ -98,24 +64,48 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
     { label: "100%", value: 1 },
   ];
 
+  const [currentStage, setCurrentStage] = useState<'raising' | 'graduate'>('raising');
+  const [raiseAmount, setRaiseAmount] = useState('');
+  const [myRaised, setMyRaised] = useState(0);
+  const [tokenOwner, setTokenOwner] = useState<string | null>(null);
+  const [totalRaised, setTotalRaised] = useState(0);
+
+  const calculateRaiseProgress = useCallback(() => {
+    const progress = (totalRaised / 4.36e18) * 100;
+    return Math.min(progress, 100);
+  }, [totalRaised])
+
+  const [tabKey, setTabKey] = useState<string | number>(TabKeys.buy);
+  const [buyInputValue, setBuyInputValue] = useState<string>();
+  const [sellInputValue, setSellInputValue] = useState<string>();
+  const [slippage, setSlippage] = useState("20");
+  const [editSlippage, setEditSlippage] = useState("");
+  const [slippageModalOpen, setSlippageModalOpen] = useState(false);
+  const [trading, setTrading] = useState(false);
+
+  const tabColor = tabKey === "buy" ? "success" : "danger";
+
   useEffect(() => {
     const fetchTokenInfo = async () => {
+      if (!slug || typeof slug !== 'string') return;
+
       try {
         // Check graduation status
-        const isGraduated = await getIsGraduate(slug);
+        const isGraduated = await getIsGraduate(slug as `0x${string}`);
         setCurrentStage(isGraduated ? 'graduate' : 'raising');
 
-        // Fetch user's raised amount
+        // Get token owner
+        const tokenOwnerAddress = await owner(slug as `0x${string}`);
+        setTokenOwner(tokenOwnerAddress);
+
+        // Fetch total raised
         if (address) {
-          const raised = await raisedOf(slug, address);
+          const raised = await raisedOf(slug as `0x${string}`, address);
           
           // Get claimable tokens
-          const [claimableTokens] = await getClaim(slug, address);
-
-          setUserRaiseInfo({
-            totalRaised: raised,
-            maxClaimableTokens: Number(claimableTokens)
-          });
+          const myRaised = await raisedOf(slug as `0x${string}`, address);
+          setTotalRaised(raised)
+          setMyRaised(myRaised)
         }
       } catch (error) {
         console.error('Error fetching token info:', error);
@@ -127,6 +117,11 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
   }, [slug, address]);
 
   const handleRaiseSubmit = async () => {
+    if (!slug || typeof slug !== 'string') {
+      toast('Invalid token address');
+      return;
+    }
+
     const amount = parseFloat(raiseAmount);
     if (isNaN(amount) || amount <= 0) {
       toast('Invalid raise amount');
@@ -134,7 +129,7 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
     }
 
     try {
-      const tx = await raise(slug, amount);
+      const tx = await raise(slug as `0x${string}`, amount);
       if (tx) {
         toast('Raise submitted successfully');
         setRaiseAmount('');
@@ -144,7 +139,45 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
     }
   };
 
+  const handleGraduate = async () => {
+    if (!slug || typeof slug !== 'string') {
+      toast('Invalid token address');
+      return;
+    }
+
+    // Check conditions
+    if (!address || tokenOwner?.toLowerCase() !== address.toLowerCase()) {
+      toast('Only token owner can graduate');
+      return;
+    }
+
+    if (currentStage !== 'raising') {
+      toast('Token can only be graduated during raising stage');
+      return;
+    }
+
+    if (totalRaised < 4.36) {
+      toast('Total raised must be greater than 4.36 ETH');
+      return;
+    }
+
+    try {
+      const tx = await graduate(slug as `0x${string}`);
+      if (tx) {
+        toast('Token graduated successfully');
+        setCurrentStage('graduate');
+      }
+    } catch (error) {
+      toast('Failed to graduate token');
+    }
+  };
+
   const handleBuy = async () => {
+    if (!slug || typeof slug !== 'string') {
+      toast('Invalid token address');
+      return;
+    }
+
     const amount = parseFloat(buyInputValue || '0');
     if (isNaN(amount) || amount <= 0) {
       toast('Invalid buy amount');
@@ -155,7 +188,7 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
       setTrading(true);
       // TODO: Implement actual buy logic with proper parameters
       const tx = await uniswapBuy(
-        slug, 
+        slug as `0x${string}`, 
         address!, 
         BigInt(0), 
         BigInt(0)
@@ -171,6 +204,11 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
   };
 
   const handleSell = async () => {
+    if (!slug || typeof slug !== 'string') {
+      toast('Invalid token address');
+      return;
+    }
+
     const amount = parseFloat(sellInputValue || '0');
     if (isNaN(amount) || amount <= 0) {
       toast('Invalid sell amount');
@@ -181,7 +219,7 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
       setTrading(true);
       // TODO: Implement actual sell logic with proper parameters
       const tx = await uniswapSell(
-        slug, 
+        slug as `0x${string}`, 
         BigInt(0), 
         address!, 
         BigInt(0), 
@@ -209,9 +247,6 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
 
   return (
     <div className="container mx-auto p-4">
-      <Head>
-        <title>{`Launchpad | hares.ai`}</title>
-      </Head>
       <Card>
         <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
           <h1 className="text-2xl font-bold">Token Launchpad: {slug}</h1>
@@ -220,6 +255,14 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
           {currentStage === 'raising' && (
             <div className="space-y-4">
               <h2 className="text-xl">Raising Stage</h2>
+              <Progress 
+                label="Raise Progress" 
+                value={calculateRaiseProgress()} 
+                color="primary" 
+                showValueLabel={true}
+                formatOptions={{ style: "percent", maximumFractionDigits: 2 }}
+                className="mb-4"
+              />
               <Input 
                 type="number" 
                 label="Enter amount to raise"
@@ -228,6 +271,18 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
                 fullWidth
                 variant="bordered"
               />
+              <div className="mt-4 mb-2 flex gap-1">
+                {raiseOptions.map((option, i) => (
+                  <Chip
+                    key={i}
+                    size="sm"
+                    className="cursor-pointer text-[10px] xl:text-xs"
+                    onClick={() => setRaiseAmount(String(option.value))}
+                  >
+                    {option.label}
+                  </Chip>
+                ))}
+              </div>
               <Button 
                 color="primary" 
                 fullWidth 
@@ -235,10 +290,20 @@ export default function TokenLaunchpad({ slug }: { slug: `0x${string}` }) {
               >
                 Submit Raise
               </Button>
-              {userRaiseInfo.totalRaised > 0 && (
+              {totalRaised > 0 && (
                 <div>
-                  <p>Total Raised: {userRaiseInfo.totalRaised} ETH</p>
+                  <p>Total Raised: {formatEther(BigInt(totalRaised))} ETH</p>
                 </div>
+              )}
+              {address && tokenOwner?.toLowerCase() === address.toLowerCase() && (
+                <Button 
+                  color="success" 
+                  fullWidth 
+                  onClick={handleGraduate}
+                  isDisabled={totalRaised < 4.36}
+                >
+                  Graduate Token
+                </Button>
               )}
             </div>
           )}
