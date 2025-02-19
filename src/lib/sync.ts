@@ -74,11 +74,11 @@ export async function handleEvents() {
     throw error.message;
   }
   const functionMap: Record<string, Function> = {
-    HaresTokenCreated: handleTokenCreated,
-    HaresTokenTransfer: handleTokenTransfer,
-    HaresTokenBuy: handleTokenBuy,
-    HaresTokenSell: handleTokenSell,
-    HaresMarketGraduated: handleMarketGraduated,
+    BABTokenCreated: handleTokenCreated,
+    BABTokenTransfer: handleTokenTransfer,
+    BABTokenBuy: handleTokenBuy,
+    BABTokenSell: handleTokenSell,
+    BABMarketGraduated: handleMarketGraduated,
   };
   for (let i = 0; i < events.length; i++) {
     const { topic } = events[i];

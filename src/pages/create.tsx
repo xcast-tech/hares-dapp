@@ -3,7 +3,6 @@ import { Form, Input, Button, Textarea, Accordion, AccordionItem, Card, Select, 
 import React, { FormEvent, PropsWithChildren, useRef, useState } from "react";
 import Image from "next/image";
 import { useHaresContract } from "@/hooks/useHaresContract";
-import { useHarespadContract } from "@/hooks/useHarespadContract";
 import { toast } from "react-toastify";
 import { ABIs, EventTopic } from "@/lib/constant";
 import { useRouter } from "next/router";
@@ -31,7 +30,6 @@ function AnchorIcon() {
 const Create = () => {
   const router = useRouter();
   const { createToken: createBondingCurveToken } = useHaresContract();
-  const { createToken: createHarespadToken } = useHarespadContract();
   const [name, setName] = useState("");
   const [ticker, setTicker] = useState("");
   const [desc, setDesc] = useState("");
@@ -42,8 +40,6 @@ const Create = () => {
   const [website, setWebsite] = useState("");
 
   const [devBuyAmount, setDevBuyAmount] = useState("");
-  const [mode, setMode] = useState<"bonding-curve" | "launchpad">("bonding-curve");
-
   const [loading, setLoading] = useState(false);
 
   async function handleCreateToken(name: string, symbol: string) {
@@ -53,24 +49,16 @@ const Create = () => {
     }
 
     try {
-      let res;
-      if (mode === "bonding-curve") {
-        res = await createBondingCurveToken(name, symbol, devBuyAmount);
-        const tokenCreatedEvent = res?.logs?.find?.((item) => item?.topics?.[0] === EventTopic.HaresTokenCreated);
-        if (tokenCreatedEvent) {
-          const event: any = decodeEventLog({
-            abi: ABIs.HaresFactoryAbi,
-            data: tokenCreatedEvent.data,
-            topics: tokenCreatedEvent.topics,
-          });
-          const tokenAddress = ((event.args as any).tokenAddress || "").toLowerCase();
-          return tokenAddress;
-        }
-      } else {
-        // For launchpad mode, generate a random token ID
-        const tokenId = Math.floor(Math.random() * 1000000);
-        res = await createHarespadToken(name, symbol, tokenId);
-        return res || "";
+      const res = await createBondingCurveToken(name, symbol, devBuyAmount);
+      const tokenCreatedEvent = res?.logs?.find?.((item) => item?.topics?.[0] === EventTopic.HaresTokenCreated);
+      if (tokenCreatedEvent) {
+        const event: any = decodeEventLog({
+          abi: ABIs.HaresFactoryAbi,
+          data: tokenCreatedEvent.data,
+          topics: tokenCreatedEvent.topics,
+        });
+        const tokenAddress = ((event.args as any).tokenAddress || "").toLowerCase();
+        return tokenAddress;
       }
     } catch (error: any) {
       toast(error?.message);
@@ -110,7 +98,6 @@ const Create = () => {
           twitter: twitter.trim(),
           telegram: telegram.trim(),
           desc: desc.trim(),
-          mode: mode,
         });
 
         loopToken({ address });
@@ -167,28 +154,6 @@ const Create = () => {
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
             />
-          </div>
-
-          <div>
-            <Select
-              className="mt-2"
-              classNames={{ 
-                mainWrapper: "flex-1", 
-                trigger: "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]" 
-              }}
-              label="Select Mode"
-              labelPlacement="outside"
-              isRequired
-              selectedKeys={[mode]}
-              onChange={(e) => setMode(e.target.value as "bonding-curve" | "launchpad")}
-            >
-              <SelectItem key="bonding-curve" value="bonding-curve">
-                Bonding Curve
-              </SelectItem>
-              <SelectItem key="launchpad" value="launchpad">
-                Launchpad
-              </SelectItem>
-            </Select>
           </div>
 
           <div>

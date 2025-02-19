@@ -35,11 +35,6 @@ export default [
           },
           {
             internalType: "uint256",
-            name: "poolMode",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
             name: "tradeCreatorFeeBps",
             type: "uint256",
           },
@@ -59,13 +54,18 @@ export default [
             type: "uint256",
           },
         ],
-        internalType: "struct IHaresFactory.Config",
+        internalType: "struct IBABFactory.Config",
         name: "_config",
         type: "tuple",
       },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
+  },
+  {
+    inputs: [],
+    name: "InsufficientFee",
+    type: "error",
   },
   {
     inputs: [
@@ -150,11 +150,6 @@ export default [
           },
           {
             internalType: "uint256",
-            name: "poolMode",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
             name: "tradeCreatorFeeBps",
             type: "uint256",
           },
@@ -175,12 +170,12 @@ export default [
           },
         ],
         indexed: false,
-        internalType: "struct IHaresFactory.Config",
+        internalType: "struct IBABFactory.Config",
         name: "config",
         type: "tuple",
       },
     ],
-    name: "HaresTokenCreated",
+    name: "BABTokenCreated",
     type: "event",
   },
   {
@@ -264,11 +259,6 @@ export default [
           },
           {
             internalType: "uint256",
-            name: "poolMode",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
             name: "tradeCreatorFeeBps",
             type: "uint256",
           },
@@ -288,7 +278,7 @@ export default [
             type: "uint256",
           },
         ],
-        internalType: "struct IHaresFactory.Config",
+        internalType: "struct IBABFactory.Config",
         name: "",
         type: "tuple",
       },
@@ -352,11 +342,6 @@ export default [
           },
           {
             internalType: "uint256",
-            name: "poolMode",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
             name: "tradeCreatorFeeBps",
             type: "uint256",
           },
@@ -376,7 +361,7 @@ export default [
             type: "uint256",
           },
         ],
-        internalType: "struct IHaresFactory.Config",
+        internalType: "struct IBABFactory.Config",
         name: "_config",
         type: "tuple",
       },

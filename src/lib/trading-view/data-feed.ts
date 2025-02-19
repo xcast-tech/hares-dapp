@@ -1,7 +1,4 @@
-import {
-  convertTradesToBar,
-  convertTradeToBars,
-} from "../utils";
+import { convertTradesToBar, convertTradeToBars } from "../utils";
 import { Address, Trade } from "../types";
 import { publicWsClient } from "../wagmi";
 import { ABIs, EventTopic } from "../constant";
@@ -121,7 +118,7 @@ export default (
     subsriberCache.forEach((unwatch) => {
       unwatch();
     });
-    subsriberCache = []
+    subsriberCache = [];
 
     const unwatch = publicWsClient.watchEvent({
       address: address as Address,
@@ -132,7 +129,7 @@ export default (
           cacheStartTime = Date.now();
           tradesInCurrentBar = [];
         }
-        let hasNewEvent = false
+        let hasNewEvent = false;
         for (let i = 0; i < logs.length; i++) {
           const { topics, data, blockNumber, transactionIndex } = logs[i];
           const event = decodeEventLog({
@@ -141,7 +138,7 @@ export default (
             topics,
           });
           const { eventName, args } = event;
-          if (eventName === "HaresTokenBuy") {
+          if (eventName === "BABTokenBuy") {
             const trade = {
               id: Number(blockNumber) * 1000 + transactionIndex,
               from: args.buyer.toLowerCase(),
@@ -154,12 +151,12 @@ export default (
             } as Trade;
             onNewTrade([trade]);
             tradesInCurrentBar.push(trade);
-            hasNewEvent = true
+            hasNewEvent = true;
             if (Number(trade.totalSupply) > 8e26) {
               unwatch();
             }
           }
-          if (eventName === "HaresTokenSell") {
+          if (eventName === "BABTokenSell") {
             const trade = {
               id: Number(blockNumber) * 1000 + transactionIndex,
               from: args.seller.toLowerCase(),
@@ -171,7 +168,7 @@ export default (
               timestamp: Math.floor(Date.now() / 1000),
             } as Trade;
             onNewTrade([trade]);
-            hasNewEvent = true
+            hasNewEvent = true;
             tradesInCurrentBar.push(trade);
           }
         }
@@ -184,7 +181,6 @@ export default (
         }
       },
     });
-
 
     subsriberCache.push(unwatch);
   },

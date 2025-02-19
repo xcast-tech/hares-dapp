@@ -1,5 +1,12 @@
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { metaMaskWallet, okxWallet, trustWallet, coinbaseWallet, rainbowWallet, walletConnectWallet } from "@rainbow-me/rainbowkit/wallets";
+import {
+  metaMaskWallet,
+  okxWallet,
+  trustWallet,
+  coinbaseWallet,
+  rainbowWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import { createClient, createPublicClient, http, webSocket } from "viem";
 import { createConfig } from "wagmi";
 import { mainChain } from "@/lib/constant";
@@ -30,5 +37,15 @@ export const wagmiConfig = createConfig({
   ssr: true,
 });
 
-export const publicClient = createPublicClient({ chain: mainChain, transport: http('https://base-mainnet.g.alchemy.com/v2/bzN2BAfDGirwFXA3a392zz-aHCYkrLo1') });
-export const publicWsClient = createPublicClient({ chain: mainChain, transport: webSocket('wss://base-mainnet.g.alchemy.com/v2/bzN2BAfDGirwFXA3a392zz-aHCYkrLo1') });
+export const publicClient = createPublicClient({
+  chain: mainChain,
+  transport: http(
+    "https://polygon-mainnet.g.alchemy.com/v2/ewYI1qbiYF06opUs36WZ9qJJRZRstxNK"
+  ),
+});
+export const publicWsClient = createPublicClient({
+  chain: mainChain,
+  transport: webSocket(
+    "wss://polygon-mainnet.g.alchemy.com/v2/ewYI1qbiYF06opUs36WZ9qJJRZRstxNK"
+  ),
+});

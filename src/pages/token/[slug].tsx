@@ -259,15 +259,10 @@ export default function Token(props: IToken) {
                 {detail?.symbol} received: {Number(getEthBuyQuote(Number(totalSupply) / 1e18, Number(buyInputValue))) / 1e18}
               </p>
             )}
-            {isGraduate || signature ? (
-              <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
-                {trading ? "Trading..." : "Place trade"}
-              </Button>
-            ) : (
-              <Button fullWidth color="success" className="mt-2" onPress={login}>
-                Connect to Farcaster to buy
-              </Button>
-            )}
+            {/* Need to add BABT validation */}
+            <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
+              {trading ? "Trading..." : "Place trade"}
+            </Button>
           </div>
         )}
 

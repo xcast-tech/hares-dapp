@@ -231,7 +231,7 @@ export default [
         type: "bool",
       },
     ],
-    name: "HaresMarketGraduated",
+    name: "BABMarketGraduated",
     type: "event",
   },
   {
@@ -292,7 +292,7 @@ export default [
         type: "bool",
       },
     ],
-    name: "HaresTokenBuy",
+    name: "BABTokenBuy",
     type: "event",
   },
   {
@@ -323,7 +323,7 @@ export default [
         type: "uint256",
       },
     ],
-    name: "HaresTokenFees",
+    name: "BABTokenFees",
     type: "event",
   },
   {
@@ -353,12 +353,12 @@ export default [
           },
         ],
         indexed: false,
-        internalType: "struct Hares.SecondaryRewards",
+        internalType: "struct BAB.SecondaryRewards",
         name: "rewards",
         type: "tuple",
       },
     ],
-    name: "HaresTokenSecondaryRewards",
+    name: "BABTokenSecondaryRewards",
     type: "event",
   },
   {
@@ -419,7 +419,7 @@ export default [
         type: "bool",
       },
     ],
-    name: "HaresTokenSell",
+    name: "BABTokenSell",
     type: "event",
   },
   {
@@ -462,7 +462,7 @@ export default [
         type: "uint256",
       },
     ],
-    name: "HaresTokenTransfer",
+    name: "BABTokenTransfer",
     type: "event",
   },
   {
@@ -498,6 +498,32 @@ export default [
         internalType: "uint24",
         name: "",
         type: "uint24",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "LP_TICK_LOWER",
+    outputs: [
+      {
+        internalType: "int24",
+        name: "",
+        type: "int24",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "LP_TICK_UPPER",
+    outputs: [
+      {
+        internalType: "int24",
+        name: "",
+        type: "int24",
       },
     ],
     stateMutability: "view",
@@ -909,7 +935,7 @@ export default [
             type: "uint256",
           },
         ],
-        internalType: "struct IHaresValidator.Commitment",
+        internalType: "struct IBABValidator.Commitment",
         name: "_commitment",
         type: "tuple",
       },

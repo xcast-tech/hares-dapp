@@ -1,21 +1,18 @@
-import { base, baseSepolia } from "viem/chains";
+import { base, baseSepolia, polygon } from "viem/chains";
 
 import BondingCurveAbi from "./abi/BondingCurve";
 import HaresFactoryAbi from "./abi/HaresFactory";
 import HaresAbi from "./abi/Hares";
 import HaresValidatorAbi from "./abi/HaresValidator";
 import UniswapV3Pool from "./abi/UniswapV3Pool";
-import HarespadFactory from "./abi/HarespadFactory";
-import Harespad from "./abi/Harespad";
 import { Address } from "./types";
 
-export const mainChain = baseSepolia;
+export const mainChain = polygon;
 export const contractAddress = {
-  BondingCurve: "0x124ce4caBd15A5D359a69Ca5902d428148E8527B" as Address,
-  HaresValidator: "0xF84AD05784192d7a40a1D098E8A4Ad86e55D4850" as Address,
-  HaresFactory: "0x2B0142aF95A06023A6A80c6B0667a21A4CFd0320" as Address,
-  WETH: "0x4200000000000000000000000000000000000006" as Address,
-  HarespadFactory: "0xE7080e6303a86156C683a44C89B456012Bd6aCfa" as Address,
+  BondingCurve: "0x316Ca81870b86c5Ce35D4Afe5bA512ad2d3783b7" as Address,
+  HaresValidator: "0x91aEE2F51197053836938618805f28A77d508c61" as Address,
+  HaresFactory: "0xAB45f737A59Cb935fc189FcfF7a77af1e1947141" as Address,
+  WETH: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270" as Address,
 };
 
 export const ABIs = {
@@ -24,26 +21,24 @@ export const ABIs = {
   HaresAbi,
   HaresValidatorAbi,
   UniswapV3Pool,
-  HarespadFactory,
-  Harespad,
 };
 
 export const EventTopic: Record<string, string> = {
   HaresTokenCreated:
-    "0xbfdfa7e444d771224fb47363ae2d9f73fff763bafcf0b63a2f38f75dc0fdafa8",
+    "0xfd346d5c02b2e0002045e14eafc72ee3c58ee7dc23ae96b1a130c9703e500bc4",
   HaresTokenTransfer:
-    "0x1b8d7365dae3cd94c61c4353507a591533f5b24569ad4792690b605287eb3399",
+    "0x4094f1cf9c22c433db0b220c48bc94f47e2c93296f56a8b9fc33a69ddab53882",
   HaresTokenBuy:
-    "0x53aedb61808d0c6b119592ca2d3e621372bd951061604f945887f28270c172f0",
+    "0x03d6fa0abbf51ed965299837d77d70b68ac82c0bd8e2d104c056d3d135abc767",
   HaresTokenSell:
-    "0xccd08e8d623ae7c390b796d06f88141f7f458b173dad570718c9a2716f3b2d7b",
+    "0x0356859bb57a8e38f4212c48a3dd4c5726c382ff19ad19b90a0fdd80a5e35bda",
   HaresMarketGraduated:
-    "0x9d436d1d2465f3ad09e9f3badd64e111aa2ab084f06f755ee55dc8557c596f75",
+    "0xb1eedf734432e24ee0d06ba360e9f293c6135315787e97012415419e8fb95645",
 };
 
 export const BondingCurveConfig = {
-  A: 750000000,
-  B: 4000000000,
+  A: 883000000,
+  B: 6100000000,
 };
 
 export const HaresAiWarpcastLink = "https://warpcast.com/hares-ai";

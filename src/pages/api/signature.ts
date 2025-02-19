@@ -1,8 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { contractAddress, mainChain } from "@/lib/constant";
-import { createAppClient, viemConnector } from '@farcaster/auth-client';
+import { createAppClient, viemConnector } from "@farcaster/auth-client";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { signTypedData } from 'viem/accounts'
+import { signTypedData } from "viem/accounts";
 import { Address, Commitment } from "@/lib/types";
 import { getDomain } from "@/lib/utils";
 (BigInt.prototype as any).toJSON = function () {
@@ -11,9 +11,18 @@ import { getDomain } from "@/lib/utils";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
-  const { fcMessage, fcSignature, value, recipient, refundRecipient, minOrderSize, sqrtPriceLimitX96, expired } = req.body as Commitment & { fcMessage: string, fcSignature: string };
+  const {
+    fcMessage,
+    fcSignature,
+    value,
+    recipient,
+    refundRecipient,
+    minOrderSize,
+    sqrtPriceLimitX96,
+    expired,
+  } = req.body as Commitment & { fcMessage: string; fcSignature: string };
 
   // const appClient = createAppClient({
   //   relay: 'https://relay.farcaster.xyz',
@@ -36,22 +45,22 @@ export default async function handler(
   const signature = await signTypedData({
     privateKey: process.env.PRIVATE_KEY as Address,
     domain: {
-      name: 'HaresValidator',
-      version: '1',
+      name: "BABValidator",
+      version: "1",
       chainId: mainChain.id,
-      verifyingContract: contractAddress.HaresValidator
+      verifyingContract: contractAddress.HaresValidator,
     },
     types: {
       Commitment: [
-        { name: 'value', type: 'uint256' },
-        { name: 'recipient', type: 'address' },
-        { name: 'refundRecipient', type: 'address' },
-        { name: 'minOrderSize', type: 'uint256' },
-        { name: 'sqrtPriceLimitX96', type: 'uint256' },
-        { name: 'expired', type: 'uint256' }
-      ]
+        { name: "value", type: "uint256" },
+        { name: "recipient", type: "address" },
+        { name: "refundRecipient", type: "address" },
+        { name: "minOrderSize", type: "uint256" },
+        { name: "sqrtPriceLimitX96", type: "uint256" },
+        { name: "expired", type: "uint256" },
+      ],
     },
-    primaryType: 'Commitment',
+    primaryType: "Commitment",
     message: {
       value: BigInt(value.toString()),
       recipient,
@@ -59,12 +68,11 @@ export default async function handler(
       minOrderSize: BigInt(minOrderSize.toString()),
       sqrtPriceLimitX96: BigInt(sqrtPriceLimitX96.toString()),
       expired: BigInt(expired.toString()),
-    }
-  })
+    },
+  });
 
   res.json({
     code: 0,
-    data: signature
+    data: signature,
   });
-
 }

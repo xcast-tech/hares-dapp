@@ -18,7 +18,7 @@ interface InfoProps {
 }
 
 export const Info: FC<InfoProps> = ({ detail, className }) => {
-  const currentEth = detail ? (detail?.isGraduate ? 4.4 : Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(detail?.totalSupply) / 1e18)) / 1e18) : 0;
+  const currentEth = detail ? (detail?.isGraduate ? 18.91 : Number(getTokenSellQuote(Number(detail?.totalSupply) / 1e18, Number(detail?.totalSupply) / 1e18)) / 1e18) : 0;
   return (
     <div className={twMerge(className)}>
       <div className="flex gap-2.5">

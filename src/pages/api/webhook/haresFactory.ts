@@ -1,15 +1,49 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { decodeEventLog } from "viem";
-(BigInt.prototype as any).toJSON = function () { return this.toString() }
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
 import { isValidSignatureForStringBody } from "@/lib/utils";
 import { ABIs, EventTopic } from "@/lib/constant";
 import { Address } from "@/lib/types";
 import { supabaseClient } from "@/lib/supabase";
 import { handleEvents } from "@/lib/sync";
 
-const signingKey = process.env.HARESFACTORY_WEBHOOK_KEY!
+const signingKey = process.env.HARESFACTORY_WEBHOOK_KEY!;
 
+// {
+//   block {
+//     hash,
+//     number,
+//     timestamp,
+//     # Replace placeholder contract address to filter for logs
+//     logs(filter: {addresses: ["0x2B0142aF95A06023A6A80c6B0667a21A4CFd0320"]}) {
+//       data,
+//       topics,
+//       index,
+//       account {
+//         address
+//       },
+//       transaction {
+//         hash,
+//         nonce,
+//         index,
+//         from {
+//           address
+//         },
+//         to {
+//           address
+//         },
+//         value,
+//         status,
+//         createdContract {
+//           address
+//         }
+//       }
+//     }
+//   }
+// }
 // const testData = {
 //   "createdAt": "2024-12-14T19:06:11.578Z",
 //   "event": {
@@ -58,19 +92,24 @@ const signingKey = process.env.HARESFACTORY_WEBHOOK_KEY!
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
-
-  const { body, headers } = req
-  console.log(JSON.stringify(body))
-  const alchemySignature = headers['x-alchemy-signature'] as string
-  if (!isValidSignatureForStringBody(JSON.stringify(body), alchemySignature, signingKey)) {
+  const { body, headers } = req;
+  console.log(JSON.stringify(body));
+  const alchemySignature = headers["x-alchemy-signature"] as string;
+  if (
+    !isValidSignatureForStringBody(
+      JSON.stringify(body),
+      alchemySignature,
+      signingKey
+    )
+  ) {
     res.status(401).json({
-      code: 401
-    })
+      code: 401,
+    });
   }
-  const { logs, number, timestamp } = body.event.data.block
-  const events = []
+  const { logs, number, timestamp } = body.event.data.block;
+  const events = [];
   for (let i = 0; i < logs.length; i++) {
     if (logs[i].topics[0] === EventTopic.HaresTokenCreated) {
       const event = {
@@ -82,35 +121,38 @@ export default async function handler(
         ...decodeEventLog({
           abi: ABIs.HaresFactoryAbi,
           data: logs[i].data as Address,
-          topics: logs[i].topics as []
-        })
-      }
-      events.push(event)
+          topics: logs[i].topics as [],
+        }),
+      };
+      events.push(event);
     }
   }
 
-  const { error } = await supabaseClient.from('Event').upsert(events.map((e) => ({
-    block: e.block,
-    contractAddress: e.address.toLowerCase(),
-    data: JSON.stringify(e.args),
-    hash: e.hash,
-    timestamp: e.timeStamp,
-    topic: e.eventName,
-    txIndex: e.txIndex,
-  })), {
-    onConflict: 'topic,hash,data',
-  })
+  const { error } = await supabaseClient.from("Event").upsert(
+    events.map((e) => ({
+      block: e.block,
+      contractAddress: e.address.toLowerCase(),
+      data: JSON.stringify(e.args),
+      hash: e.hash,
+      timestamp: e.timeStamp,
+      topic: e.eventName,
+      txIndex: e.txIndex,
+    })),
+    {
+      onConflict: "topic,hash,data",
+    }
+  );
 
   if (error) {
     res.status(500).json({
       code: 500,
-      message: error.message
-    })
+      message: error.message,
+    });
   }
 
-  await handleEvents()
-  
-  res.status(200).json({ 
+  await handleEvents();
+
+  res.status(200).json({
     code: 0,
   });
 }
