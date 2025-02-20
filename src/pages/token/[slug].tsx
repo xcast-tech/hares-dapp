@@ -1,10 +1,27 @@
-import { Tabs, Tab, Button, Input, Chip, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
+import {
+  Tabs,
+  Tab,
+  Button,
+  Input,
+  Chip,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { Info } from "@/components/info";
 import { getTokenTopHoldersApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken, TopHolder, Trade } from "@/lib/types";
-import { cn, formatNumber, formatTokenBalance, getEthBuyQuote, getTokenSellQuote } from "@/lib/utils";
+import {
+  cn,
+  formatNumber,
+  formatTokenBalance,
+  getEthBuyQuote,
+  getTokenSellQuote,
+} from "@/lib/utils";
 import { useHaresContract } from "@/hooks/useHaresContract";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
@@ -53,7 +70,6 @@ export default function Token(props: IToken) {
   const { ethPrice } = useAppContext();
   const { login, userInfo } = useFarcasterContext();
   const { buy, sell, getTokenBalance } = useHaresContract();
-  const { message, signature } = userInfo ?? {};
 
   const { address } = useAccount();
 
@@ -204,7 +220,14 @@ export default function Token(props: IToken) {
 
   const tradeComponent = (
     <div className="text-xs xl:text-sm">
-      <Tabs fullWidth className="h-[40px]" size="lg" color={tabColor} selectedKey={tabKey} onSelectionChange={(key) => setTabKey(key)}>
+      <Tabs
+        fullWidth
+        className="h-[40px]"
+        size="lg"
+        color={tabColor}
+        selectedKey={tabKey}
+        onSelectionChange={(key) => setTabKey(key)}
+      >
         <Tab key={TabKeys.buy} title="Buy" />
         <Tab key={TabKeys.sell} title="Sell" />
       </Tabs>
@@ -256,11 +279,23 @@ export default function Token(props: IToken) {
             </div>
             {buyInputValue && !isGraduate && (
               <p className="text-xs text-gray-500">
-                {detail?.symbol} received: {Number(getEthBuyQuote(Number(totalSupply) / 1e18, Number(buyInputValue))) / 1e18}
+                {detail?.symbol} received:{" "}
+                {Number(
+                  getEthBuyQuote(
+                    Number(totalSupply) / 1e18,
+                    Number(buyInputValue)
+                  )
+                ) / 1e18}
               </p>
             )}
             {/* Need to add BABT validation */}
-            <Button fullWidth color="success" className="mt-2" onPress={handleBuy} isLoading={trading}>
+            <Button
+              fullWidth
+              color="success"
+              className="mt-2"
+              onPress={handleBuy}
+              isLoading={trading}
+            >
               {trading ? "Trading..." : "Place trade"}
             </Button>
           </div>
@@ -273,7 +308,9 @@ export default function Token(props: IToken) {
                 <div className="mb-3 flex items-center justify-between">
                   <div>Amount ({detail?.symbol})</div>
                   <div className="flex gap-2 items-center">
-                    <div className="text-gray-300 text-sm">{formatTokenBalance(tokenBalance)}</div>
+                    <div className="text-gray-300 text-sm">
+                      {formatTokenBalance(tokenBalance)}
+                    </div>
                     <Button
                       size="sm"
                       className="text-[#999] h-[26px]"
@@ -312,7 +349,9 @@ export default function Token(props: IToken) {
                           return;
                         }
                         const balance = await fetchTokenBalance(ca, address);
-                        setSellInputValue(String((Number(balance) / 1e18) * option.value));
+                        setSellInputValue(
+                          String((Number(balance) / 1e18) * option.value)
+                        );
                       }}
                     >
                       {option.label}
@@ -321,8 +360,24 @@ export default function Token(props: IToken) {
                 })}
               </div>
             </div>
-            {sellInputValue && !isGraduate && <p className="text-xs text-gray-500">ETH received: {Number(getTokenSellQuote(Number(totalSupply) / 1e18, Number(sellInputValue))) / 1e18}</p>}
-            <Button fullWidth color="danger" className="mt-2" onPress={handleSell} isLoading={trading}>
+            {sellInputValue && !isGraduate && (
+              <p className="text-xs text-gray-500">
+                ETH received:{" "}
+                {Number(
+                  getTokenSellQuote(
+                    Number(totalSupply) / 1e18,
+                    Number(sellInputValue)
+                  )
+                ) / 1e18}
+              </p>
+            )}
+            <Button
+              fullWidth
+              color="danger"
+              className="mt-2"
+              onPress={handleSell}
+              isLoading={trading}
+            >
               {trading ? "Trading..." : "Place trade"}
             </Button>
           </div>
@@ -354,23 +409,52 @@ export default function Token(props: IToken) {
           <span className="font-bold">{detail?.symbol}: </span>
           <span>{ca}</span>
         </h1>
-        {isGraduate ? <p className="text-green-400 mb-2">The token has already graduated and been migrated to the Uniswap V3 pool.</p> : null}
+        {isGraduate ? (
+          <p className="text-green-400 mb-2">
+            The token has already graduated and been migrated to the Uniswap V3
+            pool.
+          </p>
+        ) : null}
       </div>
       <div className={cn("flex flex-col gap-6", "xl:flex-row")}>
         <div className="xl:flex-1">
-          <TradingView className="w-full h-[500px] bg-black" symbol={detail.symbol} address={ca} ethPrice={ethPrice} onNewTrade={handleNewTrade} />
-          <TradeList list={historyList} symbol={detail.symbol} className="hidden xl:block" />
+          <TradingView
+            className="w-full h-[500px] bg-black"
+            symbol={detail.symbol}
+            address={ca}
+            ethPrice={ethPrice}
+            onNewTrade={handleNewTrade}
+          />
+          <TradeList
+            list={historyList}
+            symbol={detail.symbol}
+            className="hidden xl:block"
+          />
         </div>
         <div className={cn("", "xl:w-[400px] xl:min-w-[400px]")}>
-          <div className={cn("hidden", "xl:block bg-[#333] rounded-[16px] p-2")}>{tradeComponent}</div>
+          <div
+            className={cn("hidden", "xl:block bg-[#333] rounded-[16px] p-2")}
+          >
+            {tradeComponent}
+          </div>
 
           <Info className="mt-8" detail={detail} />
-          <TopHolders list={topHolders} className="mt-4" devAddress={detail.creatorAddress} />
+          <TopHolders
+            list={topHolders}
+            className="mt-4"
+            devAddress={detail.creatorAddress}
+          />
         </div>
 
-        <TradeList list={historyList} symbol={detail.symbol} className="xl:hidden" />
+        <TradeList
+          list={historyList}
+          symbol={detail.symbol}
+          className="xl:hidden"
+        />
 
-        <div className={cn("fixed z-10 left-0 right-0 bottom-4 px-4", "xl:hidden")}>
+        <div
+          className={cn("fixed z-10 left-0 right-0 bottom-4 px-4", "xl:hidden")}
+        >
           <Button
             fullWidth
             color="primary"
@@ -406,7 +490,9 @@ export default function Token(props: IToken) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">set max. slippage (%)</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                set max. slippage (%)
+              </ModalHeader>
               <ModalBody>
                 <div>
                   <Input
@@ -417,7 +503,10 @@ export default function Token(props: IToken) {
                     }}
                     autoFocus={false}
                   />
-                  <div className="text-xs mt-1">this is the maximum amount of slippage you are willing to accept when placing trades.</div>
+                  <div className="text-xs mt-1">
+                    this is the maximum amount of slippage you are willing to
+                    accept when placing trades.
+                  </div>
                 </div>
               </ModalBody>
               <ModalFooter>

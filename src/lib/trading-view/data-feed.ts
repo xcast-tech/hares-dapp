@@ -1,6 +1,6 @@
 import { convertTradesToBar, convertTradeToBars } from "../utils";
 import { Address, Trade } from "../types";
-import { publicWsClient } from "../wagmi";
+import { publicWsClient, publicClient } from "../wagmi";
 import { ABIs, EventTopic } from "../constant";
 import { decodeEventLog } from "viem";
 
@@ -13,7 +13,7 @@ const configurationData = {
 
 export default (
   symbol: string,
-  address: string,
+  address: `0x${string}`,
   ethPrice: number,
   onNewTrade: Function
 ) => ({
@@ -103,16 +103,21 @@ export default (
     });
   },
 
-  subscribeBars: (
+  subscribeBars: async (
     symbolInfo: any,
     resolution: any,
     onRealtimeCallback: any,
     subscriberUID: any,
     onResetCacheNeededCallback: any
   ) => {
+    const blockNumber = await publicClient.getBlockNumber();
     console.log(
       "[subscribeBars]: Method call with subscriberUID:",
-      subscriberUID
+      subscriberUID,
+      "address",
+      address,
+      "blockNumber",
+      blockNumber
     );
     let tradesInCurrentBar: Trade[] = [];
     subsriberCache.forEach((unwatch) => {
@@ -120,11 +125,32 @@ export default (
     });
     subsriberCache = [];
 
-    const unwatch = publicWsClient.watchEvent({
+    // const unwatch1 = publicClient.watchContractEvent({
+    //   address,
+    //   abi: ABIs.HaresAbi,
+    //   eventName: "BABTokenBuy",
+    //   fromBlock: BigInt(68163131),
+    //   onLogs: async (logs) => {
+    //     console.log("BABTokenBuy logs", logs);
+    //   },
+    // });
+
+    // const unwatch2 = publicClient.watchContractEvent({
+    //   address,
+    //   abi: ABIs.HaresAbi,
+    //   eventName: "BABTokenSell",
+    //   fromBlock: BigInt(68163131),
+    //   onLogs: async (logs) => {
+    //     console.log("BABTokenSell logs", logs);
+    //   },
+    // });
+
+    const unwatch = publicClient.watchEvent({
       address: address as Address,
       pollingInterval: 5000,
+      fromBlock: blockNumber - BigInt(1),
       onLogs: async (logs) => {
-        console.log(logs);
+        console.log("logs", logs);
         if (Date.now() - cacheStartTime > resolution * 60 * 1000) {
           cacheStartTime = Date.now();
           tradesInCurrentBar = [];

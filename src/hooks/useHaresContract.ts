@@ -123,28 +123,31 @@ export function useHaresContract() {
     }
     const commitment = {
       value: parseEther(eth.toString()),
-      recipient: address,
-      refundRecipient: address,
+      // recipient: address,
+      // refundRecipient: address,
       minOrderSize,
       sqrtPriceLimitX96,
       expired: BigInt(Math.floor(Date.now()) + 60 * 100),
     };
-    const buySignatureRes = await getSignatureApi(
-      message!,
-      signature!,
-      commitment
-    );
+    const buySignatureRes = await getSignatureApi(commitment);
     if (buySignatureRes.code !== 0) {
       toast(buySignatureRes.message);
       return;
     }
-    const buySignature = buySignatureRes.data;
+    const { signature, recipient, refundRecipient } = buySignatureRes.data;
     const gasPrice = await publicClient?.getGasPrice();
     const tx = await writeContractAsync({
       address: token,
       abi: ABIs.HaresAbi,
       functionName: "signatureBuy",
-      args: [commitment, buySignature],
+      args: [
+        {
+          ...commitment,
+          recipient,
+          refundRecipient,
+        },
+        signature as any,
+      ],
       value: parseEther(eth.toString()),
       gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
     });

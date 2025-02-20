@@ -1,5 +1,4 @@
 import React, { use, useState } from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 import {
   Avatar,
@@ -27,10 +26,19 @@ import { Expand } from "../icons/expand";
 import { Close } from "../icons/close";
 import style from "./style.module.css";
 import { HaresAiTwitterLink, HaresAiWarpcastLink } from "@/lib/constant";
+import { useConnect, useDisconnect, useAccountEffect } from "wagmi";
+import ConnectButton from "@/components/connect-button";
+import { useGlobalCtx } from "@/hooks/useGlobalCtx";
 
 const ChevronDownIcon = () => {
   return (
-    <svg fill="none" height="14" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      fill="none"
+      height="14"
+      viewBox="0 0 24 24"
+      width="14"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M17.9188 8.17969H11.6888H6.07877C5.11877 8.17969 4.63877 9.33969 5.31877 10.0197L10.4988 15.1997C11.3288 16.0297 12.6788 16.0297 13.5088 15.1997L15.4788 13.2297L18.6888 10.0197C19.3588 9.33969 18.8788 8.17969 17.9188 8.17969Z"
         fill="currentColor"
@@ -40,10 +48,6 @@ const ChevronDownIcon = () => {
 };
 
 export const Header = () => {
-  const { userInfo } = useFarcasterContext();
-
-  const { login, logout } = useFarcasterContext();
-
   const [isAboutOpen, setIsAboutOpen] = React.useState(false);
 
   const [expand, setExpand] = useState(false);
@@ -52,14 +56,43 @@ export const Header = () => {
     setIsAboutOpen(open);
   };
 
+  useAccountEffect({
+    onDisconnect() {
+      console.log("wallet connect Disconnected!");
+      fetch("/api/logout", {
+        method: "POST",
+      })
+        .then((d) => d.json())
+        .then((d) => {
+          if (d.code === 0) {
+            window.location.reload();
+          }
+        });
+    },
+  });
+
   return (
-    <div className={cn("fixed top-0 left-0 right-0 h-[52px] backdrop-blur px-4 z-10 flex justify-between items-center", "xl:h-[72px] lx:px-12 xl:gap-6")}>
+    <div
+      className={cn(
+        "fixed top-0 left-0 right-0 h-[52px] backdrop-blur px-4 z-10 flex justify-between items-center",
+        "xl:h-[72px] lx:px-12 xl:gap-6"
+      )}
+    >
       <Link href="/">
         <div className="flex items-center gap-3">
-          <div className={cn("bg-theme overflow-hidden w-6 h-6 rounded-[6px]", "xl:w-8 xl:h-8 xl:rounded-[8px]")}>
+          <div
+            className={cn(
+              "bg-theme overflow-hidden w-6 h-6 rounded-[6px]",
+              "xl:w-8 xl:h-8 xl:rounded-[8px]"
+            )}
+          >
             <img src="/logo.png" alt="Hares.ai" />
           </div>
-          <img src="/logo-text.svg" alt="Hares.ai" className="h-[12px] xl:h-[18px]" />
+          <img
+            src="/logo-text.svg"
+            alt="Hares.ai"
+            className="h-[12px] xl:h-[18px]"
+          />
         </div>
       </Link>
 
@@ -102,9 +135,12 @@ export const Header = () => {
         )}
 
         <div
-          className={cn("hidden absolute z-[1000] top-[52px] left-0 right-0 h-[calc(100vh-52px)]", {
-            block: expand,
-          })}
+          className={cn(
+            "hidden absolute z-[1000] top-[52px] left-0 right-0 h-[calc(100vh-52px)]",
+            {
+              block: expand,
+            }
+          )}
         >
           <div className="absolute z-0 inset-0 backdrop-blur-xl bg-black/80"></div>
           <div className="relative z-10 p-4 bg-[#141414] rounded-b-[16px] border-solid border-b-1 border-[#262626]">
@@ -112,7 +148,7 @@ export const Header = () => {
               <ConnectButton />
             </div>
 
-            <div className="mt-2">
+            {/* <div className="mt-2">
               {userInfo ? (
                 <Dropdown placement="bottom">
                   <DropdownTrigger>
@@ -135,7 +171,7 @@ export const Header = () => {
                   Connect Facaster
                 </Button>
               )}
-            </div>
+            </div> */}
 
             <div className="h-px bg-[#262626] my-4"></div>
 
@@ -179,15 +215,30 @@ export const Header = () => {
 
       <div className={cn("hidden", "xl:flex items-center gap-2")}>
         <div>
-          {userInfo ? (
+          {/* {userInfo ? (
             <ButtonGroup variant="flat">
               <Dropdown placement="bottom-end">
                 <DropdownTrigger>
-                  <Button startContent={<Avatar className="w-6 h-6 text-tiny" {...(userInfo?.pfpUrl ? { src: userInfo?.pfpUrl } : { name: userInfo?.displayName })} />} variant="bordered">
+                  <Button
+                    startContent={
+                      <Avatar
+                        className="w-6 h-6 text-tiny"
+                        {...(userInfo?.pfpUrl
+                          ? { src: userInfo?.pfpUrl }
+                          : { name: userInfo?.displayName })}
+                      />
+                    }
+                    variant="bordered"
+                  >
                     {userInfo?.displayName}
                   </Button>
                 </DropdownTrigger>
-                <DropdownMenu disallowEmptySelection aria-label="Merge options" className="max-w-[300px]" selectionMode="single">
+                <DropdownMenu
+                  disallowEmptySelection
+                  aria-label="Merge options"
+                  className="max-w-[300px]"
+                  selectionMode="single"
+                >
                   <DropdownItem key="merge" onPress={logout}>
                     Sign out
                   </DropdownItem>
@@ -198,7 +249,7 @@ export const Header = () => {
             <button onClick={login} className="p-4 text-white">
               Connect Facaster
             </button>
-          )}
+          )} */}
         </div>
         <ConnectButton />
       </div>
@@ -207,21 +258,32 @@ export const Header = () => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">About Hares</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                About Hares
+              </ModalHeader>
               <ModalBody>
                 <div>
                   Launch Meme Tokens on Base—Zero Code, Instant Trading
                   <br />
                   <br />
-                  Minimize bot front-running during the bonding curve phase through Farcaster accounts and cryptography, ensuring a fair project launch.
+                  Minimize bot front-running during the bonding curve phase
+                  through Farcaster accounts and cryptography, ensuring a fair
+                  project launch.
                   <br />
                   <br />
-                  Once the bonding curve collects approximately <span className="font-bold">4.2 ETH</span>, it migrates to a <span className="font-bold">Uniswap V3 Pool</span>. The collected{" "}
-                  <span className="font-bold">4.2 ETH</span> and <span className="font-bold">200M remaining tokens</span> are pooled, launching with an initial market cap of around{" "}
+                  Once the bonding curve collects approximately{" "}
+                  <span className="font-bold">4.2 ETH</span>, it migrates to a{" "}
+                  <span className="font-bold">Uniswap V3 Pool</span>. The
+                  collected <span className="font-bold">4.2 ETH</span> and{" "}
+                  <span className="font-bold">200M remaining tokens</span> are
+                  pooled, launching with an initial market cap of around{" "}
                   <span className="font-bold">$84,000 USD</span>.
                   <br />
                   <br />
-                  Upon graduation, meme developers receive <span className="font-bold">0.1 ETH</span> as a launch incentive and retain <span className="font-bold">50% of Uniswap LP fees</span> to
+                  Upon graduation, meme developers receive{" "}
+                  <span className="font-bold">0.1 ETH</span> as a launch
+                  incentive and retain{" "}
+                  <span className="font-bold">50% of Uniswap LP fees</span> to
                   support continuous meme growth and innovation.
                 </div>
               </ModalBody>

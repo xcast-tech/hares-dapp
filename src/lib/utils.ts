@@ -13,9 +13,21 @@ export function maskAddress(address: string = "") {
 }
 
 export function getDomain() {
-  if (process.env.LOCAL === 'true') return "127.0.0.1:3001"
-  return "www.hares.ai"
+  if (process.env.LOCAL === "true") return "127.0.0.1:3001";
+  return "www.hares.ai";
 }
+
+export const formatDecimalNumber = (
+  num: number | string,
+  minimumFractionDigits = 4,
+  maximumFractionDigits = 4
+) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    minimumFractionDigits: minimumFractionDigits,
+    maximumFractionDigits: maximumFractionDigits,
+  }).format(Number(num));
+};
 
 export function formatNumber(value: string | number): string {
   let num: number;
@@ -146,8 +158,8 @@ export function getKChartData(
       i === 0
         ? (Number(getTokenSellQuote(prev, 1)) / 1e18) * ethPrice
         : (Number(getTokenSellQuote(+history[i - 1].totalSupply / 1e18, 1)) /
-          1e18) *
-        ethPrice;
+            1e18) *
+          ethPrice;
 
     const close =
       (Number(getTokenSellQuote(+item.totalSupply / 1e18, 1)) / 1e18) *
@@ -284,3 +296,7 @@ export function getHost() {
   if (process.env.LOCAL === "true") return "http://127.0.0.1:3001";
   return "https://hares.ai";
 }
+
+export const formatAddressString = (address: string) => {
+  return `${address.slice(0, 4)}...${address.slice(-4)}`;
+};
