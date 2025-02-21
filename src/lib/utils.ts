@@ -3,6 +3,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { BondingCurveConfig } from "./constant";
 import { Trade } from "./types";
+import { formatEther } from "viem";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -28,6 +29,14 @@ export const formatDecimalNumber = (
     maximumFractionDigits: maximumFractionDigits,
   }).format(Number(num));
 };
+
+export function formatToFourDecimalPlaces(value: string | number) {
+  const number = Number(value);
+  if (isNaN(number)) {
+    throw new Error("Invalid number format");
+  }
+  return number.toFixed(4);
+}
 
 export function formatNumber(value: string | number): string {
   let num: number;
@@ -61,6 +70,15 @@ export function formatTokenBalance(value: string | number): string {
   const num = +value / 1e18;
 
   if (num < 1e-3) {
+    return "<0.001";
+  }
+  return formatNumber(num);
+}
+
+export function formatBigintTokenBalance(value: bigint): string {
+  const num = formatEther(value);
+
+  if (Number(num) < 1e-3) {
     return "<0.001";
   }
   return formatNumber(num);
@@ -131,6 +149,14 @@ export function getTokenSellQuote(currentSupply: number, tokenToSell: number) {
   const delta = ((expBx0 - expBx1) * A) / B;
   return BigInt(Math.floor(delta));
 }
+
+// export const getTokenSellQuoteBigint = (currentSupply: number | string, tokenToSell: number | string) => {
+//   const { A, B } = BondingCurveConfig;
+//   const expBx0 = Math.exp((B * currentSupply) / 1e18) * 1e18;
+//   const expBx1 = Math.exp((B * (currentSupply - tokenToSell)) / 1e18) * 1e18;
+//   const delta = ((expBx0 - expBx1) * A) / B;
+//   return BigInt(Math.floor(delta));
+// }
 
 export function getSqrtPriceLimitX96(
   sqrtPriceLimitX96: number | bigint,

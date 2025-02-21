@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useMemo,
 } from "react";
 import { useAccount, useSignMessage, useSwitchChain } from "wagmi"; // Replace with the actual hook import
 import {
@@ -18,6 +19,7 @@ type ProfileType = {
   address: string;
 };
 interface GlobalContextType {
+  isLogin: boolean;
   address: string | undefined;
   profile: ProfileType | undefined;
   isLoading: boolean;
@@ -34,6 +36,12 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<ProfileType>();
   const [isLoading, setIsLoading] = useState(true);
   const [signLoading, setSignLoading] = useState(false);
+
+  const isLogin = useMemo(() => {
+    return (
+      profile?.address?.toLocaleLowerCase() === address?.toLocaleLowerCase()
+    );
+  }, [profile, address]);
 
   const handleSign = async () => {
     try {
@@ -85,6 +93,8 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       //   duration: 3000,
       //   isClosable: false,
       // });
+    } finally {
+      setSignLoading(false);
     }
   };
 
@@ -116,7 +126,9 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   }, [isConnected, address]);
 
   return (
-    <GlobalContext.Provider value={{ address, profile, isLoading, handleSign }}>
+    <GlobalContext.Provider
+      value={{ isLogin, address, profile, isLoading, handleSign }}
+    >
       {children}
     </GlobalContext.Provider>
   );

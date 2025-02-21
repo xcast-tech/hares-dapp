@@ -48,4 +48,6 @@ export const HaresAiTwitterLink = "/";
 
 export const graduatedPool = parseEther("18.91"); // 18.91
 
+export const primaryMarketSupply = parseEther((8e8).toString()); // 800,000,000
+
 export const loginSignText = "Sign to continue";
