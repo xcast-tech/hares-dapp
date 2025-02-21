@@ -90,6 +90,9 @@ const Create = () => {
         return tokenAddress;
       }
     } catch (error: any) {
+      if (error.message.includes("User rejected the request")) {
+        return;
+      }
       toast(error?.message);
     }
     return "";
@@ -100,9 +103,6 @@ const Create = () => {
     if (res?.data?.picture) {
       router.push(`/token/${address}`);
     } else {
-      setTimeout(() => {
-        loopToken({ address });
-      }, 2000);
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve(loopToken({ address }));
@@ -125,7 +125,7 @@ const Create = () => {
       const address = await handleCreateToken(name.trim(), ticker.trim());
 
       if (address) {
-        setUpApi({
+        await setUpApi({
           address,
           picture: file,
           website: website.trim(),
