@@ -13,7 +13,7 @@ import {
 } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
-import { decodeEventLog, parseEther } from "viem";
+import { decodeEventLog, parseEther, zeroAddress } from "viem";
 import {
   useAccount,
   usePublicClient,
@@ -33,7 +33,7 @@ export function useHaresContract() {
       address: contractAddress.HaresFactory,
       abi: ABIs.HaresFactoryAbi,
       functionName: "createToken",
-      args: [name, symbol],
+      args: [name, symbol, zeroAddress],
       // gas,
       value: parseEther(value),
     });
@@ -129,79 +129,20 @@ export function useHaresContract() {
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
-      const sqrtPriceLimitX96 = getSqrtPriceLimitX96(
-        sqrtPriceX96,
-        slipage,
-        isWETHToken0,
-        true
+      sqrtPriceLimitX96 = BigInt(
+        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true)
       );
-
-      const finalSqrtPriceLimitX96 = BigInt(sqrtPriceLimitX96);
-      // const finalSqrtPriceLimitX96 = BigInt(sqrtPriceLimitX96 * (1 - slipage));
-      console.log(
-        "--- publicBuy",
-        address,
-        address,
-        BigInt(0),
-        finalSqrtPriceLimitX96
-      );
-
-      const gasPrice = await publicClient?.getGasPrice();
-      const tx = await writeContractAsync({
-        address: token,
-        abi: ABIs.HaresAbi,
-        functionName: "publicBuy",
-        args: [address, address, BigInt(0), finalSqrtPriceLimitX96],
-        value: parseEther(eth.toString()),
-        gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
-      });
-      onTxSend(tx);
-      await publicClient?.waitForTransactionReceipt({
-        hash: tx,
-      });
-      return tx;
+    } else {
+      // primaryMarket
+      minOrderSize = BigInt(Math.floor(buyQuote * (1 - slipage)));
     }
 
-    // primaryMarket
-    minOrderSize = BigInt(Math.floor(buyQuote * (1 - slipage)));
-
-    const commitment = {
-      value: parseEther(eth.toString()),
-      // recipient: address,
-      // refundRecipient: address,
-      minOrderSize,
-      sqrtPriceLimitX96,
-      expired: BigInt(Math.floor(Date.now()) + 60 * 100),
-    };
-
-    const buySignatureRes = await getSignatureApi(commitment);
-    if (buySignatureRes.code !== 0) {
-      toast(buySignatureRes.message);
-      return;
-    }
-    const { signature, recipient, refundRecipient } = buySignatureRes.data;
     const gasPrice = await publicClient?.getGasPrice();
-    console.log(
-      "--commitment",
-      {
-        ...commitment,
-        recipient,
-        refundRecipient,
-      },
-      signature
-    );
     const tx = await writeContractAsync({
       address: token,
       abi: ABIs.HaresAbi,
-      functionName: "signatureBuy",
-      args: [
-        {
-          ...commitment,
-          recipient,
-          refundRecipient,
-        },
-        signature as any,
-      ],
+      functionName: "buy",
+      args: [address, address, minOrderSize, sqrtPriceLimitX96, "0x0"],
       value: parseEther(eth.toString()),
       gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
     });
