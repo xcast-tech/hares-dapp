@@ -39,9 +39,9 @@ export const wagmiConfig = createConfig({
 
 export const publicClient = createPublicClient({
   chain: mainChain,
-  transport: http(
-    "https://polygon-mainnet.g.alchemy.com/v2/ewYI1qbiYF06opUs36WZ9qJJRZRstxNK"
-  ),
+  transport:
+    http(),
+    // "https://polygon-mainnet.g.alchemy.com/v2/ewYI1qbiYF06opUs36WZ9qJJRZRstxNK"
 });
 export const publicWsClient = createPublicClient({
   chain: mainChain,

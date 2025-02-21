@@ -6,6 +6,7 @@ import HaresAbi from "./abi/Hares";
 import HaresValidatorAbi from "./abi/HaresValidator";
 import UniswapV3Pool from "./abi/UniswapV3Pool";
 import { Address } from "./types";
+import { parseEther } from "viem";
 
 export const mainChain = polygon;
 export const contractAddress = {
@@ -44,3 +45,7 @@ export const BondingCurveConfig = {
 export const HaresAiWarpcastLink = "https://warpcast.com/hares-ai";
 
 export const HaresAiTwitterLink = "/";
+
+export const graduatedPool = parseEther("4.4"); // 18.91
+
+export const loginSignText = "Sign to continue";

@@ -51,17 +51,19 @@ export const setUpApi = async (data: {
 };
 
 export const getSignatureApi = async (
-  fcMessage: string,
-  fcSignature: string,
-  commitment: Commitment
-) => {
+  commitment: Omit<Commitment, "recipient" | "refundRecipient">
+): Promise<{
+  code: number;
+  data: {
+    signature: string;
+    recipient: `0x${string}`;
+    refundRecipient: `0x${string}`;
+  };
+  message?: string;
+}> => {
   const res = await request("/api/signature", {
     method: "post",
-    data: {
-      fcMessage,
-      fcSignature,
-      ...commitment,
-    },
+    data: commitment,
   });
   return res?.data;
 };

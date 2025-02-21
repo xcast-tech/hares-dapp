@@ -56,6 +56,10 @@ export type Trade = {
   timestamp: number;
 };
 
-export type TopHolder = Database["public"]["Functions"]["get_top_holders"]["Returns"][0];
+export type TopHolder =
+  Database["public"]["Functions"]["get_top_holders"]["Returns"][0];
 
-export type FarcasterUserInfo = Pick<StatusAPIResponse, "fid" | "displayName" | "pfpUrl" | "username" | "message" | "signature">;
+export type FarcasterUserInfo = Pick<
+  StatusAPIResponse,
+  "fid" | "displayName" | "pfpUrl" | "username" | "message" | "signature"
+>;
