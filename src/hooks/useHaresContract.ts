@@ -1,5 +1,10 @@
 import { getSignatureApi } from "@/lib/apis";
-import { ABIs, contractAddress, EventTopic } from "@/lib/constant";
+import {
+  ABIs,
+  contractAddress,
+  EventTopic,
+  primaryMarketSupply,
+} from "@/lib/constant";
 import { Address } from "@/lib/types";
 import {
   getEthBuyQuote,
@@ -9,12 +14,18 @@ import {
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
 import { decodeEventLog, parseEther } from "viem";
-import { useAccount, usePublicClient, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  usePublicClient,
+  useWriteContract,
+  useWalletClient,
+} from "wagmi";
 
 export function useHaresContract() {
   const { address } = useAccount();
   const { message, signature } = useSignInMessage();
   const publicClient = usePublicClient();
+  const walletClient = useWalletClient();
   const { data: hash, writeContract, writeContractAsync } = useWriteContract();
 
   async function createToken(name: string, symbol: string, value: string = "") {
@@ -46,7 +57,7 @@ export function useHaresContract() {
 
   async function getCurrentSupply(token: Address) {
     if (!publicClient) {
-      return 0;
+      return BigInt(0);
     }
     const res = await publicClient?.readContract({
       address: token,
@@ -59,7 +70,7 @@ export function useHaresContract() {
 
   async function getTokenBalance(token: Address, adddress: Address) {
     if (!publicClient) {
-      return 0;
+      return BigInt(0);
     }
 
     const res = await publicClient?.readContract({
@@ -68,7 +79,7 @@ export function useHaresContract() {
       functionName: "balanceOf",
       args: [adddress],
     });
-    return Number(res);
+    return res;
   }
 
   async function getTokenPoolAddress(token: Address) {
@@ -110,17 +121,50 @@ export function useHaresContract() {
     const currentSupply = await getCurrentSupply(token);
     let minOrderSize = BigInt(0);
     let sqrtPriceLimitX96 = BigInt(0);
+    console.log("- slipage", slipage);
     const buyQuote = Number(getEthBuyQuote(Number(currentSupply) / 1e18, eth));
-    if (currentSupply > 8e26) {
+    const isGraduated = currentSupply > primaryMarketSupply;
+    if (isGraduated) {
+      // publicMarket
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
-      sqrtPriceLimitX96 = BigInt(
-        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true)
+      const sqrtPriceLimitX96 = getSqrtPriceLimitX96(
+        sqrtPriceX96,
+        slipage,
+        isWETHToken0,
+        true
       );
-    } else {
-      minOrderSize = BigInt(Math.floor(buyQuote * (1 - slipage)));
+
+      const finalSqrtPriceLimitX96 = BigInt(sqrtPriceLimitX96);
+      // const finalSqrtPriceLimitX96 = BigInt(sqrtPriceLimitX96 * (1 - slipage));
+      console.log(
+        "--- publicBuy",
+        address,
+        address,
+        BigInt(0),
+        finalSqrtPriceLimitX96
+      );
+
+      const gasPrice = await publicClient?.getGasPrice();
+      const tx = await writeContractAsync({
+        address: token,
+        abi: ABIs.HaresAbi,
+        functionName: "publicBuy",
+        args: [address, address, BigInt(0), finalSqrtPriceLimitX96],
+        value: parseEther(eth.toString()),
+        gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
+      });
+      onTxSend(tx);
+      await publicClient?.waitForTransactionReceipt({
+        hash: tx,
+      });
+      return tx;
     }
+
+    // primaryMarket
+    minOrderSize = BigInt(Math.floor(buyQuote * (1 - slipage)));
+
     const commitment = {
       value: parseEther(eth.toString()),
       // recipient: address,
@@ -129,6 +173,7 @@ export function useHaresContract() {
       sqrtPriceLimitX96,
       expired: BigInt(Math.floor(Date.now()) + 60 * 100),
     };
+
     const buySignatureRes = await getSignatureApi(commitment);
     if (buySignatureRes.code !== 0) {
       toast(buySignatureRes.message);
@@ -136,6 +181,15 @@ export function useHaresContract() {
     }
     const { signature, recipient, refundRecipient } = buySignatureRes.data;
     const gasPrice = await publicClient?.getGasPrice();
+    console.log(
+      "--commitment",
+      {
+        ...commitment,
+        recipient,
+        refundRecipient,
+      },
+      signature
+    );
     const tx = await writeContractAsync({
       address: token,
       abi: ABIs.HaresAbi,
@@ -174,7 +228,7 @@ export function useHaresContract() {
 
     let minOrderSize = BigInt(0);
     let sqrtPriceLimitX96 = BigInt(0);
-    if (currentSupply > 8e26) {
+    if (currentSupply > primaryMarketSupply) {
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
@@ -184,6 +238,33 @@ export function useHaresContract() {
     } else {
       minOrderSize = BigInt(Math.floor(sellQuote * (1 - slipage)));
     }
+    // const res = await walletClient?.simulateContract({
+    //   address: token,
+    //   abi: ABIs.HaresAbi,
+    //   functionName: "sell",
+    //   args: [
+    //     parseEther(tokenToSell.toString()),
+    //     address,
+    //     minOrderSize,
+    //     sqrtPriceLimitX96,
+    //   ],
+    // });
+    // console.log("--res", res);
+    // If simulation is successful, proceed with the actual transaction
+    // const hash = await walletClient.writeContract(request)
+    // const tx = await writeContractAsync(res?.request!);
+    // const gas = await publicClient?.estimateContractGas({
+    //   address: token,
+    //   abi: ABIs.HaresAbi,
+    //   functionName: "sell",
+    //   args: [
+    //     parseEther(tokenToSell.toString()),
+    //     address,
+    //     minOrderSize,
+    //     sqrtPriceLimitX96,
+    //   ],
+    // });
+    // console.log("--gas", gas);
     const gasPrice = await publicClient?.getGasPrice();
     const tx = await writeContractAsync({
       address: token,

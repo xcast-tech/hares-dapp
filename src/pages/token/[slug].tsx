@@ -17,7 +17,10 @@ import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken, TopHolder, Trade } from "@/lib/types";
 import {
   cn,
+  formatBigintTokenBalance,
+  formatDecimalNumber,
   formatNumber,
+  formatToFourDecimalPlaces,
   formatTokenBalance,
   getEthBuyQuote,
   getTokenSellQuote,
@@ -31,6 +34,7 @@ import Head from "next/head";
 import { getTokenDetail } from "@/lib/model";
 import { TradeList } from "@/components/trade-list";
 import { TopHolders } from "@/components/top-holders";
+import { formatEther } from "viem";
 
 const TabKeys = {
   buy: "buy",
@@ -77,7 +81,7 @@ export default function Token(props: IToken) {
   const [totalSupply, setTotalSupply] = useState(detail.totalSupply);
   const [isGraduate, setIsGraduate] = useState(detail.isGraduate);
 
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
+  const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt(0));
   const [slippage, setSlippage] = useState("20");
   const [editSlippage, setEditSlippage] = useState("");
   const [historyList, setHistoryList] = useState<Trade[]>([]);
@@ -172,6 +176,9 @@ export default function Token(props: IToken) {
         toast(`Buy transaction send. tx: ${tx}`);
       }
     } catch (error: any) {
+      if (error.message.includes("User rejected the request")) {
+        return;
+      }
       toast(error?.message);
     } finally {
       setTrading(false);
@@ -196,6 +203,9 @@ export default function Token(props: IToken) {
       });
       toast(`Sell transaction send. tx: ${tx}`);
     } catch (error: any) {
+      if (error.message.includes("User rejected the request")) {
+        return;
+      }
       toast(error?.message);
     } finally {
       setTrading(false);
@@ -309,7 +319,7 @@ export default function Token(props: IToken) {
                   <div>Amount ({detail?.symbol})</div>
                   <div className="flex gap-2 items-center">
                     <div className="text-gray-300 text-sm">
-                      {formatTokenBalance(tokenBalance)}
+                      {formatBigintTokenBalance(tokenBalance)}
                     </div>
                     <Button
                       size="sm"
@@ -349,9 +359,12 @@ export default function Token(props: IToken) {
                           return;
                         }
                         const balance = await fetchTokenBalance(ca, address);
-                        setSellInputValue(
-                          String((Number(balance) / 1e18) * option.value)
+                        const amount = formatToFourDecimalPlaces(
+                          formatEther(
+                            (balance * BigInt(option.value * 100)) / BigInt(100)
+                          )
                         );
+                        setSellInputValue(amount);
                       }}
                     >
                       {option.label}
