@@ -14,7 +14,7 @@ import React, { FormEvent, PropsWithChildren, useRef, useState } from "react";
 import Image from "next/image";
 import { useHaresContract } from "@/hooks/useHaresContract";
 import { toast } from "react-toastify";
-import { ABIs, EventTopic } from "@/lib/constant";
+import { ABIs, EventTopic, tokenSymbol } from "@/lib/constant";
 import { useRouter } from "next/router";
 import { decodeEventLog } from "viem";
 import { cn } from "@/lib/utils";
@@ -393,8 +393,8 @@ const Create = () => {
                     label="dev buy"
                     name="devBuy"
                     type="number"
-                    endContent="ETH"
-                    placeholder="Amount in ETH"
+                    endContent={tokenSymbol}
+                    placeholder={`Amount in ${tokenSymbol}`}
                     value={devBuyAmount}
                     onChange={(e) => setDevBuyAmount(e.target.value)}
                   />

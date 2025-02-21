@@ -1,7 +1,14 @@
-import { mainChain } from "@/lib/constant";
+import { mainChain, tokenSymbol } from "@/lib/constant";
 import { Trade } from "@/lib/types";
 import { cn, formatTokenBalance, maskAddress } from "@/lib/utils";
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@nextui-org/react";
 import dayjs from "dayjs";
 import React from "react";
 import { formatEther } from "viem";
@@ -21,7 +28,12 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
     switch (columnKey) {
       case "from":
         return (
-          <a className="text-white" title={cellValue as string} href={`${mainChain.blockExplorers.default.url}/address/${cellValue}`} target="_blank">
+          <a
+            className="text-white"
+            title={cellValue as string}
+            href={`${mainChain.blockExplorers.default.url}/address/${cellValue}`}
+            target="_blank"
+          >
             {maskAddress(cellValue as string)}
           </a>
         );
@@ -30,13 +42,25 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
         return cellValue === 0 ? "Buy" : "Sell";
 
       case "trueEth":
-        return <span className="text-white">{Number(formatEther(BigInt(cellValue), "wei")).toFixed(4)}</span>;
+        return (
+          <span className="text-white">
+            {Number(formatEther(BigInt(cellValue), "wei")).toFixed(4)}
+          </span>
+        );
 
       case "trueOrderSize":
-        return <span className="text-white">{formatTokenBalance(cellValue as string)}</span>;
+        return (
+          <span className="text-white">
+            {formatTokenBalance(cellValue as string)}
+          </span>
+        );
 
       case "timestamp":
-        return <span className="text-white">{dayjs().to(dayjs((cellValue as number) * 1000))}</span>;
+        return (
+          <span className="text-white">
+            {dayjs().to(dayjs((cellValue as number) * 1000))}
+          </span>
+        );
 
       default:
         return cellValue;
@@ -57,15 +81,24 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
         <TableHeader>
           <TableColumn key="from">Account</TableColumn>
           <TableColumn key="type">Type</TableColumn>
-          <TableColumn key="trueEth">ETH</TableColumn>
+          <TableColumn key="trueEth">{tokenSymbol}</TableColumn>
           <TableColumn key="trueOrderSize">{symbol}</TableColumn>
           <TableColumn key="timestamp">Date</TableColumn>
         </TableHeader>
         <TableBody emptyContent="No transaction data.">
           {list.map((item) => {
             return (
-              <TableRow key={item.id} className={cn(item.type === 1 ? "text-[#F31260]" : "text-[#05DD6B]")}>
-                {(columnKey) => <TableCell>{renderCell(item, columnKey as keyof Trade)}</TableCell>}
+              <TableRow
+                key={item.id}
+                className={cn(
+                  item.type === 1 ? "text-[#F31260]" : "text-[#05DD6B]"
+                )}
+              >
+                {(columnKey) => (
+                  <TableCell>
+                    {renderCell(item, columnKey as keyof Trade)}
+                  </TableCell>
+                )}
               </TableRow>
             );
           })}

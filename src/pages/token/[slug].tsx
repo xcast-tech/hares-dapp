@@ -35,6 +35,7 @@ import { getTokenDetail } from "@/lib/model";
 import { TradeList } from "@/components/trade-list";
 import { TopHolders } from "@/components/top-holders";
 import { formatEther } from "viem";
+import { tokenSymbol } from "@/lib/constant";
 
 const TabKeys = {
   buy: "buy",
@@ -104,19 +105,19 @@ export default function Token(props: IToken) {
       value: 0,
     },
     {
-      label: "0.01 ETH",
+      label: `0.01 ${tokenSymbol}`,
       value: 0.01,
     },
     {
-      label: "0.02 ETH",
+      label: `0.02 ${tokenSymbol}`,
       value: 0.02,
     },
     {
-      label: "0.05 ETH",
+      label: `0.05 ${tokenSymbol}`,
       value: 0.05,
     },
     {
-      label: "0.1 ETH",
+      label: `0.1 ${tokenSymbol}`,
       value: 0.1,
     },
   ];
@@ -246,7 +247,7 @@ export default function Token(props: IToken) {
           <div>
             <div>
               <div className="mb-3 flex justify-between items-center">
-                <span>Amount (ETH)</span>
+                <span>Amount ({tokenSymbol})</span>
                 <Button
                   size="sm"
                   className="text-[#999] h-[26px]"
@@ -265,7 +266,7 @@ export default function Token(props: IToken) {
                     setBuyInputValue(e.target.value);
                   }}
                   type="number"
-                  endContent={"ETH"}
+                  endContent={tokenSymbol}
                   autoFocus={false}
                 />
               </div>
@@ -375,7 +376,7 @@ export default function Token(props: IToken) {
             </div>
             {sellInputValue && !isGraduate && (
               <p className="text-xs text-gray-500">
-                ETH received:{" "}
+                {tokenSymbol} received:{" "}
                 {Number(
                   getTokenSellQuote(
                     Number(totalSupply) / 1e18,

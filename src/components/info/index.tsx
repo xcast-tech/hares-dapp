@@ -16,7 +16,12 @@ import { IToken } from "@/lib/types";
 import dayjs from "dayjs";
 import { Twitter2 } from "../twitter2";
 import { formatEther } from "viem";
-import { graduatedPool } from "@/lib/constant";
+import {
+  graduatedPool,
+  graduatedPoolConstant,
+  tokenSymbol,
+} from "@/lib/constant";
+import { useAccount } from "wagmi";
 
 interface InfoProps {
   className?: string;
@@ -116,13 +121,13 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
           <p className="text-xs mt-1">
             Bonding curve progress:&nbsp;
             {currentEth === graduatedPool
-              ? "19.11"
+              ? graduatedPoolConstant
               : formatDecimalNumber(
                   formatEther((currentEth * BigInt(100)) / BigInt(99))
                 )}
             /&nbsp;
             {/* {formatEther((graduatedPool * BigInt(100)) / BigInt(99))} ETH */}
-            19.11 ETH
+            {graduatedPoolConstant} {tokenSymbol}
           </p>
         </>
       )}
