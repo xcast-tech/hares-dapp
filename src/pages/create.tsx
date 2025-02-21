@@ -103,6 +103,11 @@ const Create = () => {
       setTimeout(() => {
         loopToken({ address });
       }, 2000);
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(loopToken({ address }));
+        }, 2000);
+      });
     }
   }
 
@@ -129,7 +134,7 @@ const Create = () => {
           desc: desc.trim(),
         });
 
-        loopToken({ address });
+        await loopToken({ address });
       }
     } catch (error) {
     } finally {
