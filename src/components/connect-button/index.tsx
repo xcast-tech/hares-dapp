@@ -1,69 +1,175 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styled from "@emotion/styled";
-import { formatAddressString } from "@/lib/utils";
 
 const WalletConnectButton = () => {
   return (
-    <ConnectButton.Custom>
-      {({
-        account,
-        chain,
-        openAccountModal,
-        openChainModal,
-        openConnectModal,
-        authenticationStatus,
-        mounted,
-      }) => {
-        // const ready = mounted && authenticationStatus !== 'loading';
-        // const connected =
-        //   ready &&
-        //   account &&
-        //   chain &&
-        //   (!authenticationStatus ||
-        //     authenticationStatus === 'authenticated');
+    <>
+      {/* <ConnectButton /> */}
+      <ConnectButton.Custom>
+        {({
+          account,
+          chain,
+          openAccountModal,
+          openChainModal,
+          openConnectModal,
+          authenticationStatus,
+          mounted,
+        }) => {
+          const ready = mounted && authenticationStatus !== "loading";
+          const connected =
+            ready &&
+            account &&
+            chain &&
+            (!authenticationStatus || authenticationStatus === "authenticated");
 
-        if (account?.address)
+          if (connected)
+            return (
+              <CryptoBalanceDisplay
+                balance={account.displayBalance}
+                walletAddress={account.address}
+                onClick={openAccountModal}
+              />
+            );
+
+          // 连接钱包
           return (
-            <ConnectBtn onClick={openAccountModal}>
-              {formatAddressString(account.address)}
+            <ConnectBtn disabled={!ready} onClick={openConnectModal}>
+              Connect Wallet
             </ConnectBtn>
           );
-
-        // 连接钱包
-        return (
-          <ConnectBtn onClick={openConnectModal}>Connect Wallet</ConnectBtn>
-        );
-      }}
-    </ConnectButton.Custom>
+        }}
+      </ConnectButton.Custom>
+    </>
   );
 };
 
 export default WalletConnectButton;
 
-// finish style like rainbowkit wallet button
+interface WalletInfoProps {
+  balance?: string;
+  walletAddress: string;
+  onClick?: () => void;
+}
+
+const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
+  balance,
+  walletAddress,
+  onClick,
+}) => {
+  // Truncate wallet address
+  const truncatedAddress =
+    walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
+
+  return (
+    <ProfileBtn
+      onClick={() => {
+        console.log("ProfileBtn onClick");
+        onClick && onClick();
+      }}
+    >
+      <BalanceText>{balance}</BalanceText>
+      <WalletAddressContainer>
+        <WalletAddress>{truncatedAddress}</WalletAddress>
+        <DropdownIcon>
+          <svg
+            fill="none"
+            height="7"
+            width="14"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title>Dropdown</title>
+            <path
+              d="M12.75 1.54001L8.51647 5.0038C7.77974 5.60658 6.72026 5.60658 5.98352 5.0038L1.75 1.54001"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              xmlns="http://www.w3.org/2000/svg"
+            ></path>
+          </svg>
+        </DropdownIcon>
+      </WalletAddressContainer>
+    </ProfileBtn>
+  );
+};
+
 const ConnectBtn = styled.button`
-  background: linear-gradient(90deg, #ff7a18, #af002d 70%);
-  border: none;
-  border-radius: 12px;
+  background-color: #6a3cd6;
   color: white;
-  cursor: pointer;
   font-size: 16px;
-  font-weight: bold;
-  padding: 12px 24px;
-  text-align: center;
-  transition: background 0.3s ease;
+  font-weight: 700;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.125s;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  transform: scale(1);
 
   &:hover {
-    background: linear-gradient(90deg, #af002d, #ff7a18 70%);
+    transform: scale(1.025);
   }
 
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 122, 24, 0.5);
+  &:disabled {
+    background-color: #a4c2f4;
+    cursor: not-allowed;
+  }
+`;
+
+// finish style like rainbowkit wallet button
+const ProfileBtn = styled.button`
+  display: flex;
+  align-items: center;
+  background-color: #1a1b1f;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.125s;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  transform: scale(1);
+
+  &:hover {
+    transform: scale(1.025);
   }
 
-  &:active {
-    background: linear-gradient(90deg, #af002d, #ff7a18 70%);
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  &:disabled {
+    background-color: #a4c2f4;
+    cursor: not-allowed;
   }
+`;
+
+const BalanceText = styled.span`
+  padding: 8px;
+  padding-left: 12px;
+`;
+
+const WalletAddressContainer = styled.div`
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.075),
+    rgba(255, 255, 255, 0.15)
+  );
+  border-radius: 12px;
+  height: 36px;
+`;
+
+const WalletAddress = styled.span`
+  margin-right: 4px;
+`;
+
+const DropdownIcon = styled.div`
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

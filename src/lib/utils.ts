@@ -19,8 +19,8 @@ export function getDomain() {
 
 export const formatDecimalNumber = (
   num: number | string,
-  minimumFractionDigits = 4,
-  maximumFractionDigits = 4
+  minimumFractionDigits = 2,
+  maximumFractionDigits = 2
 ) => {
   return new Intl.NumberFormat("en-US", {
     style: "decimal",

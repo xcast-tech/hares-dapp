@@ -46,6 +46,6 @@ export const HaresAiWarpcastLink = "https://warpcast.com/hares-ai";
 
 export const HaresAiTwitterLink = "/";
 
-export const graduatedPool = parseEther("4.4"); // 18.91
+export const graduatedPool = parseEther("18.91"); // 18.91
 
 export const loginSignText = "Sign to continue";
