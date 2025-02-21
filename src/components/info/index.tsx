@@ -109,14 +109,20 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
             <div
               className="h-full w-full bg-green-400"
               style={{
-                width: `${(currentEth / graduatedPool) * BigInt(100)}%`,
+                width: `${(Number(currentEth) / Number(graduatedPool)) * 100}%`,
               }}
             ></div>
           </div>
           <p className="text-xs mt-1">
-            Bonding curve progress:{" "}
-            {formatDecimalNumber(formatEther(currentEth))} /{" "}
-            {formatEther(graduatedPool)} ETH
+            Bonding curve progress:&nbsp;
+            {currentEth === graduatedPool
+              ? "19.11"
+              : formatDecimalNumber(
+                  formatEther((currentEth * BigInt(100)) / BigInt(99))
+                )}
+            /&nbsp;
+            {/* {formatEther((graduatedPool * BigInt(100)) / BigInt(99))} ETH */}
+            19.11 ETH
           </p>
         </>
       )}

@@ -25,13 +25,16 @@ export function debugLog(msg: any, level: "info" | "warn" | "error" = "info") {
 
 export async function syncEvents(from: number, to: number) {
   debugLog(`Fetching events from ${from} to ${to}`);
-  const allEvents = await Promise.all([
-    getTokenCreateEvent(from, to),
-    getTokenEvents(from, to, "HaresTokenTransfer"),
-    getTokenEvents(from, to, "HaresTokenBuy"),
-    getTokenEvents(from, to, "HaresTokenSell"),
-    getTokenEvents(from, to, "HaresMarketGraduated"),
-  ]);
+  const allEvents = [await getTokenCreateEvent(from, to)];
+  allEvents.push(
+    ...(await Promise.all([
+      // getTokenCreateEvent(from, to),
+      getTokenEvents(from, to, "HaresTokenTransfer"),
+      getTokenEvents(from, to, "HaresTokenBuy"),
+      getTokenEvents(from, to, "HaresTokenSell"),
+      getTokenEvents(from, to, "HaresMarketGraduated"),
+    ]))
+  );
 
   const getOrder = (e: any) => e.block * 100000 + e.txIndex;
   const events = allEvents.flat().sort((a, b) => getOrder(a) - getOrder(b));
@@ -174,6 +177,7 @@ async function handleTokenBuy(
     totalSupply: string;
     isGraduate: boolean;
   };
+  debugLog(JSON.stringify(args));
   const { error: error1 } = await supabaseClient.from("Trade").upsert(
     {
       event: row.id,

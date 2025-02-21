@@ -13,7 +13,14 @@ import {
 } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
-import { decodeEventLog, parseEther, zeroAddress } from "viem";
+import {
+  decodeEventLog,
+  parseEther,
+  zeroAddress,
+  padBytes,
+  bytesToHex,
+  zeroHash,
+} from "viem";
 import {
   useAccount,
   usePublicClient,
@@ -98,7 +105,7 @@ export function useHaresContract() {
 
   async function getCurrentSqrtPriceX96(pool: Address) {
     if (!publicClient) {
-      return 0;
+      return BigInt(0);
     }
     const res = await publicClient?.readContract({
       address: pool,
@@ -132,6 +139,7 @@ export function useHaresContract() {
       sqrtPriceLimitX96 = BigInt(
         getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true)
       );
+      // sqrtPriceLimitX96 = sqrtPriceX96;
     } else {
       // primaryMarket
       minOrderSize = BigInt(Math.floor(buyQuote * (1 - slipage)));
@@ -142,7 +150,7 @@ export function useHaresContract() {
       address: token,
       abi: ABIs.HaresAbi,
       functionName: "buy",
-      args: [address, address, minOrderSize, sqrtPriceLimitX96, "0x0"],
+      args: [address, address, minOrderSize, sqrtPriceLimitX96, zeroHash],
       value: parseEther(eth.toString()),
       gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
     });
