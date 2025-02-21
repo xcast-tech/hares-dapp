@@ -5,6 +5,7 @@
   "scripts": {
     "supabase:generate": "supabase gen types --lang=typescript --project-id \"zvxwaizeligjkjieoqhv\" --schema public > src/lib/supabase/supabase.ts",
     "indexer": "ts-node ./scripts/indexer.ts",
+    "fetch-transfers": "ts-node ./scripts/fetch-token-transfers.ts",
     "shadcn-add": "shadcn add",
     "dev": "next dev -p 3001",
     "build": "next build",
