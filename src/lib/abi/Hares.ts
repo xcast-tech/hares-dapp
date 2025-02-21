@@ -21,6 +21,11 @@ export default [
         name: "_tokenCreator",
         type: "address",
       },
+      {
+        internalType: "address",
+        name: "_validator",
+        type: "address",
+      },
     ],
     stateMutability: "payable",
     type: "constructor",
@@ -128,22 +133,7 @@ export default [
   },
   {
     inputs: [],
-    name: "ExpiredSignature",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "InsufficientToken",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidSignature",
-    type: "error",
-  },
-  {
-    inputs: [],
-    name: "InvalidValue",
     type: "error",
   },
   {
@@ -164,6 +154,11 @@ export default [
   {
     inputs: [],
     name: "SlippageBoundsExceeded",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ValidationFail",
     type: "error",
   },
   {
@@ -662,6 +657,45 @@ export default [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "recipient",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "refundRecipient",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "minOrderSize",
+        type: "uint256",
+      },
+      {
+        internalType: "uint160",
+        name: "sqrtPriceLimitX96",
+        type: "uint160",
+      },
+      {
+        internalType: "bytes32",
+        name: "data",
+        type: "bytes32",
+      },
+    ],
+    name: "buy",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "claimSecondaryRewards",
     outputs: [],
@@ -835,40 +869,6 @@ export default [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "recipient",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "refundRecipient",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "minOrderSize",
-        type: "uint256",
-      },
-      {
-        internalType: "uint160",
-        name: "sqrtPriceLimitX96",
-        type: "uint160",
-      },
-    ],
-    name: "publicBuy",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "payable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "tokensToSell",
         type: "uint256",
@@ -898,62 +898,6 @@ export default [
       },
     ],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        components: [
-          {
-            internalType: "uint256",
-            name: "value",
-            type: "uint256",
-          },
-          {
-            internalType: "address",
-            name: "recipient",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "refundRecipient",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "minOrderSize",
-            type: "uint256",
-          },
-          {
-            internalType: "uint160",
-            name: "sqrtPriceLimitX96",
-            type: "uint160",
-          },
-          {
-            internalType: "uint256",
-            name: "expired",
-            type: "uint256",
-          },
-        ],
-        internalType: "struct IBABValidator.Commitment",
-        name: "_commitment",
-        type: "tuple",
-      },
-      {
-        internalType: "bytes",
-        name: "_signature",
-        type: "bytes",
-      },
-    ],
-    name: "signatureBuy",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "payable",
     type: "function",
   },
   {

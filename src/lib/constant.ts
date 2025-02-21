@@ -10,9 +10,9 @@ import { parseEther } from "viem";
 
 export const mainChain = polygon;
 export const contractAddress = {
-  BondingCurve: "0x316Ca81870b86c5Ce35D4Afe5bA512ad2d3783b7" as Address,
-  HaresValidator: "0x91aEE2F51197053836938618805f28A77d508c61" as Address,
-  HaresFactory: "0xAB45f737A59Cb935fc189FcfF7a77af1e1947141" as Address,
+  BondingCurve: "0x60349c2bCc7a5c4B7A633843A3c689fdcAbD7233" as Address,
+  BABTValidatorAddress: "0x389B9897E8a5a8e5F08D19bECfBF0f5a08960117" as Address,
+  HaresFactory: "0x60d7d1FB3cfD1aefecdb8164b65ED6dd70b9bc64" as Address,
   WETH: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270" as Address,
 };
 
@@ -26,7 +26,7 @@ export const ABIs = {
 
 export const EventTopic: Record<string, string> = {
   HaresTokenCreated:
-    "0xfd346d5c02b2e0002045e14eafc72ee3c58ee7dc23ae96b1a130c9703e500bc4",
+    "0x1fc0f11aa4dadb735ee8cf1429a9b9cff9e67be8186df94a8a89193b03695365",
   HaresTokenTransfer:
     "0x4094f1cf9c22c433db0b220c48bc94f47e2c93296f56a8b9fc33a69ddab53882",
   HaresTokenBuy:

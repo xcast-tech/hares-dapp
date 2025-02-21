@@ -10,11 +10,6 @@ export default [
           },
           {
             internalType: "address",
-            name: "validator",
-            type: "address",
-          },
-          {
-            internalType: "address",
             name: "weth",
             type: "address",
           },
@@ -117,15 +112,16 @@ export default [
         type: "string",
       },
       {
+        indexed: false,
+        internalType: "address",
+        name: "validator",
+        type: "address",
+      },
+      {
         components: [
           {
             internalType: "address",
             name: "protocolFeeRecipient",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "validator",
             type: "address",
           },
           {
@@ -209,6 +205,11 @@ export default [
         name: "symbol",
         type: "string",
       },
+      {
+        internalType: "address",
+        name: "validator",
+        type: "address",
+      },
     ],
     name: "createToken",
     outputs: [
@@ -230,11 +231,6 @@ export default [
           {
             internalType: "address",
             name: "protocolFeeRecipient",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "validator",
             type: "address",
           },
           {
@@ -313,11 +309,6 @@ export default [
           {
             internalType: "address",
             name: "protocolFeeRecipient",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "validator",
             type: "address",
           },
           {
