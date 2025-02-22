@@ -10,6 +10,7 @@ import { parseEther } from "viem";
 
 export const mainChain = polygon;
 
+export const tokenSymbol = mainChain.nativeCurrency.symbol;
 export const contractAddress = {
   BondingCurve: "0x60349c2bCc7a5c4B7A633843A3c689fdcAbD7233" as Address,
   BABTValidatorAddress: "0x389B9897E8a5a8e5F08D19bECfBF0f5a08960117" as Address,
@@ -48,6 +49,7 @@ export const HaresAiWarpcastLink = "https://warpcast.com/hares-ai";
 export const HaresAiTwitterLink = "/";
 
 export const graduatedPool = parseEther("18.91"); // 18.91
+export const graduatedPoolConstant = "19.11"; // 18.91 / 0.99
 
 export const primaryMarketSupply = parseEther((8e8).toString()); // 800,000,000
 

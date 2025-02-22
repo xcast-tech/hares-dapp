@@ -6,7 +6,12 @@ import React, {
   ReactNode,
   useMemo,
 } from "react";
-import { useAccount, useSignMessage, useSwitchChain } from "wagmi"; // Replace with the actual hook import
+import {
+  useAccount,
+  useDisconnect,
+  useSignMessage,
+  useSwitchChain,
+} from "wagmi"; // Replace with the actual hook import
 import {
   ConnectButton,
   useConnectModal,
@@ -23,6 +28,7 @@ interface GlobalContextType {
   address: string | undefined;
   profile: ProfileType | undefined;
   isLoading: boolean;
+  shouldSign: boolean;
   handleSign: () => void;
 }
 
@@ -32,10 +38,12 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const { openConnectModal } = useConnectModal();
   const { switchChainAsync } = useSwitchChain();
   const { signMessageAsync } = useSignMessage();
+  const { disconnect } = useDisconnect();
   const { address, chain, isConnected } = useAccount(); // 获取当前网络信息
   const [profile, setProfile] = useState<ProfileType>();
   const [isLoading, setIsLoading] = useState(true);
   const [signLoading, setSignLoading] = useState(false);
+  const [shouldSign, setShouldSign] = useState(false);
 
   const isLogin = useMemo(() => {
     return (
@@ -77,6 +85,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
 
       if (res.code === 0) {
         fetchProfile();
+        setShouldSign(false);
       }
       console.log("- handleSignres", res);
       // location.reload();
@@ -84,6 +93,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       console.log("error", err);
       if (err.message.includes("User rejected the request.")) {
         setSignLoading(false);
+        disconnect();
         return;
       }
       // toast({
@@ -117,17 +127,21 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    if (!isConnected || !address) return;
-    fetchProfile().then((profile) => {
-      if (profile.address?.toLowerCase() !== address.toLowerCase()) {
-        handleSign();
-      }
-    });
-  }, [isConnected, address]);
+    if (!isConnected || !address || !profile) return;
+    if (profile.address?.toLowerCase() !== address.toLowerCase()) {
+      setShouldSign(true);
+      handleSign();
+      return;
+    }
+  }, [isConnected, address, profile]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   return (
     <GlobalContext.Provider
-      value={{ isLogin, address, profile, isLoading, handleSign }}
+      value={{ isLogin, address, profile, isLoading, shouldSign, handleSign }}
     >
       {children}
     </GlobalContext.Provider>

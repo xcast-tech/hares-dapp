@@ -16,7 +16,12 @@ import { IToken } from "@/lib/types";
 import dayjs from "dayjs";
 import { Twitter2 } from "../twitter2";
 import { formatEther } from "viem";
-import { graduatedPool } from "@/lib/constant";
+import {
+  graduatedPool,
+  graduatedPoolConstant,
+  tokenSymbol,
+} from "@/lib/constant";
+import { useAccount } from "wagmi";
 
 interface InfoProps {
   className?: string;
@@ -36,7 +41,9 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
     <div className={twMerge(className)}>
       <div className="flex gap-2.5">
         <div className="w-[120px] min-w-[120px] h-[120px] relative">
-          {detail?.picture && <Image fill alt="" src={detail?.picture} />}
+          {detail?.picture && (
+            <Image objectFit="cover" fill alt="" src={detail?.picture} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <div className="font-bold">{detail?.name}</div>
@@ -109,14 +116,20 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
             <div
               className="h-full w-full bg-green-400"
               style={{
-                width: `${(currentEth / graduatedPool) * BigInt(100)}%`,
+                width: `${(Number(currentEth) / Number(graduatedPool)) * 100}%`,
               }}
             ></div>
           </div>
           <p className="text-xs mt-1">
-            Bonding curve progress:{" "}
-            {formatDecimalNumber(formatEther(currentEth))} /{" "}
-            {formatEther(graduatedPool)} ETH
+            Bonding curve progress:&nbsp;
+            {currentEth === graduatedPool
+              ? graduatedPoolConstant
+              : formatDecimalNumber(
+                  formatEther((currentEth * BigInt(100)) / BigInt(99))
+                )}
+            /&nbsp;
+            {/* {formatEther((graduatedPool * BigInt(100)) / BigInt(99))} ETH */}
+            {graduatedPoolConstant} {tokenSymbol}
           </p>
         </>
       )}

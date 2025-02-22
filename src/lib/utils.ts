@@ -142,7 +142,8 @@ export function getEthBuyQuote(currentSupply: number, ethOrderSize: number) {
   return BigInt(Math.floor(realSize));
 }
 
-export function getTokenSellQuote(currentSupply: number, tokenToSell: number) {
+export function getTokenSellQuote(currentSupply = 0, tokenToSell = 0) {
+  if (!currentSupply || !tokenToSell) return BigInt(0);
   const { A, B } = BondingCurveConfig;
   const expBx0 = Math.exp((B * currentSupply) / 1e18) * 1e18;
   const expBx1 = Math.exp((B * (currentSupply - tokenToSell)) / 1e18) * 1e18;

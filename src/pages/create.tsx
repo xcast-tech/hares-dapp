@@ -14,7 +14,7 @@ import React, { FormEvent, PropsWithChildren, useRef, useState } from "react";
 import Image from "next/image";
 import { useHaresContract } from "@/hooks/useHaresContract";
 import { toast } from "react-toastify";
-import { ABIs, EventTopic } from "@/lib/constant";
+import { ABIs, EventTopic, tokenSymbol } from "@/lib/constant";
 import { useRouter } from "next/router";
 import { decodeEventLog } from "viem";
 import { cn } from "@/lib/utils";
@@ -90,6 +90,9 @@ const Create = () => {
         return tokenAddress;
       }
     } catch (error: any) {
+      if (error.message.includes("User rejected the request")) {
+        return;
+      }
       toast(error?.message);
     }
     return "";
@@ -100,9 +103,6 @@ const Create = () => {
     if (res?.data?.picture) {
       router.push(`/token/${address}`);
     } else {
-      setTimeout(() => {
-        loopToken({ address });
-      }, 2000);
       return new Promise((resolve) => {
         setTimeout(() => {
           resolve(loopToken({ address }));
@@ -125,7 +125,7 @@ const Create = () => {
       const address = await handleCreateToken(name.trim(), ticker.trim());
 
       if (address) {
-        setUpApi({
+        await setUpApi({
           address,
           picture: file,
           website: website.trim(),
@@ -393,8 +393,8 @@ const Create = () => {
                     label="dev buy"
                     name="devBuy"
                     type="number"
-                    endContent="ETH"
-                    placeholder="Amount in ETH"
+                    endContent={tokenSymbol}
+                    placeholder={`Amount in ${tokenSymbol}`}
                     value={devBuyAmount}
                     onChange={(e) => setDevBuyAmount(e.target.value)}
                   />
