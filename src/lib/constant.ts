@@ -9,10 +9,11 @@ import { Address } from "./types";
 import { parseEther } from "viem";
 
 export const mainChain = polygon;
+
 export const contractAddress = {
   BondingCurve: "0x60349c2bCc7a5c4B7A633843A3c689fdcAbD7233" as Address,
   BABTValidatorAddress: "0x389B9897E8a5a8e5F08D19bECfBF0f5a08960117" as Address,
-  HaresFactory: "0x60d7d1FB3cfD1aefecdb8164b65ED6dd70b9bc64" as Address,
+  HaresFactory: "0xA59131DCB67abcCafe3810EC75714FA9e1e304dF" as Address,
   WETH: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270" as Address,
 };
 
