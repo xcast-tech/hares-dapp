@@ -1,7 +1,9 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styled from "@emotion/styled";
+import { useGlobalCtx } from "@/hooks/useGlobalCtx";
 
 const WalletConnectButton = () => {
+  const { shouldSign, handleSign } = useGlobalCtx();
   return (
     <>
       {/* <ConnectButton /> */}
@@ -25,9 +27,17 @@ const WalletConnectButton = () => {
           if (connected)
             return (
               <CryptoBalanceDisplay
+                shouldSign={shouldSign}
                 balance={account.displayBalance}
                 walletAddress={account.address}
-                onClick={openAccountModal}
+                onClick={(sign) => {
+                  console.log("CryptoBalanceDisplay onClick shouldSign:", sign);
+                  if (sign) {
+                    handleSign();
+                    return;
+                  }
+                  openAccountModal();
+                }}
               />
             );
 
@@ -46,12 +56,14 @@ const WalletConnectButton = () => {
 export default WalletConnectButton;
 
 interface WalletInfoProps {
+  shouldSign?: boolean;
   balance?: string;
   walletAddress: string;
-  onClick?: () => void;
+  onClick?: (shouldSign?: boolean) => void;
 }
 
 const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
+  shouldSign,
   balance,
   walletAddress,
   onClick,
@@ -64,31 +76,37 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
     <ProfileBtn
       onClick={() => {
         console.log("ProfileBtn onClick");
-        onClick && onClick();
+        onClick && onClick(shouldSign);
       }}
     >
-      <BalanceText>{balance}</BalanceText>
-      <WalletAddressContainer>
-        <WalletAddress>{truncatedAddress}</WalletAddress>
-        <DropdownIcon>
-          <svg
-            fill="none"
-            height="7"
-            width="14"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <title>Dropdown</title>
-            <path
-              d="M12.75 1.54001L8.51647 5.0038C7.77974 5.60658 6.72026 5.60658 5.98352 5.0038L1.75 1.54001"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.5"
-              xmlns="http://www.w3.org/2000/svg"
-            ></path>
-          </svg>
-        </DropdownIcon>
-      </WalletAddressContainer>
+      {shouldSign ? (
+        <SignMessage>Sign Message</SignMessage>
+      ) : (
+        <>
+          <BalanceText>{balance}</BalanceText>
+          <WalletAddressContainer>
+            <WalletAddress>{truncatedAddress}</WalletAddress>
+            <DropdownIcon>
+              <svg
+                fill="none"
+                height="7"
+                width="14"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>Dropdown</title>
+                <path
+                  d="M12.75 1.54001L8.51647 5.0038C7.77974 5.60658 6.72026 5.60658 5.98352 5.0038L1.75 1.54001"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  xmlns="http://www.w3.org/2000/svg"
+                ></path>
+              </svg>
+            </DropdownIcon>
+          </WalletAddressContainer>
+        </>
+      )}
     </ProfileBtn>
   );
 };
@@ -141,6 +159,10 @@ const ProfileBtn = styled.button`
     background-color: #a4c2f4;
     cursor: not-allowed;
   }
+`;
+
+const SignMessage = styled.span`
+  padding: 8px 12px;
 `;
 
 const BalanceText = styled.span`

@@ -41,7 +41,9 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
     <div className={twMerge(className)}>
       <div className="flex gap-2.5">
         <div className="w-[120px] min-w-[120px] h-[120px] relative">
-          {detail?.picture && <Image fill alt="" src={detail?.picture} />}
+          {detail?.picture && (
+            <Image objectFit="cover" fill alt="" src={detail?.picture} />
+          )}
         </div>
         <div className="flex flex-col gap-1">
           <div className="font-bold">{detail?.name}</div>

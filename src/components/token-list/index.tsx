@@ -16,14 +16,22 @@ function Token({ detail }: TokenProps) {
       <Card>
         <div className="p-3 flex gap-[10px]  h-[144px]">
           <div>
-            <div className="w-[120px] h-[120px] relative">{detail?.picture && <Image fill alt="" src={detail?.picture} />}</div>
+            <div className="w-[120px] h-[120px] relative">
+              {detail?.picture && (
+                <Image objectFit="cover" fill alt="" src={detail?.picture} />
+              )}
+            </div>
           </div>
           <div>
             <div className="text-[16px] font-semibold">{detail?.name}</div>
-            <div className="text-[#999] text-[12px]">created {dayjs().to(dayjs(detail?.created_timestamp * 1000))}</div>
+            <div className="text-[#999] text-[12px]">
+              created {dayjs().to(dayjs(detail?.created_timestamp * 1000))}
+            </div>
             {/* <div className="text-green-400">market cap: ${formatThousandNumber(+detail?.marketCap)}</div> */}
             <div>
-              <span className="break-all line-clamp-3 text-[14px] font-normal">{detail?.desc || "-"}</span>
+              <span className="break-all line-clamp-3 text-[14px] font-normal">
+                {detail?.desc || "-"}
+              </span>
             </div>
           </div>
         </div>
