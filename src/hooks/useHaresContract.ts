@@ -1,32 +1,11 @@
 import { getSignatureApi } from "@/lib/apis";
-import {
-  ABIs,
-  contractAddress,
-  EventTopic,
-  primaryMarketSupply,
-} from "@/lib/constant";
+import { ABIs, contractAddress, EventTopic, primaryMarketSupply } from "@/lib/constant";
 import { Address } from "@/lib/types";
-import {
-  getEthBuyQuote,
-  getSqrtPriceLimitX96,
-  getTokenSellQuote,
-} from "@/lib/utils";
+import { getEthBuyQuote, getSqrtPriceLimitX96, getTokenSellQuote } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
-import {
-  decodeEventLog,
-  parseEther,
-  zeroAddress,
-  padBytes,
-  bytesToHex,
-  zeroHash,
-} from "viem";
-import {
-  useAccount,
-  usePublicClient,
-  useWriteContract,
-  useWalletClient,
-} from "wagmi";
+import { decodeEventLog, parseEther, zeroAddress, padBytes, bytesToHex, zeroHash } from "viem";
+import { useAccount, usePublicClient, useWriteContract, useWalletClient } from "wagmi";
 
 export function useHaresContract() {
   const { address } = useAccount();
@@ -36,20 +15,19 @@ export function useHaresContract() {
   const { data: hash, writeContract, writeContractAsync } = useWriteContract();
 
   async function createToken(name: string, symbol: string, value: string = "") {
+    const isBNBTest = process.env.BNBTest === "true";
     const tx = await writeContractAsync({
       address: contractAddress.HaresFactory,
       abi: ABIs.HaresFactoryAbi,
       functionName: "createToken",
-      args: [name, symbol, zeroAddress],
+      args: [name, symbol, isBNBTest ? contractAddress.BABTValidatorAddress : zeroAddress],
       // gas,
       value: parseEther(value),
     });
     const res = await publicClient?.waitForTransactionReceipt({
       hash: tx,
     });
-    const tokenCreatedEvent = res?.logs?.find(
-      (log) => log.topics[0] === EventTopic.HaresTokenCreated
-    );
+    const tokenCreatedEvent = res?.logs?.find((log) => log.topics[0] === EventTopic.HaresTokenCreated);
     if (tokenCreatedEvent) {
       const event = decodeEventLog({
         abi: ABIs.HaresFactoryAbi,
@@ -116,12 +94,7 @@ export function useHaresContract() {
     return res[0];
   }
 
-  async function buy(
-    token: Address,
-    eth: number,
-    slipage: number,
-    onTxSend: (tx: string) => void = () => {}
-  ) {
+  async function buy(token: Address, eth: number, slipage: number, onTxSend: (tx: string) => void = () => {}) {
     if (!address) {
       return;
     }
@@ -136,9 +109,7 @@ export function useHaresContract() {
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
-      sqrtPriceLimitX96 = BigInt(
-        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true)
-      );
+      sqrtPriceLimitX96 = BigInt(getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true));
       // sqrtPriceLimitX96 = sqrtPriceX96;
     } else {
       // primaryMarket
@@ -161,19 +132,12 @@ export function useHaresContract() {
     return tx;
   }
 
-  async function sell(
-    token: Address,
-    tokenToSell: number,
-    slipage: number,
-    onTxSend: (tx: string) => void = () => {}
-  ) {
+  async function sell(token: Address, tokenToSell: number, slipage: number, onTxSend: (tx: string) => void = () => {}) {
     if (!address) {
       return;
     }
     const currentSupply = await getCurrentSupply(token);
-    const sellQuote = Number(
-      getTokenSellQuote(Number(currentSupply) / 1e18, tokenToSell)
-    );
+    const sellQuote = Number(getTokenSellQuote(Number(currentSupply) / 1e18, tokenToSell));
 
     let minOrderSize = BigInt(0);
     let sqrtPriceLimitX96 = BigInt(0);
@@ -181,9 +145,7 @@ export function useHaresContract() {
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
-      sqrtPriceLimitX96 = BigInt(
-        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, false)
-      );
+      sqrtPriceLimitX96 = BigInt(getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, false));
     } else {
       minOrderSize = BigInt(Math.floor(sellQuote * (1 - slipage)));
     }
@@ -219,12 +181,7 @@ export function useHaresContract() {
       address: token,
       abi: ABIs.HaresAbi,
       functionName: "sell",
-      args: [
-        parseEther(tokenToSell.toString()),
-        address,
-        minOrderSize,
-        sqrtPriceLimitX96,
-      ],
+      args: [parseEther(tokenToSell.toString()), address, minOrderSize, sqrtPriceLimitX96],
       gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
     });
     onTxSend(tx);
