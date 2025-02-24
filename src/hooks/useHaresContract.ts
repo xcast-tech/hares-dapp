@@ -15,7 +15,7 @@ export function useHaresContract() {
   const { data: hash, writeContract, writeContractAsync } = useWriteContract();
 
   async function createToken(name: string, symbol: string, value: string = "") {
-    const isBNBTest = process.env.BNBTest === "true";
+    const isBNBTest = process.env.NEXT_PUBLIC_BNBTest === "true";
     const tx = await writeContractAsync({
       address: contractAddress.HaresFactory,
       abi: ABIs.HaresFactoryAbi,

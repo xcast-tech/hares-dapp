@@ -8,7 +8,7 @@ import UniswapV3Pool from "./abi/UniswapV3Pool";
 import { Address } from "./types";
 import { parseEther } from "viem";
 
-const isBNBTest = process.env.BNBTest === "true";
+const isBNBTest = process.env.NEXT_PUBLIC_BNBTest === "true";
 
 export const mainChain = isBNBTest ? bsc : polygon;
 export const contractAddress = isBNBTest
