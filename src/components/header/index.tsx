@@ -28,7 +28,6 @@ import style from "./style.module.css";
 import { HaresAiTwitterLink, HaresAiWarpcastLink } from "@/lib/constant";
 import { useConnect, useDisconnect, useAccountEffect } from "wagmi";
 import ConnectButton from "@/components/connect-button";
-import { useGlobalCtx } from "@/hooks/useGlobalCtx";
 
 const ChevronDownIcon = () => {
   return (

@@ -29,6 +29,8 @@ interface GlobalContextType {
   profile: ProfileType | undefined;
   isLoading: boolean;
   shouldSign: boolean;
+  tradingLoading: boolean;
+  setTradingLoading: (loading: boolean) => void;
   handleSign: () => void;
 }
 
@@ -44,6 +46,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [signLoading, setSignLoading] = useState(false);
   const [shouldSign, setShouldSign] = useState(false);
+  const [tradingLoading, setTradingLoading] = useState(false);
 
   const isLogin = useMemo(() => {
     return (
@@ -141,7 +144,16 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <GlobalContext.Provider
-      value={{ isLogin, address, profile, isLoading, shouldSign, handleSign }}
+      value={{
+        isLogin,
+        address,
+        profile,
+        isLoading,
+        shouldSign,
+        handleSign,
+        tradingLoading,
+        setTradingLoading,
+      }}
     >
       {children}
     </GlobalContext.Provider>

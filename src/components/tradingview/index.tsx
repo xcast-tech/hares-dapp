@@ -1,10 +1,7 @@
 import { ABIs } from "@/lib/constant";
 import DataFeed from "@/lib/trading-view/data-feed";
 import Script from "next/script";
-import { useEffect, useState } from "react";
-import { useWatchContractEvent } from "wagmi";
-import { watchContractEvent } from "@wagmi/core";
-import { wagmiConfig } from "@/lib/wagmi";
+import { useEffect, useRef, useState } from "react";
 
 type Props = {
   symbol: string;
@@ -17,6 +14,9 @@ type Props = {
 export default function TradingView(props: Props) {
   const { symbol, address, ethPrice, className, onNewTrade } = props;
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const chartContainerRef = useRef<HTMLDivElement>(
+    null
+  ) as React.MutableRefObject<HTMLInputElement>;
 
   // useWatchContractEvent({
   //   address,
@@ -68,7 +68,7 @@ export default function TradingView(props: Props) {
         disabled_features: [],
         enabled_features: [],
         datafeed: DataFeed(symbol, address, ethPrice, onNewTrade),
-        theme: "dark", // 暗色主题
+        theme: "dark",
         overrides: {
           "paneProperties.background": "#000000", // 图表背景色
           "paneProperties.backgroundType": "solid", // 背景类型
@@ -80,15 +80,15 @@ export default function TradingView(props: Props) {
         },
       });
       widget.onChartReady(function () {
-        // 可以在这里再次尝试应用 overrides
+        // overrides update
         widget.applyOverrides({
-          "paneProperties.background": "#000000", // 图表背景色
-          "paneProperties.backgroundType": "solid", // 背景类型
-          "paneProperties.borderColor": "#333", // 边框颜色
-          "scalesProperties.textColor": "#FFFFFF", // 刻度文字颜色
-          "scalesProperties.lineColor": "#aaaaaa", // 刻度线颜色
-          "chart.backgroundColor": "#020024", // 设置背景颜色
-          "chart.crosshairColor": "#555", // 十字线颜色
+          "paneProperties.background": "#000000",
+          "paneProperties.backgroundType": "solid",
+          "paneProperties.borderColor": "#333",
+          "scalesProperties.textColor": "#FFFFFF",
+          "scalesProperties.lineColor": "#aaaaaa",
+          "chart.backgroundColor": "#020024",
+          "chart.crosshairColor": "#555",
         });
         // 确保图表加载完成后再移除所有已加载的指标
         widget.chart().removeAllStudies(); // 移除所有默认的指标
@@ -105,7 +105,12 @@ export default function TradingView(props: Props) {
         onLoad={() => setIsScriptLoaded(true)}
         src="/scripts/charting_library.standalone.js"
       ></Script>
-      <div id="tv_chart_container" className="w-full h-full"></div>
+      <Script src="/scripts/datafeed.js"></Script>
+      <div
+        ref={chartContainerRef}
+        id="tv_chart_container"
+        className="w-full h-full"
+      ></div>
     </div>
   );
 }

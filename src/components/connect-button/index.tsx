@@ -1,6 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import styled from "@emotion/styled";
-import { useGlobalCtx } from "@/hooks/useGlobalCtx";
+import { useGlobalCtx } from "@/context/useGlobalCtx";
 
 const WalletConnectButton = () => {
   const { shouldSign, handleSign } = useGlobalCtx();

@@ -319,6 +319,52 @@ export function convertTradesToBar(trades: Trade[], ethPrice: number) {
   };
 }
 
+export function convertTradesToBarData(
+  trades: Trade[],
+  nativeTokenPrice: number
+) {
+  // initialSupply: the total supply of the token before the first trade
+  const initialSupply =
+    Number(trades[0].totalSupply) +
+    (trades[0].type === 0 ? -1 : 1) * Number(trades[0].trueOrderSize);
+  const open =
+    (Number(getTokenSellQuote(initialSupply / 1e18, 1)) / 1e18) *
+    nativeTokenPrice;
+  const close =
+    (Number(
+      getTokenSellQuote(+trades[trades.length - 1].totalSupply / 1e18, 1)
+    ) /
+      1e18) *
+    nativeTokenPrice;
+  const low = Math.min(
+    ...trades.map(
+      (t) =>
+        (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) *
+        nativeTokenPrice
+    )
+  );
+  const high = Math.max(
+    ...trades.map(
+      (t) =>
+        (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) *
+        nativeTokenPrice
+    )
+  );
+  return {
+    time: trades[trades.length - 1].timestamp,
+    open,
+    close,
+    low,
+    high,
+    volume: Math.abs(
+      trades.reduce(
+        (acc, t) => acc + (t.type === 0 ? 1 : -1) * Number(t.trueOrderSize),
+        0
+      ) / 1e18
+    ),
+  };
+}
+
 export function getHost() {
   if (process.env.LOCAL === "true") return "http://127.0.0.1:3001";
   return "https://hares.ai";
@@ -326,4 +372,40 @@ export function getHost() {
 
 export const formatAddressString = (address: string) => {
   return `${address.slice(0, 4)}...${address.slice(-4)}`;
+};
+
+export function isTimestampInSeconds(timestamp: number) {
+  // A timestamp in seconds is usually less than 10^10
+  return timestamp < 1e10;
+}
+
+export const formatTimestampInSecond = (timestamp: number) => {
+  if (isNaN(timestamp)) return 0;
+  if (isTimestampInSeconds(timestamp)) return timestamp;
+  return Math.floor(timestamp / 1000);
+};
+
+export const groupDatasInRanges = (
+  trades: Trade[],
+  range: number,
+  from: number,
+  to: number
+) => {
+  const result: Trade[][] = [];
+  const rangeCount = Math.ceil((to - from) / range);
+  const rangeGroup = Array.from({ length: rangeCount })
+    .fill("")
+    .map((_, i) => {
+      return {
+        from: Math.max(from + i * range, from),
+        to: Math.min(from + (i + 1) * range, to),
+      };
+    });
+  rangeGroup.forEach((range) => {
+    const rangeDatas = trades.filter(
+      (trade) => trade.timestamp >= range.from && trade.timestamp < range.to
+    );
+    result.push(rangeDatas);
+  });
+  return result;
 };

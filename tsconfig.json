@@ -15,12 +15,13 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "~@/*": ["./public/*"]
     }
   },
   "ts-node": {
     "compilerOptions": {
-      "module": "commonjs",
+      "module": "commonjs"
     },
     "require": ["tsconfig-paths/register"]
   },

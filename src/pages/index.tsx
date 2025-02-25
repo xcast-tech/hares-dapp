@@ -2,7 +2,14 @@ import { SkeletonTokenList } from "@/components/skeleton-token-list";
 import { TokenList } from "@/components/token-list";
 import { tokenListApi, TokenListApiData } from "@/lib/apis";
 import Image from "next/image";
-import { Button, Input, InputProps, Select, SelectItem, SelectProps } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  InputProps,
+  Select,
+  SelectItem,
+  SelectProps,
+} from "@nextui-org/react";
 import { debounce } from "lodash-es";
 import Head from "next/head";
 import Link from "next/link";
@@ -114,9 +121,24 @@ export default function Home() {
         <title>hares.ai</title>
       </Head>
       <div className="pb-[80px]">
-        <div className={cn("w-full flex justify-center h-[120px] relative", "xl:h-[210px]")}>
-          <Image src="/left.png" fill className="object-left object-contain" alt={""} />
-          <Image src="/right.png" fill className="object-right object-contain" alt={""} />
+        <div
+          className={cn(
+            "w-full flex justify-center h-[120px] relative",
+            "xl:h-[210px]"
+          )}
+        >
+          <Image
+            src="/left.png"
+            fill
+            className="object-left object-contain"
+            alt={""}
+          />
+          <Image
+            src="/right.png"
+            fill
+            className="object-right object-contain"
+            alt={""}
+          />
 
           <div className="h-full flex items-center relative">
             <Link href="/create">
@@ -128,27 +150,53 @@ export default function Home() {
               >
                 <div className="flex items-center justify-center gap-2">
                   <Image src="/btn-star.svg" height={16} width={32} alt={""} />
-                  <div className="text-[20px] font-bold">[start a new coin]</div>
-                  <Image src="/btn-star.svg" height={16} width={32} className="rotate-180" alt={""} />
+                  <div className="text-[20px] font-bold">
+                    [start a new coin]
+                  </div>
+                  <Image
+                    src="/btn-star.svg"
+                    height={16}
+                    width={32}
+                    className="rotate-180"
+                    alt={""}
+                  />
                 </div>
               </Button>
             </Link>
           </div>
         </div>
 
-        <div className={cn("-translate-y-1/2 mx-6 mb-4 flex justify-center gap-2 shadow-[0px_0px_0px_10px_#191919] rounded-[16px]", "xl:w-[600px] xl:mx-auto")}>
+        <div
+          className={cn(
+            "-translate-y-1/2 mx-6 mb-4 flex justify-center gap-2 shadow-[0px_0px_0px_10px_#191919] rounded-[16px]",
+            "xl:w-[600px] xl:mx-auto"
+          )}
+        >
           <Input
             type="text"
             placeholder="Search For Token"
             fullWidth
             onChange={handleNameChangeDebounce}
-            classNames={{ inputWrapper: cn("h-[40px] text-[#666] text-[16px] !bg-[#141414]", "xl:h-[60px]") }}
+            classNames={{
+              inputWrapper: cn(
+                "h-[40px] text-[#666] text-[16px] !bg-[#141414]",
+                "xl:h-[60px]"
+              ),
+            }}
           />
         </div>
 
         <div className="p-4 mt-5 xl:mt-10">
           <div className="mb-4">
-            <Select className="w-[180px]" classNames={{ trigger: "!bg-[#1A1A1A] border border-solid border-[#262626]" }} label="Sort" selectedKeys={[sort]} onSelectionChange={handleSortChange}>
+            <Select
+              className="w-[180px]"
+              classNames={{
+                trigger: "!bg-[#1A1A1A] border border-solid border-[#262626]",
+              }}
+              label="Sort"
+              selectedKeys={[sort]}
+              onSelectionChange={handleSortChange}
+            >
               {sortOptions.map((opt) => (
                 <SelectItem key={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -165,11 +213,30 @@ export default function Home() {
             )
           )}
 
-          {loading && <SkeletonTokenList list={Array(pageSize).fill({})} className="mt-4" />}
+          {loading && (
+            <SkeletonTokenList
+              list={Array(pageSize).fill({})}
+              className="mt-4"
+            />
+          )}
 
           <div ref={paginationDomRef}></div>
         </div>
       </div>
+      {/* <div
+        style={{
+          width: "100%",
+          height: "500px",
+          background: "#000",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <button className="shiny-cta">
+          <span>Get unlimited access</span>
+        </button>
+      </div> */}
     </>
   );
 }

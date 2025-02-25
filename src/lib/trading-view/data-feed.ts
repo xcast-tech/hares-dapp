@@ -77,7 +77,14 @@ export default (
     onErrorCallback: Function
   ) => {
     const { from, to, firstDataRequest } = periodParams;
-    console.log("[getBars]: Method call", symbolInfo, resolution, periodParams);
+    console.log(
+      "[getBars]: Method call",
+      symbolInfo,
+      resolution,
+      periodParams,
+      "ethPrice",
+      ethPrice
+    );
     if (!historyTrades) {
       const res = await fetch(`/api/trade/history?address=${address}`).then(
         (res) => res.json()
@@ -94,6 +101,14 @@ export default (
       to,
       resolution,
       ethPrice
+    );
+    console.log(
+      "[getBars history]: Bars history",
+      bars,
+      "from",
+      from,
+      "to",
+      to
     );
     if (firstDataRequest) {
       cacheStartTime = to * 1000;

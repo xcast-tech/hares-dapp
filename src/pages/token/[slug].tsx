@@ -36,6 +36,7 @@ import { TradeList } from "@/components/trade-list";
 import { TopHolders } from "@/components/top-holders";
 import { formatEther } from "viem";
 import { tokenSymbol } from "@/lib/constant";
+import { TradingChart } from "@/components/trading-chart";
 
 const TabKeys = {
   buy: "buy",
@@ -432,13 +433,26 @@ export default function Token(props: IToken) {
       </div>
       <div className={cn("flex flex-col gap-6", "xl:flex-row")}>
         <div className="xl:flex-1">
-          <TradingView
+          {/* <TradingView
             className="w-full h-[500px] bg-black"
             symbol={detail.symbol}
             address={ca}
             ethPrice={ethPrice}
             onNewTrade={handleNewTrade}
-          />
+          /> */}
+          <div className="w-full h-[500px] bg-black">
+            <TradingChart
+              param={{
+                name: detail.name,
+                ticker: detail.symbol,
+                creator: detail.creatorAddress,
+                url: detail.website,
+                reserveOne: 1,
+                reserveTwo: 1,
+                token: detail.address as `0x${string}`,
+              }}
+            />
+          </div>
           <TradeList
             list={historyList}
             symbol={detail.symbol}
