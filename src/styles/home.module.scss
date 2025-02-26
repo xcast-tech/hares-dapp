@@ -1,0 +1,35 @@
+.select-base {
+  height: 100%;
+  background-color: transparent;
+}
+.select-trigger {
+  padding: 0 24px;
+  height: 100%;
+  background-color: transparent;
+  border-radius: 0;
+}
+
+.select-main-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.select-inner-wrapper {
+  width: 102px;
+  height: 100%;
+}
+
+.select-value {
+  color: #eaecef;
+
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%;
+}
+
+.select-selector-icon {
+  width: 16px;
+  height: 16px;
+  color: #eaecef;
+}

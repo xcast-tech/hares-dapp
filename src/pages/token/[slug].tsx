@@ -9,7 +9,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useEffect, useState } from "react";
 import { Info } from "@/components/info";
 import { getTokenTopHoldersApi } from "@/lib/apis";
@@ -24,10 +24,11 @@ import {
   formatTokenBalance,
   getEthBuyQuote,
   getTokenSellQuote,
+  removeDuplicateTrades,
 } from "@/lib/utils";
 import { useHaresContract } from "@/hooks/useHaresContract";
 import { toast } from "react-toastify";
-import { useAccount } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { useAppContext } from "@/context/useAppContext";
 import TradingView from "@/components/tradingview";
 import Head from "next/head";
@@ -35,8 +36,16 @@ import { getTokenDetail } from "@/lib/model";
 import { TradeList } from "@/components/trade-list";
 import { TopHolders } from "@/components/top-holders";
 import { formatEther } from "viem";
-import { tokenSymbol } from "@/lib/constant";
+import { primaryMarketSupply, tokenSymbol } from "@/lib/constant";
 import { TradingChart } from "@/components/trading-chart";
+import styled from "@emotion/styled";
+import BSCIcon from "~@/icons/bsc.svg";
+
+import styles from "./index.module.scss";
+import { useGlobalCtx } from "@/context/useGlobalCtx";
+import { TokenInfo } from "@/components/token/info";
+
+console.log("- styles:", styles);
 
 const TabKeys = {
   buy: "buy",
@@ -76,8 +85,9 @@ export default function Token(props: IToken) {
   const { ethPrice } = useAppContext();
   const { login, userInfo } = useFarcasterContext();
   const { buy, sell, getTokenBalance } = useHaresContract();
+  const { address, shouldSign, handleSign } = useGlobalCtx();
 
-  const { address } = useAccount();
+  const { data: balance } = useBalance({ address });
 
   const ca = detail.address as Address;
   const [totalSupply, setTotalSupply] = useState(detail.totalSupply);
@@ -102,7 +112,7 @@ export default function Token(props: IToken) {
 
   const buyOptions = [
     {
-      label: "reset",
+      label: "Reset",
       value: 0,
     },
     {
@@ -125,7 +135,7 @@ export default function Token(props: IToken) {
 
   const sellOptions = [
     {
-      label: "reset",
+      label: "Reset",
       value: 0,
     },
     {
@@ -146,12 +156,14 @@ export default function Token(props: IToken) {
     if (trades?.length > 0) {
       const newTrade = trades[trades.length - 1];
       if (trades.length === 1) {
-        if (Number(trades[0].totalSupply) > 8e26) {
+        if (Number(trades[0].totalSupply) > primaryMarketSupply) {
           setIsGraduate(1);
         }
-        setHistoryList((v) => [...trades, ...v]);
+        setHistoryList((v) => removeDuplicateTrades([...trades, ...v]));
       } else {
-        setHistoryList((v) => [...v, ...trades].sort((a, b) => b.id - a.id));
+        setHistoryList((v) =>
+          removeDuplicateTrades([...v, ...trades].sort((a, b) => b.id - a.id))
+        );
       }
       setTotalSupply(newTrade.totalSupply);
 
@@ -231,10 +243,14 @@ export default function Token(props: IToken) {
   }
 
   const tradeComponent = (
-    <div className="text-xs xl:text-sm">
+    <StyledActionContainer>
       <Tabs
         fullWidth
-        className="h-[40px]"
+        classNames={{
+          tabList: styles["action-tabs"],
+          tab: styles["action-tab"],
+          cursor: styles["action-cursor"],
+        }}
         size="lg"
         color={tabColor}
         selectedKey={tabKey}
@@ -243,124 +259,137 @@ export default function Token(props: IToken) {
         <Tab key={TabKeys.buy} title="Buy" />
         <Tab key={TabKeys.sell} title="Sell" />
       </Tabs>
-      <div className="mt-6">
-        {tabKey === TabKeys.buy && (
-          <div>
-            <div>
-              <div className="mb-3 flex justify-between items-center">
-                <span>Amount ({tokenSymbol})</span>
-                <Button
-                  size="sm"
-                  className="text-[#999] h-[26px]"
-                  onPress={() => {
-                    setEditSlippage(slippage);
-                    setSlippageModalOpen(true);
-                  }}
-                >
-                  set max slippage
-                </Button>
-              </div>
-              <div>
-                <Input
+      <StyledActionTrade>
+        <StyledActionTradeTop>
+          <StyledTokenActionTradeAmount>
+            <span>Amount&nbsp;</span>
+            <span>
+              ({tabKey === TabKeys.buy ? tokenSymbol : detail?.symbol}):
+            </span>
+            <span>
+              &nbsp;&nbsp;
+              {tabKey === TabKeys.buy
+                ? formatBigintTokenBalance(balance?.value || BigInt(0))
+                : formatBigintTokenBalance(tokenBalance)}
+            </span>
+          </StyledTokenActionTradeAmount>
+          <StyledTokenActionTradeSlippageBtn
+            onPress={() => {
+              setEditSlippage(slippage);
+              setSlippageModalOpen(true);
+            }}
+          >
+            set max slippage
+          </StyledTokenActionTradeSlippageBtn>
+        </StyledActionTradeTop>
+        <StyledTokenActionTradePlace>
+          {tabKey === TabKeys.buy ? (
+            <StyledTokenActionTradePlaceInner>
+              <StyledTokenActionTradePlaceInputBox>
+                <StyledTokenActionTradePlaceInput
                   value={buyInputValue}
+                  placeholder="0.00"
                   onChange={(e) => {
                     setBuyInputValue(e.target.value);
                   }}
                   type="number"
-                  endContent={tokenSymbol}
                   autoFocus={false}
                 />
-              </div>
-            </div>
-
-            <div className="mt-4 mb-2 flex gap-1">
-              {buyOptions.map((option, i) => {
-                return (
-                  <Chip
-                    key={i}
-                    size="sm"
-                    className="cursor-pointer text-[10px] xl:text-xs"
-                    onClick={() => {
-                      setBuyInputValue(String(option.value));
-                    }}
-                  >
-                    {option.label}
-                  </Chip>
-                );
-              })}
-            </div>
-            {buyInputValue && !isGraduate && (
-              <p className="text-xs text-gray-500">
-                {detail?.symbol} received:{" "}
-                {Number(
-                  getEthBuyQuote(
-                    Number(totalSupply) / 1e18,
-                    Number(buyInputValue)
-                  )
-                ) / 1e18}
-              </p>
-            )}
-            {/* Need to add BABT validation */}
-            <Button
-              fullWidth
-              color="success"
-              className="mt-2"
-              onPress={handleBuy}
-              isLoading={trading}
-            >
-              {trading ? "Trading..." : "Place trade"}
-            </Button>
-          </div>
-        )}
-
-        {tabKey === TabKeys.sell && (
-          <div>
-            <div>
-              <div>
-                <div className="mb-3 flex items-center justify-between">
-                  <div>Amount ({detail?.symbol})</div>
-                  <div className="flex gap-2 items-center">
-                    <div className="text-gray-300 text-sm">
-                      {formatBigintTokenBalance(tokenBalance)}
-                    </div>
-                    <Button
-                      size="sm"
-                      className="text-[#999] h-[26px]"
-                      onPress={() => {
-                        setEditSlippage(slippage);
-                        setSlippageModalOpen(true);
+                <StyledTokenActionTradeDivider />
+                <StyledTokenActionInputRight>
+                  <span>{tokenSymbol}</span>
+                  <StyledTokenActionInputIcon
+                    alt="token icon"
+                    src="/icons/bsc.svg"
+                  />
+                </StyledTokenActionInputRight>
+              </StyledTokenActionTradePlaceInputBox>
+              {buyInputValue && !isGraduate && (
+                <StyledTokenReceived>
+                  {detail?.symbol} received:{" "}
+                  {formatDecimalNumber(
+                    formatEther(
+                      getEthBuyQuote(
+                        Number(totalSupply) / 1e18,
+                        Number(buyInputValue)
+                      )
+                    )
+                  )}
+                </StyledTokenReceived>
+              )}
+              <StyledTokenActionTradePlaceOptions>
+                {buyOptions.map((option, i) => {
+                  return (
+                    <StyledChip
+                      key={i}
+                      onClick={() => {
+                        setBuyInputValue(String(option.value));
                       }}
                     >
-                      set max slippage
-                    </Button>
-                  </div>
-                </div>
-                <div>
-                  <Input
-                    value={sellInputValue}
-                    onChange={(e) => {
-                      setSellInputValue(e.target.value);
-                    }}
-                    type="number"
-                    endContent={detail?.symbol}
-                    autoFocus={false}
+                      {option.label}
+                    </StyledChip>
+                  );
+                })}
+              </StyledTokenActionTradePlaceOptions>
+              <StyledTokenActionTradePlaceSubmit
+                fullWidth
+                color="success"
+                onPress={() => {
+                  if (!address || shouldSign) {
+                    handleSign();
+                    return;
+                  }
+                  handleBuy();
+                }}
+                isLoading={trading}
+              >
+                {!address || shouldSign ? (
+                  <span>Sign In First</span>
+                ) : (
+                  <span>{trading ? "Trading..." : "Place trade"}</span>
+                )}
+              </StyledTokenActionTradePlaceSubmit>
+            </StyledTokenActionTradePlaceInner>
+          ) : (
+            <StyledTokenActionTradePlaceInner>
+              <StyledTokenActionTradePlaceInputBox>
+                <StyledTokenActionTradePlaceInput
+                  value={sellInputValue}
+                  onChange={(e) => {
+                    setSellInputValue(e.target.value);
+                  }}
+                  type="number"
+                  autoFocus={false}
+                />
+                <StyledTokenActionTradeDivider />
+                <StyledTokenActionInputRight>
+                  <span>{detail?.symbol}</span>
+                  <StyledTokenActionInputIcon
+                    alt="token icon"
+                    src={detail?.picture}
                   />
-                </div>
-              </div>
-
-              <div className="mt-4 mb-2 flex gap-1">
+                </StyledTokenActionInputRight>
+              </StyledTokenActionTradePlaceInputBox>
+              {sellInputValue && !isGraduate && (
+                <StyledTokenReceived>
+                  {tokenSymbol} received:{" "}
+                  {formatDecimalNumber(
+                    formatEther(
+                      getTokenSellQuote(
+                        Number(totalSupply) / 1e18,
+                        Number(sellInputValue)
+                      )
+                    )
+                  )}
+                </StyledTokenReceived>
+              )}
+              <StyledTokenActionTradePlaceOptions>
                 {sellOptions.map((option, i) => {
                   return (
-                    <Chip
+                    <StyledChip
                       key={i}
-                      size="sm"
-                      className="cursor-pointer text-[10px] xl:text-xs"
                       onClick={async () => {
-                        if (!address) {
-                          toast("Please connect wallet first");
-                          return;
-                        }
-                        const balance = await fetchTokenBalance(ca, address);
+                        const balance = await fetchTokenBalance(ca, address!);
                         const amount = formatToFourDecimalPlaces(
                           formatEther(
                             (balance * BigInt(option.value * 100)) / BigInt(100)
@@ -370,35 +399,33 @@ export default function Token(props: IToken) {
                       }}
                     >
                       {option.label}
-                    </Chip>
+                    </StyledChip>
                   );
                 })}
-              </div>
-            </div>
-            {sellInputValue && !isGraduate && (
-              <p className="text-xs text-gray-500">
-                {tokenSymbol} received:{" "}
-                {Number(
-                  getTokenSellQuote(
-                    Number(totalSupply) / 1e18,
-                    Number(sellInputValue)
-                  )
-                ) / 1e18}
-              </p>
-            )}
-            <Button
-              fullWidth
-              color="danger"
-              className="mt-2"
-              onPress={handleSell}
-              isLoading={trading}
-            >
-              {trading ? "Trading..." : "Place trade"}
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
+              </StyledTokenActionTradePlaceOptions>
+              <StyledTokenActionTradePlaceSubmit
+                fullWidth
+                color="danger"
+                onPress={() => {
+                  if (!address || shouldSign) {
+                    handleSign();
+                    return;
+                  }
+                  handleSell();
+                }}
+                isLoading={trading}
+              >
+                {!address || shouldSign ? (
+                  <span>Sign In First</span>
+                ) : (
+                  <span>{trading ? "Trading..." : "Place trade"}</span>
+                )}
+              </StyledTokenActionTradePlaceSubmit>
+            </StyledTokenActionTradePlaceInner>
+          )}
+        </StyledTokenActionTradePlace>
+      </StyledActionTrade>
+    </StyledActionContainer>
   );
 
   useEffect(() => {
@@ -415,72 +442,74 @@ export default function Token(props: IToken) {
   }, [ca]);
 
   return (
-    <div className={cn("px-4 pb-8", "xl:px-[7vw]")}>
+    <>
       <Head>
         <title>{`${detail?.symbol} | hares.ai`}</title>
       </Head>
-      <div className="my-6">
-        <h1 className="text-medium break-all xl:text-lg">
-          <span className="font-bold">{detail?.symbol}: </span>
-          <span>{ca}</span>
-        </h1>
-        {isGraduate ? (
-          <p className="text-green-400 mb-2">
-            The token has already graduated and been migrated to the Uniswap V3
-            pool.
-          </p>
-        ) : null}
-      </div>
-      <div className={cn("flex flex-col gap-6", "xl:flex-row")}>
-        <div className="xl:flex-1">
-          {/* <TradingView
-            className="w-full h-[500px] bg-black"
-            symbol={detail.symbol}
-            address={ca}
-            ethPrice={ethPrice}
-            onNewTrade={handleNewTrade}
-          /> */}
-          <div className="w-full h-[500px] bg-black">
-            <TradingChart
-              param={{
-                name: detail.name,
-                ticker: detail.symbol,
-                creator: detail.creatorAddress,
-                url: detail.website,
-                reserveOne: 1,
-                reserveTwo: 1,
-                token: detail.address as `0x${string}`,
-              }}
-            />
-          </div>
-          <TradeList
+      <StyledTokenContainer>
+        <StyledTokenLeft>
+          <StyledTradingInfo>
+            <StyledTokenInfo>
+              <TokenInfo detail={detail} />
+              <StyledTokenRBHInfo>
+                <b>{detail?.symbol}:&nbsp;</b>
+                <span>{ca}</span>
+              </StyledTokenRBHInfo>
+            </StyledTokenInfo>
+            <StyledTradingChartBox>
+              {!isGraduate ? (
+                <StyledTokenGraduate>
+                  The token has already graduated and been migrated to the
+                  Uniswap V3 pool.
+                </StyledTokenGraduate>
+              ) : null}
+              <StyledTradingChartContainer>
+                {/* <TradingView
+                className="w-full h-[500px] bg-black"
+                symbol={detail.symbol}
+                address={ca}
+                ethPrice={ethPrice}
+                onNewTrade={handleNewTrade}
+              /> */}
+                <TradingChart
+                  param={{
+                    name: detail.name,
+                    ticker: detail.symbol,
+                    creator: detail.creatorAddress,
+                    url: detail.website,
+                    reserveOne: 1,
+                    reserveTwo: 1,
+                    token: detail.address as `0x${string}`,
+                  }}
+                  tradesCallBack={handleNewTrade}
+                />
+              </StyledTradingChartContainer>
+            </StyledTradingChartBox>
+          </StyledTradingInfo>
+
+          {/* <TradeList
             list={historyList}
             symbol={detail.symbol}
             className="hidden xl:block"
-          />
-        </div>
-        <div className={cn("", "xl:w-[400px] xl:min-w-[400px]")}>
-          <div
-            className={cn("hidden", "xl:block bg-[#333] rounded-[16px] p-2")}
-          >
-            {tradeComponent}
-          </div>
+          /> */}
+          <StyledTradeListContainer>
+            <TradeList list={historyList} symbol={detail.symbol} />
+          </StyledTradeListContainer>
+        </StyledTokenLeft>
+        <StyledTradeContainer>
+          {tradeComponent}
+          <StyledTradeTopHolders>
+            <TopHolders list={topHolders} devAddress={detail.creatorAddress} />
+          </StyledTradeTopHolders>
+        </StyledTradeContainer>
 
-          <Info className="mt-8" detail={detail} />
-          <TopHolders
-            list={topHolders}
-            className="mt-4"
-            devAddress={detail.creatorAddress}
-          />
-        </div>
-
-        <TradeList
+        {/* <TradeList
           list={historyList}
           symbol={detail.symbol}
           className="xl:hidden"
-        />
+        /> */}
 
-        <div
+        {/* <div
           className={cn("fixed z-10 left-0 right-0 bottom-4 px-4", "xl:hidden")}
         >
           <Button
@@ -511,8 +540,8 @@ export default function Token(props: IToken) {
               )}
             </ModalContent>
           </Modal>
-        </div>
-      </div>
+        </div> */}
+      </StyledTokenContainer>
 
       <Modal isOpen={slippageModalOpen} onOpenChange={onOpenChange}>
         <ModalContent>
@@ -560,6 +589,259 @@ export default function Token(props: IToken) {
           )}
         </ModalContent>
       </Modal>
-    </div>
+    </>
   );
 }
+
+const StyledTokenContainer = styled.div`
+  padding-top: 14px;
+  padding-left: 32px;
+  padding-right: 32px;
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+`;
+
+const StyledTokenLeft = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+`;
+
+const StyledTradingInfo = styled.div`
+  width: 100%;
+`;
+
+const StyledTradingChartBox = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.05);
+`;
+
+const StyledTradingChartContainer = styled.div`
+  width: 100%;
+  height: 360px;
+`;
+
+const StyledTokenGraduate = styled.div`
+  color: #fcd535;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 19.6px */
+`;
+
+const StyledTokenInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledTokenRBHInfo = styled.div`
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+
+  color: rgba(234, 236, 239, 0.5);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 150%;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: #020308;
+  > b {
+    color: #eaecef;
+    font-weight: 700;
+  }
+`;
+
+const StyledTradeListContainer = styled.div`
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+`;
+
+const StyledTradeContainer = styled.div`
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+const StyledActionContainer = styled.div`
+  padding: 6px;
+  padding-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  border-radius: 34px;
+  border: 1px solid #2b3139;
+  background: #181a1f;
+  overflow: hidden;
+`;
+
+const StyledActionTrade = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 16px;
+  padding-top: 24px;
+`;
+
+const StyledActionTradeTop = styled.div`
+  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const StyledTokenActionTradeAmount = styled.div`
+  flex: 1;
+  color: #eaecef;
+
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%;
+`;
+
+const StyledTokenActionTradeSlippageBtn = styled(Button)`
+  padding: 0 8px;
+  display: flex;
+  height: 26px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  background: rgba(252, 213, 53, 0.1);
+
+  color: #fcd535;
+
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%;
+`;
+
+const StyledTokenActionTradePlace = styled.div``;
+
+const StyledTokenActionTradePlaceInner = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const StyledTokenActionTradePlaceInputBox = styled.div`
+  padding: 0 16px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-radius: 8px;
+  border: 1px solid #2b3139;
+
+  background: #181a1f;
+`;
+
+const StyledTokenActionTradePlaceInput = styled.input`
+  flex: 1;
+  width: 100%;
+  color: #eaecef;
+
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+  outline: none;
+  border: none;
+  background: transparent;
+  &::placeholder {
+    color: rgba(234, 236, 239, 0.5);
+  }
+`;
+
+const StyledTokenActionTradeDivider = styled.div`
+  width: 1px;
+  height: 24px;
+  background: #2b3139;
+`;
+
+const StyledTokenActionInputRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #eaecef;
+
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px;
+`;
+
+const StyledTokenActionInputIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+const StyledTokenReceived = styled.div`
+  height: 18px;
+  line-height: 18px;
+  color: #fcd535;
+
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+`;
+
+const StyledTokenActionTradePlaceOptions = styled.ul`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const StyledChip = styled(Chip)`
+  padding: 0 6px;
+  height: 24px;
+  line-height: 24px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.05);
+
+  color: #eaecef;
+  text-align: center;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  cursor: pointer;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const StyledTokenActionTradePlaceSubmit = styled(Button)`
+  margin-top: 4px;
+  display: flex;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 12px;
+
+  text-align: center;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%; /* 22.5px */
+  text-transform: capitalize;
+`;
+
+const StyledTradeTopHolders = styled.div`
+  width: 100%;
+`;

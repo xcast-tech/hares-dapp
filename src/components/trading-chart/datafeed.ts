@@ -13,15 +13,7 @@ import {
   subscribeOnStream,
   unsubscribeFromStream,
 } from "./streaming";
-
-function removeDuplicateTrades(trades: Trade[]) {
-  const seen = new Set();
-  return trades.filter((trade) => {
-    const duplicate = seen.has(trade.id);
-    seen.add(trade.id);
-    return !duplicate;
-  });
-}
+import { removeDuplicateTrades } from "@/lib/utils";
 
 let subsriberCache: Function[] = [];
 
@@ -156,11 +148,13 @@ export function getDataFeed({
   name,
   token,
   nativeTokenPrice,
+  tradesCallBack,
 }: {
   name: string;
   pairIndex: number;
   token: `0x${string}`;
   nativeTokenPrice: number;
+  tradesCallBack: (trades: Trade[]) => void;
 }): IBasicDataFeed {
   return {
     onReady: (callback) => {
@@ -221,6 +215,7 @@ export function getDataFeed({
 
       try {
         const { list, noData } = await loadTrades(pairIndex, token, from, to);
+        tradesCallBack(list);
 
         console.log(
           "----- get bars trades",
@@ -307,7 +302,8 @@ export function getDataFeed({
         subscriberUID,
         onResetCacheNeededCallback,
         lastBarsCache.get(symbolInfo.name)!,
-        pairIndex
+        pairIndex,
+        tradesCallBack
       );
     },
 

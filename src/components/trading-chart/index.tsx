@@ -9,12 +9,17 @@ import {
 } from "~@/libraries/charting_library/charting_library";
 import { coinInfo } from "./types";
 import { TVChartContainer } from "@/components/trading-chart/container";
+import { Trade } from "@/lib/types";
 
 interface TradingChartProps {
   param: coinInfo;
+  tradesCallBack: (trades: Trade[]) => void;
 }
 
-export const TradingChart: React.FC<TradingChartProps> = ({ param }) => {
+export const TradingChart: React.FC<TradingChartProps> = ({
+  param,
+  tradesCallBack,
+}) => {
   const [isScriptReady, setIsScriptReady] = useState(false);
 
   console.log("tradingview chart", param);
@@ -37,6 +42,7 @@ export const TradingChart: React.FC<TradingChartProps> = ({ param }) => {
           name={param.name}
           pairIndex={10}
           token={param.token}
+          tradesCallBack={tradesCallBack}
         />
       )}
     </>

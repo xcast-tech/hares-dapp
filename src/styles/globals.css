@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #141414;
+  --background: linear-gradient(0deg, #020308 0%, #020308 100%), #020308;
   --foreground: #ededed;
   --shiny-cta-bg: #000000;
     --shiny-cta-bg-subtle: #1a1818;
@@ -12,7 +12,7 @@
     --shiny-cta-highlight-subtle: #8484ff;
 }
 
-body {
+body, html {
   color: var(--foreground);
   background: var(--background);
   font-family: "Inter", Arial, Helvetica, sans-serif;

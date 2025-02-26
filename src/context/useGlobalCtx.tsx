@@ -25,7 +25,7 @@ type ProfileType = {
 };
 interface GlobalContextType {
   isLogin: boolean;
-  address: string | undefined;
+  address: `0x${string}` | undefined;
   profile: ProfileType | undefined;
   isLoading: boolean;
   shouldSign: boolean;

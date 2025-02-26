@@ -28,6 +28,7 @@ type SubscriptionItem = {
   handlers: {
     id: string;
     callback: SubscribeBarsCallback;
+    tradesCallBack: (trades: Trade[]) => void;
   }[];
   pairIndex: number;
 };
@@ -138,6 +139,9 @@ export async function initialWatchEvents(
           subscriptionItem.lastBar = bar;
           // Send data to every subscriber of that symbol
           subscriptionItem.handlers.forEach((handler) => handler.callback(bar));
+          subscriptionItem.handlers.forEach((handler) =>
+            handler.tradesCallBack(sortedTrades)
+          );
         }
       }
     },
@@ -158,14 +162,13 @@ export function subscribeOnStream(
   subscriberUID: string,
   onResetCacheNeededCallback: () => void,
   lastBar: Bar,
-  pairIndex: number
+  pairIndex: number,
+  tradesCallBack: (trades: Trade[]) => void
 ) {
   const handler = {
     id: subscriberUID,
-    callback: (bar: Bar) => {
-      console.log("--- subscribeOnStream new bar", bar);
-      return onRealtimeCallback(bar);
-    },
+    callback: onRealtimeCallback,
+    tradesCallBack: tradesCallBack,
   };
   let subscriptionItem = channelToSubscription.get(pairIndex);
   if (subscriptionItem) {

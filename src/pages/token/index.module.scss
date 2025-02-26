@@ -1,0 +1,32 @@
+.action-tabs {
+  padding: 8px;
+  border-radius: 100px;
+  background: #2b3139;
+  > div {
+    padding: 0;
+    background-color: inherit;
+  }
+}
+
+.action-tab {
+  height: 40px;
+  background-color: transparent;
+  border-radius: 100px;
+
+  color: #eaecef;
+  text-align: center;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
+  &:hover {
+    opacity: 1;
+  }
+  &[data-selected="true"] {
+    opacity: 1;
+  }
+}
+
+.action-cursor {
+  border-radius: inherit;
+}

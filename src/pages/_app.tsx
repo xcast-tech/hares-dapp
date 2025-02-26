@@ -1,5 +1,5 @@
-import { NextUIProvider } from "@nextui-org/react";
-import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { HeroUIProvider } from "@heroui/react";
+// import { heroui as NextThemesProvider } from "@heroui/theme";
 import type { NextPage } from "next";
 import { Header } from "@/components/header";
 import Providers from "@/lib/provider";
@@ -11,8 +11,11 @@ import "react-toastify/dist/ReactToastify.css";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { AppProvider } from "@/context/useAppContext";
-import { ReactElement, ReactNode } from "react";
+import { ReactElement, ReactNode, use, useEffect } from "react";
 import { cn, getDomain } from "@/lib/utils";
+import { Inter, Climate_Crisis } from "next/font/google";
+
+import styled from "@emotion/styled";
 
 dayjs.extend(relativeTime);
 (BigInt.prototype as any).toJSON = function () {
@@ -26,36 +29,55 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
+const inter = Inter({
+  subsets: ["latin"], // 字体子集
+  weight: ["400", "500", "600", "700"], // 字体粗细
+});
+
+const climateCrisis = Climate_Crisis({
+  subsets: ["latin"], // 字体子集
+  weight: ["400"], // 字体粗细
+  variable: "--font-climate-crisis",
+});
+
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  useEffect(() => {
+    document.body.classList.add(inter.className);
+    document.body.classList.add(climateCrisis.variable);
+    return () => {
+      document.body.classList.remove(inter.className);
+      document.body.classList.remove(climateCrisis.variable);
+    };
+  }, []);
+
   return (
     <AppProvider>
-      <NextUIProvider>
-        <NextThemesProvider attribute="class" defaultTheme="dark">
-          <Providers>
-            {Component.GetLayout ? (
-              Component.GetLayout(<Component {...pageProps} />, pageProps)
-            ) : (
-              <>
-                <div
-                  className={cn(
-                    "mt-[52px] h-[calc(100vh-52px)] ",
-                    "xl:mt-[72px] xl:h-[calc(100vh-72px)] xl:pb-20 overflow-auto"
-                  )}
-                >
-                  <Component {...pageProps} />
-                </div>
-                <Header />
-                <ToastContainer
-                  theme="dark"
-                  position="bottom-right"
-                  pauseOnFocusLoss={false}
-                  pauseOnHover={false}
-                />
-              </>
-            )}
-          </Providers>
-        </NextThemesProvider>
-      </NextUIProvider>
+      <HeroUIProvider>
+        {/* <NextThemesProvider attribute="class" defaultTheme="dark"> */}
+        <Providers>
+          {Component.GetLayout ? (
+            Component.GetLayout(<Component {...pageProps} />, pageProps)
+          ) : (
+            <>
+              <StyledMain className="dark">
+                <Component {...pageProps} />
+              </StyledMain>
+              <Header />
+              <ToastContainer
+                theme="dark"
+                position="bottom-right"
+                pauseOnFocusLoss={false}
+                pauseOnHover={false}
+              />
+            </>
+          )}
+        </Providers>
+        {/* </NextThemesProvider> */}
+      </HeroUIProvider>
     </AppProvider>
   );
 }
+
+const StyledMain = styled.main`
+  padding-top: 72px;
+`;

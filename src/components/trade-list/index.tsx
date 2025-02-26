@@ -8,10 +8,13 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import dayjs from "dayjs";
-import React from "react";
+import React, { useMemo } from "react";
 import { formatEther } from "viem";
+import styled from "@emotion/styled";
+import styles from "./index.module.scss";
+import TradesIcon from "~@/icons/trades.svg";
 
 interface TradeListProps {
   list: Trade[];
@@ -22,44 +25,72 @@ interface TradeListProps {
 export const TradeList = ({ list, symbol, className }: TradeListProps) => {
   console.log("TradeList", { list, symbol });
 
+  const columns = useMemo(() => {
+    return [
+      {
+        key: "from",
+        title: "Account",
+      },
+      {
+        key: "type",
+        title: "Type",
+      },
+      {
+        key: "trueEth",
+        title: tokenSymbol,
+      },
+      {
+        key: "trueOrderSize",
+        title: symbol,
+      },
+      {
+        key: "timestamp",
+        title: "Date",
+      },
+    ];
+  }, [tokenSymbol, symbol]);
+
   const renderCell = (item: Trade, columnKey: keyof Trade) => {
     const cellValue = item[columnKey] ?? "-";
 
     switch (columnKey) {
       case "from":
         return (
-          <a
-            className="text-white"
+          <StyledAccountPanel
             title={cellValue as string}
             href={`${mainChain.blockExplorers.default.url}/address/${cellValue}`}
             target="_blank"
           >
             {maskAddress(cellValue as string)}
-          </a>
+          </StyledAccountPanel>
         );
 
       case "type":
-        return cellValue === 0 ? "Buy" : "Sell";
+        return (
+          <StyledTypePanel mode={Number(cellValue)}>
+            {cellValue === 0 ? "Buy" : "Sell"}
+          </StyledTypePanel>
+        );
 
       case "trueEth":
         return (
-          <span className="text-white">
+          <StyledTextPanel>
             {Number(formatEther(BigInt(cellValue), "wei")).toFixed(4)}
-          </span>
+          </StyledTextPanel>
         );
 
       case "trueOrderSize":
         return (
-          <span className="text-white">
+          <StyledTextPanel>
             {formatTokenBalance(cellValue as string)}
-          </span>
+          </StyledTextPanel>
         );
 
       case "timestamp":
         return (
-          <span className="text-white">
+          <StyledTextPanel>
             {dayjs().to(dayjs((cellValue as number) * 1000))}
-          </span>
+          </StyledTextPanel>
         );
 
       default:
@@ -68,34 +99,36 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
   };
 
   return (
-    <div className={cn("mt-8", className)}>
-      <div className="font-bold mb-4">Trades</div>
+    <StyledTradeList>
+      <StyledTradeListHeader>
+        <TradesIcon />
+        <span>Trades</span>
+      </StyledTradeListHeader>
       <Table
         classNames={{
-          base: "max-h-[500px] p-4 border border-[#262626] rounded-large",
-          wrapper: "p-0",
+          base: styles["table-base"],
+          table: styles["table"],
+          thead: styles["table-header"],
+          tbody: styles["table-body"],
         }}
+        removeWrapper
+        disableAnimation
         isHeaderSticky
         aria-label="Trade history"
       >
-        <TableHeader>
-          <TableColumn key="from">Account</TableColumn>
-          <TableColumn key="type">Type</TableColumn>
-          <TableColumn key="trueEth">{tokenSymbol}</TableColumn>
-          <TableColumn key="trueOrderSize">{symbol}</TableColumn>
-          <TableColumn key="timestamp">Date</TableColumn>
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn className={styles["table-column"]} key={column.key}>
+              {column.title}
+            </TableColumn>
+          )}
         </TableHeader>
         <TableBody emptyContent="No transaction data.">
           {list.map((item) => {
             return (
-              <TableRow
-                key={item.id}
-                className={cn(
-                  item.type === 1 ? "text-[#F31260]" : "text-[#05DD6B]"
-                )}
-              >
+              <TableRow className={styles["table-row"]} key={item.id}>
                 {(columnKey) => (
-                  <TableCell>
+                  <TableCell className={styles["table-cell"]}>
                     {renderCell(item, columnKey as keyof Trade)}
                   </TableCell>
                 )}
@@ -104,6 +137,48 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
           })}
         </TableBody>
       </Table>
-    </div>
+    </StyledTradeList>
   );
 };
+
+const StyledTradeList = styled.div`
+  padding: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: transparent;
+`;
+
+const StyledTradeListHeader = styled.h1`
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #eaecef;
+
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #eaecef;
+  }
+`;
+
+const StyledAccountPanel = styled.a`
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: none;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
+`;
+
+const StyledTypePanel = styled.span<{ mode: number }>`
+  color: ${({ mode }) => (mode === 0 ? "#05DD6B" : "#F31260")};
+`;
+
+const StyledTextPanel = styled.span``;

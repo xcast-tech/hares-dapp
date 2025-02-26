@@ -15,6 +15,7 @@ import ReactLoading from "react-loading";
 import { twMerge } from "tailwind-merge";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import { useAppContext } from "@/context/useAppContext";
+import { Trade } from "@/lib/types";
 
 export type TVChartContainerProps = {
   name: string;
@@ -23,12 +24,14 @@ export type TVChartContainerProps = {
   classNames?: {
     container: string;
   };
+  tradesCallBack: (trades: Trade[]) => void;
 };
 
 export const TVChartContainer = ({
   name,
   pairIndex,
   token,
+  tradesCallBack,
 }: TVChartContainerProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(
     null
@@ -55,6 +58,7 @@ export const TVChartContainer = ({
           name,
           token,
           nativeTokenPrice: ethPrice,
+          tradesCallBack,
         }),
         theme: "dark",
         locale: "en",
@@ -94,7 +98,7 @@ export const TVChartContainer = ({
   }, [name, pairIndex]);
 
   return (
-    <div className="relative mb-[1px] h-[500px] w-full ">
+    <div className="relative h-full w-full ">
       {tradingLoading ? (
         <div className="z-9999 absolute left-0 top-0 flex h-full w-full items-center justify-center bg-tizz-background">
           <ReactLoading

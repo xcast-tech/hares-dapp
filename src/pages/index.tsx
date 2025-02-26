@@ -1,5 +1,5 @@
-import { SkeletonTokenList } from "@/components/skeleton-token-list";
-import { TokenList } from "@/components/token-list";
+import { SkeletonTokenList } from "@/components/token/list/skeleton";
+import { TokenList } from "@/components/token/list";
 import { tokenListApi, TokenListApiData } from "@/lib/apis";
 import Image from "next/image";
 import {
@@ -9,13 +9,17 @@ import {
   Select,
   SelectItem,
   SelectProps,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { debounce } from "lodash-es";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { IToken } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import styled from "@emotion/styled";
+import styles from "@/styles/home.module.scss";
+import ArrowDownIcon from "~@/icons/arrow-down.svg";
+import SearchIcon from "~@/icons/search.svg";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -120,89 +124,61 @@ export default function Home() {
       <Head>
         <title>hares.ai</title>
       </Head>
-      <div className="pb-[80px]">
-        <div
-          className={cn(
-            "w-full flex justify-center h-[120px] relative",
-            "xl:h-[210px]"
-          )}
-        >
-          <Image
-            src="/left.png"
-            fill
-            className="object-left object-contain"
-            alt={""}
-          />
-          <Image
-            src="/right.png"
-            fill
-            className="object-right object-contain"
-            alt={""}
-          />
-
-          <div className="h-full flex items-center relative">
+      <StyledHome>
+        <StyledHomeBanner>
+          <StyledHomeBannerTitle>Build And Build For Fun</StyledHomeBannerTitle>
+          <StyledHomeCreateCoin>
             <Link href="/create">
-              <Button
-                className={cn(
-                  "absolute top-[30px] left-0 -translate-x-1/2 bg-transparent w-[310px] h-[30px] rounded-[30px]",
-                  "xl:top-[64px] xl:w-[320px] xl:h-[52px] xl:rounded-[52px] xl:border xl:border-solid xl:border-[#262626]"
-                )}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <Image src="/btn-star.svg" height={16} width={32} alt={""} />
-                  <div className="text-[20px] font-bold">
-                    [start a new coin]
-                  </div>
-                  <Image
-                    src="/btn-star.svg"
-                    height={16}
-                    width={32}
-                    className="rotate-180"
-                    alt={""}
-                  />
-                </div>
-              </Button>
+              <StyledHomeCreateCoinBtn>
+                <StyledHomeCreateCoinBtnInner>
+                  Start A New Coin
+                </StyledHomeCreateCoinBtnInner>
+              </StyledHomeCreateCoinBtn>
             </Link>
-          </div>
-        </div>
+          </StyledHomeCreateCoin>
+        </StyledHomeBanner>
+        <StyledHomeTool>
+          <StyledHomeSearch>
+            <StyledHomeSearchContainer>
+              <StyledHomeSearchLeft>
+                <SearchIcon />
+                <StyledHomeSearchInputBox>
+                  <StyledHomeSearchInput
+                    type="text"
+                    onChange={handleNameChangeDebounce}
+                    placeholder="Search For Token"
+                  />
+                </StyledHomeSearchInputBox>
+              </StyledHomeSearchLeft>
+              <StyledHomeSearchRight>
+                <Select
+                  // classNames={{
+                  //   trigger:
+                  //     "!bg-[#1A1A1A] border border-solid border-[#262626]",
+                  // }}
+                  classNames={{
+                    base: styles["select-base"],
+                    trigger: styles["select-trigger"],
+                    mainWrapper: styles["select-main-wrapper"],
+                    innerWrapper: styles["select-inner-wrapper"],
+                    value: styles["select-value"],
+                    selectorIcon: styles["select-selector-icon"],
+                  }}
+                  selectedKeys={[sort]}
+                  selectorIcon={<ArrowDownIcon />}
+                  onSelectionChange={handleSortChange}
+                >
+                  {sortOptions.map((opt) => (
+                    <SelectItem key={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </Select>
+              </StyledHomeSearchRight>
+            </StyledHomeSearchContainer>
+          </StyledHomeSearch>
+          <StyledHomeCarousel></StyledHomeCarousel>
+        </StyledHomeTool>
 
-        <div
-          className={cn(
-            "-translate-y-1/2 mx-6 mb-4 flex justify-center gap-2 shadow-[0px_0px_0px_10px_#191919] rounded-[16px]",
-            "xl:w-[600px] xl:mx-auto"
-          )}
-        >
-          <Input
-            type="text"
-            placeholder="Search For Token"
-            fullWidth
-            onChange={handleNameChangeDebounce}
-            classNames={{
-              inputWrapper: cn(
-                "h-[40px] text-[#666] text-[16px] !bg-[#141414]",
-                "xl:h-[60px]"
-              ),
-            }}
-          />
-        </div>
-
-        <div className="p-4 mt-5 xl:mt-10">
-          <div className="mb-4">
-            <Select
-              className="w-[180px]"
-              classNames={{
-                trigger: "!bg-[#1A1A1A] border border-solid border-[#262626]",
-              }}
-              label="Sort"
-              selectedKeys={[sort]}
-              onSelectionChange={handleSortChange}
-            >
-              {sortOptions.map((opt) => (
-                <SelectItem key={opt.value}>{opt.label}</SelectItem>
-              ))}
-            </Select>
-          </div>
-
+        <StyledHomeContent>
           {list?.length ? (
             <TokenList list={list} />
           ) : (
@@ -221,8 +197,8 @@ export default function Home() {
           )}
 
           <div ref={paginationDomRef}></div>
-        </div>
-      </div>
+        </StyledHomeContent>
+      </StyledHome>
       {/* <div
         style={{
           width: "100%",
@@ -240,3 +216,156 @@ export default function Home() {
     </>
   );
 }
+
+const StyledHome = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledHomeBanner = styled.div`
+  padding: 50px 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.01);
+`;
+
+const StyledHomeBannerTitle = styled.h1`
+  text-align: center;
+  font-family: var(--font-climate-crisis);
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
+  background: linear-gradient(
+    96deg,
+    #1c1c1c -9.54%,
+    #fff 49.6%,
+    #303030 105.26%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;
+
+const StyledHomeCreateCoin = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+const StyledHomeCreateCoinBtn = styled.button`
+  display: flex;
+  width: 240px;
+  padding: 3px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+
+  border-radius: 100px;
+  border: 1.5px solid rgba(252, 213, 53, 0.4);
+  background: #18191e;
+`;
+
+const StyledHomeCreateCoinBtnInner = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 3px;
+  gap: 10px;
+
+  color: #18191e;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%; /* 22.5px */
+  text-transform: capitalize;
+
+  border-radius: 100px;
+  border: 1.5px solid rgba(252, 213, 53, 0.4);
+  background: #18191e;
+
+  border-radius: 100px;
+  background: linear-gradient(274deg, #ffc720 9.5%, #fcd535 53.5%);
+`;
+
+const StyledHomeTool = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledHomeSearch = styled.div`
+  height: 54px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+`;
+
+const StyledHomeSearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 0 60px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.01);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+`;
+
+const StyledHomeSearchLeft = styled.div`
+  flex: 1;
+  height: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: #eaecef;
+    opacity: 0.4;
+  }
+`;
+
+const StyledHomeSearchInputBox = styled.div`
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+`;
+
+const StyledHomeSearchInput = styled.input`
+  flex: 1;
+  width: 100%;
+  color: #eaecef;
+
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  outline: none;
+  border: none;
+  background: transparent;
+  &::placeholder {
+    color: rgba(234, 236, 239, 0.4);
+  }
+`;
+
+const StyledHomeSearchRight = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+`;
+
+const StyledHomeCarousel = styled.div``;
+
+const StyledHomeContent = styled.div`
+  padding: 32px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+`;

@@ -1,9 +1,14 @@
-import { nextui } from "@nextui-org/theme";
+import { colors, heroui } from "@heroui/react";
 import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./src/pages/**/*.{js,ts,jsx,tsx,mdx}", "./src/components/**/*.{js,ts,jsx,tsx,mdx}", "./src/app/**/*.{js,ts,jsx,tsx,mdx}", "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
       colors: {
@@ -18,12 +23,31 @@ export default {
   },
   plugins: [
     require("tailwindcss-animate"),
-    nextui({
+    heroui({
       themes: {
+        light: {
+          colors: {
+            primary: {
+              DEFAULT: "#6A3CD6",
+            },
+            success: {
+              DEFAULT: "#05DD6B",
+            },
+            danger: {
+              DEFAULT: "#F31260",
+            },
+          },
+        },
         dark: {
           colors: {
             primary: {
               DEFAULT: "#6A3CD6",
+            },
+            success: {
+              DEFAULT: "#05DD6B",
+            },
+            danger: {
+              DEFAULT: "#F31260",
             },
           },
         },

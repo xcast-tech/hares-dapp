@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function maskAddress(address: string = "") {
-  return `${address.slice(0, 5)}...${address.slice(-4)}`;
+  return `${address.slice(0, 5)}...${address.slice(-5)}`;
 }
 
 export function getDomain() {
@@ -81,7 +81,7 @@ export function formatBigintTokenBalance(value: bigint): string {
   if (Number(num) < 1e-3) {
     return "<0.001";
   }
-  return formatNumber(num);
+  return Number(num) > 1e3 ? formatNumber(num) : formatDecimalNumber(num);
 }
 
 export function formatThousandNumber(num: number): string {
@@ -409,3 +409,12 @@ export const groupDatasInRanges = (
   });
   return result;
 };
+
+export function removeDuplicateTrades(trades: Trade[]) {
+  const seen = new Set();
+  return trades.filter((trade) => {
+    const duplicate = seen.has(trade.id);
+    seen.add(trade.id);
+    return !duplicate;
+  });
+}

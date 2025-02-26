@@ -9,7 +9,7 @@ import {
   Card,
   Select,
   SelectItem,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React, { FormEvent, PropsWithChildren, useRef, useState } from "react";
 import Image from "next/image";
 import { useHaresContract } from "@/hooks/useHaresContract";

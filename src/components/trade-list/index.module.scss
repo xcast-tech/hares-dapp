@@ -1,0 +1,44 @@
+.table {
+  &-base {
+    width: 100%;
+  }
+  &-header {
+    background: transparent;
+    > tr:not(:first-child) {
+      display: none;
+    }
+    > tr:first-child {
+    }
+  }
+  &-column {
+    color: #eaecef;
+
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+    padding-left: 14px;
+    padding-right: 10px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  &-body {
+    padding: 0 16px;
+    // padding: 16px 0;
+    // display: flex;
+    // flex-direction: column;
+    // gap: 16px;
+  }
+  &-row {
+  }
+  &-cell {
+    color: rgba(234, 236, 239, 0.8);
+
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 150%;
+    &:hover {
+      color: rgba(234, 236, 239, 1);
+    }
+  }
+}
