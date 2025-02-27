@@ -45,15 +45,37 @@ export const TradesSwiper: FC<TradesSwiperProps> = ({}) => {
 };
 
 const StyledTradesSwiper = styled.div`
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
   gap: 16px;
   overflow: hidden;
   pointer-events: none;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 60px;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(90deg, #090a0e 0%, rgba(9, 10, 14, 0) 100%);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(-90deg, #090a0e 0%, rgba(9, 10, 14, 0) 100%);
+  }
 `;
 
 const StyledTradesSwiperContainer = styled.div`
+  position: relative;
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
