@@ -20,6 +20,12 @@ import { decodeEventLog } from "viem";
 import { cn } from "@/lib/utils";
 import { Twitter } from "@/components/twitter";
 import { uploadImage } from "@/lib/upload";
+import styled from "@emotion/styled";
+import styles from "@/styles/create.module.scss";
+import AnchorIcon from "~@/icons/accordion.svg";
+import XIcon from "~@/icons/x.svg";
+import TGIcon from "~@/icons/tg.svg";
+import WebsiteIcon from "~@/icons/website.svg";
 
 function Title({
   children,
@@ -34,31 +40,13 @@ function Title({
   );
 }
 
-function AnchorIcon() {
-  return (
-    <svg
-      width="20"
-      height="21"
-      viewBox="0 0 20 21"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="rotate-90"
-    >
-      <path
-        d="M10.8335 7.02363L15.3035 11.4936L16.482 10.3151L10.0001 3.83329L3.51831 10.3151L4.69683 11.4936L9.16679 7.02363V17.1666H10.8335V7.02363Z"
-        fill="#6A3CD6"
-      />
-    </svg>
-  );
-}
-
 const Create = () => {
   const router = useRouter();
   const { createToken: createBondingCurveToken } = useHaresContract();
   const [name, setName] = useState("");
   const [ticker, setTicker] = useState("");
   const [desc, setDesc] = useState("");
-  const [file, setFile] = useState("");
+  const [picture, setPicture] = useState("");
 
   const [twitter, setTwitter] = useState("");
   const [telegram, setTelegram] = useState("");
@@ -114,7 +102,7 @@ const Create = () => {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    if (!file) {
+    if (!picture) {
       toast("Please upload image");
       return;
     }
@@ -127,7 +115,7 @@ const Create = () => {
       if (address) {
         await setUpApi({
           address,
-          picture: file,
+          picture: picture,
           website: website.trim(),
           twitter: twitter.trim(),
           telegram: telegram.trim(),
@@ -143,279 +131,529 @@ const Create = () => {
   }
 
   return (
-    <div className="py-8">
-      <Card
-        className={cn(
-          "mx-4 p-8 flex justify-center",
-          "xl:mx-auto xl:w-[600px] xl:max-w-full xl:shadow-[0px_0px_0px_8px_#262626]"
-        )}
-      >
-        <Form
-          className="w-full grid grid-cols-1 gap-6"
-          validationBehavior="native"
-          onSubmit={handleSubmit}
-        >
-          <div>
-            <Title required>Name</Title>
-            <Input
-              className="!mt-0"
-              classNames={{
-                label: "hidden",
-                mainWrapper: "flex-1",
-                inputWrapper:
-                  "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]",
-              }}
-              labelPlacement="outside"
-              isRequired
-              label="name"
-              name="name"
-              type="text"
-              value={name}
-              errorMessage="This field is required"
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
+    <StyledCreate>
+      <StyledCreateContainer>
+        <StyledCreateTokenPreview>
+          <StyledTokenCard>
+            <StyledTokenCardPic>
+              {picture && <img src={picture} alt="" />}
+            </StyledTokenCardPic>
+            <StyledTokenCardName>{name || "NAME"}</StyledTokenCardName>
+            <StyledTokenCardTicker>${ticker || "TICKER"}</StyledTokenCardTicker>
+            <StyledTokenCardDesc>{desc || "-"}</StyledTokenCardDesc>
+            <StyledTokenCardDivider></StyledTokenCardDivider>
+            <StyledTokenCardPublic>
+              <StyledTokenCardPrice>$0</StyledTokenCardPrice>
+            </StyledTokenCardPublic>
+          </StyledTokenCard>
+        </StyledCreateTokenPreview>
+        <StyledCreateTokenMain>
+          <StyledCreateTokenTit>start a new coin</StyledCreateTokenTit>
+          <StyledCreateTokenForm
+            validationBehavior="native"
+            onSubmit={handleSubmit}
+          >
+            <div className="w-full">
+              <StyledCreateTokenFormTitle required>
+                Name
+              </StyledCreateTokenFormTitle>
+              <Input
+                classNames={{
+                  base: styles["input-base"],
+                  label: styles["input-label"],
+                  mainWrapper: styles["input-main-wrapper"],
+                  inputWrapper: styles["input-wrapper"],
+                  innerWrapper: styles["input-inner-wrapper"],
+                  input: styles["input"],
+                  clearButton: styles["input-clear-button"],
+                  helperWrapper: styles["input-helper-wrapper"],
+                }}
+                labelPlacement="outside"
+                isRequired
+                label="Name"
+                name="name"
+                type="text"
+                placeholder="-"
+                value={name}
+                errorMessage="This field is required"
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
 
-          <div>
-            <Title required>Ticker</Title>
-            <Input
-              className="!mt-0"
-              classNames={{
-                label: "hidden",
-                mainWrapper: "flex-1",
-                inputWrapper:
-                  "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]",
-              }}
-              labelPlacement="outside"
-              isRequired
-              label="ticker"
-              name="ticker"
-              type="text"
-              value={ticker}
-              errorMessage="This field is required"
-              onChange={(e) => setTicker(e.target.value)}
-            />
-          </div>
+            <div className="w-full">
+              <StyledCreateTokenFormTitle required>
+                Ticker
+              </StyledCreateTokenFormTitle>
+              <Input
+                classNames={{
+                  base: styles["input-base"],
+                  label: styles["input-label"],
+                  mainWrapper: styles["input-main-wrapper"],
+                  inputWrapper: styles["input-wrapper"],
+                  innerWrapper: styles["input-inner-wrapper"],
+                  input: styles["input"],
+                  clearButton: styles["input-clear-button"],
+                  helperWrapper: styles["input-helper-wrapper"],
+                }}
+                labelPlacement="outside"
+                isRequired
+                label="Ticker"
+                name="ticker"
+                type="text"
+                placeholder="-"
+                value={ticker}
+                errorMessage="This field is required"
+                onChange={(e) => setTicker(e.target.value)}
+              />
+            </div>
 
-          <div>
-            <Title>Description</Title>
-            <Textarea
-              classNames={{
-                label: "hidden",
-                inputWrapper:
-                  "flex-1 !bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]",
-              }}
-              label="description"
-              name="description"
-              type="text"
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-            />
-          </div>
+            <div className="w-full">
+              <StyledCreateTokenFormTitle>
+                Description
+              </StyledCreateTokenFormTitle>
+              <Textarea
+                classNames={{
+                  base: styles["textarea-base"],
+                  label: styles["textarea-label"],
+                  mainWrapper: styles["textarea-main-wrapper"],
+                  inputWrapper: styles["textarea-input-wrapper"],
+                  innerWrapper: styles["textarea-inner-wrapper"],
+                  input: styles["textarea-input"],
+                  clearButton: styles["textarea-clear-button"],
+                }}
+                label="description"
+                name="description"
+                placeholder="-"
+                type="text"
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+              />
+            </div>
 
-          <div>
-            <Title required>Image</Title>
-            <label htmlFor="image-file" className="cursor-pointer">
-              <div className="flex items-center px-3 text-[14px] rounded-[12px] bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]">
-                Please choose image
-              </div>
-            </label>
-            <Input
-              id="image-file"
-              className="hidden"
-              classNames={{
-                label: "hidden",
-                mainWrapper: "flex-1",
-                inputWrapper:
-                  "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]",
-              }}
-              label="image"
-              name="file"
-              type="file"
-              accept="image/png, image/jpeg, image/jpg, image/gif"
-              onChange={async (e: any) => {
-                const file = e?.nativeEvent?.target?.files?.[0];
-                console.log("---- upload image file", file);
-                if (file) {
-                  const res = await uploadImage({ file });
+            <div className="w-full">
+              <StyledCreateTokenFormTitle required>
+                Image
+              </StyledCreateTokenFormTitle>
+              <Input
+                classNames={{
+                  base: styles["input-base"],
+                  label: styles["input-label"],
+                  mainWrapper: styles["input-main-wrapper"],
+                  inputWrapper: styles["input-wrapper"],
+                  innerWrapper: styles["input-inner-wrapper"],
+                  input: styles["input-file"],
+                  clearButton: styles["input-clear-button"],
+                  helperWrapper: styles["input-helper-wrapper"],
+                }}
+                isRequired
+                name="file"
+                type="file"
+                accept="image/png, image/jpeg, image/jpg, image/gif"
+                errorMessage="This field is required"
+                onChange={async (e: any) => {
+                  const file = e?.nativeEvent?.target?.files?.[0];
+                  console.log("---- upload image file", file);
+                  if (file) {
+                    const res = await uploadImage({ file });
 
-                  if (res?.code === 0) {
-                    setFile(res?.data.url ?? "");
+                    if (res?.code === 0) {
+                      setPicture(res?.data.url ?? "");
+                    } else {
+                      setPicture("");
+                    }
                   } else {
-                    setFile("");
+                    setPicture("");
                   }
-                } else {
-                  setFile("");
-                }
+                }}
+              />
+              {picture && (
+                <StyledCreateTokenFormImagePreview>
+                  <img src={picture} alt="" />
+                </StyledCreateTokenFormImagePreview>
+              )}
+            </div>
+
+            <Accordion
+              selectionMode="multiple"
+              itemClasses={{
+                base: styles["accordion-base"],
+                title: styles["accordion-title"],
+                titleWrapper: styles["accordion-title-wrapper"],
+                content: styles["accordion-content"],
+                subtitle: styles["accordion-subtitle"],
+                trigger: styles["accordion-trigger"],
+                heading: styles["accordion-heading"],
+                indicator: styles["accordion-indicator"],
               }}
-            />
-            {file && (
-              <div className="mt-4">
-                <Image
-                  alt=""
-                  src={file}
-                  width={120}
-                  height={120}
-                  className="object-cover object-center"
-                />
-              </div>
-            )}
-          </div>
-
-          <Accordion selectionMode="multiple">
-            <AccordionItem
-              key="1"
-              indicator={<AnchorIcon />}
-              title={
-                <div className="text-[#6A3CD6] text-[14px] font-medium">
-                  Show More Options
-                </div>
-              }
             >
-              <div className="grid gap-2">
-                <Input
-                  className="!mt-0"
-                  classNames={{
-                    label: "hidden",
-                    mainWrapper: "flex-1",
-                    inputWrapper:
-                      "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]",
-                  }}
-                  labelPlacement="outside"
-                  label="twitter link"
-                  name="twitter"
-                  type="text"
-                  value={twitter}
-                  onChange={(e) => setTwitter(e.target.value)}
-                  startContent={
-                    <div className="flex items-center">
-                      <div className="w-4">
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M11.4513 2.57678H13.2914L9.27137 7.17141L14.0006 13.4237H10.2976L7.39736 9.63171L4.07876 13.4237H2.23757L6.53739 8.5092L2.00061 2.57678H5.79758L8.41919 6.04278L11.4513 2.57678ZM10.8055 12.3223H11.8251L5.24355 3.62031H4.14941L10.8055 12.3223Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </div>
-
-                      <div className="mx-5 w-px h-4 bg-[#3D3D3D]"></div>
-                    </div>
-                  }
-                />
-
-                <Input
-                  className="!mt-0"
-                  classNames={{
-                    label: "hidden",
-                    mainWrapper: "flex-1",
-                    inputWrapper:
-                      "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]",
-                  }}
-                  labelPlacement="outside"
-                  label="telegram link"
-                  name="telegram"
-                  type="text"
-                  value={telegram}
-                  onChange={(e) => setTelegram(e.target.value)}
-                  startContent={
-                    <div className="flex items-center">
-                      <div className="w-4">
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M14.2498 3.57051L12.3527 12.5172C12.2096 13.1487 11.8364 13.3058 11.306 13.0083L8.41539 10.8783L7.02063 12.2198C6.86627 12.3741 6.73718 12.5032 6.43971 12.5032L6.64738 9.55931L12.0047 4.71832C12.2377 4.51065 11.9542 4.39559 11.6427 4.60326L5.01968 8.77353L2.16841 7.8811C1.5482 7.68746 1.53697 7.26089 2.2975 6.96342L13.45 2.66686C13.9664 2.47322 14.4182 2.78192 14.2498 3.57051Z"
-                            fill="white"
-                          />
-                        </svg>
-                      </div>
-
-                      <div className="mx-5 w-px h-4 bg-[#3D3D3D]"></div>
-                    </div>
-                  }
-                />
-
-                <Input
-                  className="!mt-0"
-                  classNames={{
-                    label: "hidden",
-                    mainWrapper: "flex-1",
-                    inputWrapper:
-                      "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]",
-                  }}
-                  labelPlacement="outside"
-                  label="website"
-                  name="website"
-                  type="text"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  startContent={
-                    <div className="flex items-center">
-                      <div className="w-4">
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M1.71411 8.63164H5.17446C5.28753 10.6966 5.95153 12.6147 7.022 14.2417C4.20189 13.8034 1.99886 11.4997 1.71411 8.63164ZM1.71411 7.36826C1.99886 4.50025 4.20189 2.19653 7.022 1.7583C5.95153 3.38524 5.28753 5.3034 5.17446 7.36826H1.71411ZM14.2855 7.36826H10.8251C10.7121 5.3034 10.0481 3.38524 8.97764 1.7583C11.7978 2.19653 14.0008 4.50025 14.2855 7.36826ZM14.2855 8.63164C14.0008 11.4997 11.7978 13.8034 8.97764 14.2417C10.0481 12.6147 10.7121 10.6966 10.8251 8.63164H14.2855ZM6.44001 8.63164H9.55962C9.45122 10.3896 8.89344 12.0259 7.99979 13.4272C7.10614 12.0259 6.54841 10.3896 6.44001 8.63164ZM6.44001 7.36826C6.54841 5.61039 7.10614 3.97408 7.99979 2.57279C8.89344 3.97408 9.45122 5.61039 9.55962 7.36826H6.44001Z" />
-                        </svg>
-                      </div>
-
-                      <div className="mx-5 w-px h-4 bg-[#3D3D3D]"></div>
-                    </div>
-                  }
-                />
-
-                <div className="mt-6">
-                  <Title>Dev Buy</Title>
+              <AccordionItem
+                key="1"
+                indicator={<AnchorIcon />}
+                title="Show More Options"
+              >
+                <StyledAccordionItemSection>
+                  <StyledCreateTokenFormTitle>
+                    Social Links
+                  </StyledCreateTokenFormTitle>
                   <Input
-                    className="!mt-0"
                     classNames={{
-                      label: "hidden",
-                      mainWrapper: "flex-1",
-                      inputWrapper:
-                        "!bg-[#1A1A1A] border border-solid border-[#262626] h-[52px]",
+                      base: styles["input-base"],
+                      label: styles["input-label"],
+                      mainWrapper: styles["input-main-wrapper"],
+                      inputWrapper: styles["input-wrapper"],
+                      innerWrapper: styles["input-inner-wrapper"],
+                      input: styles["input"],
+                      clearButton: styles["input-clear-button"],
+                      helperWrapper: styles["input-helper-wrapper"],
                     }}
-                    labelPlacement="outside"
-                    isRequired
-                    label="dev buy"
+                    name="twitter"
+                    type="text"
+                    placeholder="-"
+                    value={ticker}
+                    startContent={
+                      <StyledInputStartIcon>
+                        <XIcon />
+                        <StyledInputStartDivider />
+                      </StyledInputStartIcon>
+                    }
+                    onChange={(e) => setTwitter(e.target.value)}
+                  />
+
+                  <Input
+                    classNames={{
+                      base: styles["input-base"],
+                      label: styles["input-label"],
+                      mainWrapper: styles["input-main-wrapper"],
+                      inputWrapper: styles["input-wrapper"],
+                      innerWrapper: styles["input-inner-wrapper"],
+                      input: styles["input"],
+                      clearButton: styles["input-clear-button"],
+                      helperWrapper: styles["input-helper-wrapper"],
+                    }}
+                    placeholder="-"
+                    startContent={
+                      <StyledInputStartIcon>
+                        <TGIcon />
+                        <StyledInputStartDivider />
+                      </StyledInputStartIcon>
+                    }
+                    name="telegram"
+                    type="text"
+                    value={telegram}
+                    onChange={(e) => setTelegram(e.target.value)}
+                  />
+
+                  <Input
+                    classNames={{
+                      base: styles["input-base"],
+                      label: styles["input-label"],
+                      mainWrapper: styles["input-main-wrapper"],
+                      inputWrapper: styles["input-wrapper"],
+                      innerWrapper: styles["input-inner-wrapper"],
+                      input: styles["input"],
+                      clearButton: styles["input-clear-button"],
+                      helperWrapper: styles["input-helper-wrapper"],
+                    }}
+                    placeholder="-"
+                    startContent={
+                      <StyledInputStartIcon>
+                        <WebsiteIcon />
+                        <StyledInputStartDivider />
+                      </StyledInputStartIcon>
+                    }
+                    name="website"
+                    type="text"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                  />
+                </StyledAccordionItemSection>
+                <StyledAccordionItemSection>
+                  <StyledCreateTokenFormTitle>
+                    Dev Buy
+                  </StyledCreateTokenFormTitle>
+                  <Input
+                    classNames={{
+                      base: styles["input-base"],
+                      label: styles["input-label"],
+                      mainWrapper: styles["input-main-wrapper"],
+                      inputWrapper: styles["input-wrapper"],
+                      innerWrapper: styles["input-inner-wrapper"],
+                      input: styles["input"],
+                      clearButton: styles["input-clear-button"],
+                      helperWrapper: styles["input-helper-wrapper"],
+                    }}
                     name="devBuy"
                     type="number"
-                    endContent={tokenSymbol}
+                    endContent={
+                      <StyledDevBuyEndContent>
+                        <StyledInputStartDivider />
+                        <StyledTokenActionInputIcon
+                          alt="token icon"
+                          src="/icons/bsc.svg"
+                        />
+                        <span>{tokenSymbol}</span>
+                      </StyledDevBuyEndContent>
+                    }
                     placeholder={`Amount in ${tokenSymbol}`}
                     value={devBuyAmount}
                     onChange={(e) => setDevBuyAmount(e.target.value)}
                   />
-                </div>
-              </div>
-            </AccordionItem>
-          </Accordion>
+                </StyledAccordionItemSection>
+              </AccordionItem>
+            </Accordion>
 
-          <div className="px-2">
-            <Button
-              type="submit"
-              className="w-full bg-[#6A3CD6] h-[52px]"
-              isLoading={loading}
-            >
-              create coin
-            </Button>
-          </div>
-        </Form>
-      </Card>
-    </div>
+            <StyledCreateTokenFormBottom>
+              <StyledCreateTokenFormSubmitButton
+                type="submit"
+                isLoading={loading}
+              >
+                create coin
+              </StyledCreateTokenFormSubmitButton>
+            </StyledCreateTokenFormBottom>
+          </StyledCreateTokenForm>
+        </StyledCreateTokenMain>
+      </StyledCreateContainer>
+    </StyledCreate>
   );
 };
 
 export default Create;
+
+const StyledCreate = styled.div`
+  padding-top: 24px;
+  padding-bottom: 24px;
+`;
+
+const StyledCreateContainer = styled.div`
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+`;
+
+const StyledCreateTokenPreview = styled.div`
+  padding: 60px 24px;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #020308;
+`;
+
+const StyledTokenCard = styled.div`
+  padding: 14px;
+  width: 300px;
+  border-radius: 16px;
+  background: #1a1a1a;
+  border: 1px solid #fff;
+`;
+
+const StyledTokenCardPic = styled.div`
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  border-radius: 9.15px;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  > img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    pointer-events: none;
+  }
+`;
+
+const StyledTokenCardName = styled.div`
+  margin-top: 14px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 20.588px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+  background: linear-gradient(97deg, #fff -3.13%, #fff 22.25%, #696969 100.44%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;
+
+const StyledTokenCardTicker = styled.div`
+  margin-top: 4px;
+  color: rgba(234, 236, 239, 0.25);
+  font-size: 11.438px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+`;
+
+const StyledTokenCardDesc = styled.div`
+  margin-top: 4px;
+  color: #eaecef;
+  font-size: 11.438px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 16.013px */
+`;
+
+const StyledTokenCardDivider = styled.div`
+  margin-top: 14px;
+  width: 100%;
+  height: 1px;
+  background: #1e1e1e;
+`;
+
+const StyledTokenCardPublic = styled.div`
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+`;
+
+const StyledTokenCardPrice = styled.div`
+  flex: 1;
+  font-size: 12.582px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 140%; /* 17.614px */
+
+  background: linear-gradient(90deg, #ffc720 0%, #fcd535 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;
+
+const StyledCreateTokenMain = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.01);
+`;
+
+const StyledCreateTokenTit = styled.h2`
+  color: #eaecef;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%; /* 36px */
+  text-transform: capitalize;
+`;
+const StyledCreateTokenForm = styled(Form)`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+const StyledCreateTokenFormTitle = styled(Title)`
+  padding: 0 4px;
+  margin-bottom: 0;
+  color: #eaecef;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%; /* 21px */
+  > span {
+    color: #f31260;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+  }
+`;
+
+const StyledCreateTokenFormImagePreview = styled.div`
+  margin-top: 12px;
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+`;
+
+const StyledAccordionItemSection = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const StyledInputStartIcon = styled.div`
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  > svg {
+    width: 16px;
+    height: 16px;
+    color: #eaecef;
+    opacity: 0.5;
+  }
+`;
+
+const StyledInputStartDivider = styled.div`
+  width: 1px;
+  height: 16px;
+  background: #3d3d3d;
+`;
+
+const StyledDevBuyEndContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #eaecef;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 142.857% */
+  flex-shrink: 0;
+  > img {
+    margin-left: 6px;
+  }
+`;
+
+const StyledTokenActionInputIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+
+const StyledCreateTokenFormBottom = styled.div`
+  width: 100%;
+`;
+
+const StyledCreateTokenFormSubmitButton = styled(Button)`
+  width: 100%;
+  display: flex;
+  height: 48px;
+  padding: 0px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  align-self: stretch;
+  border-radius: 100px;
+  background: linear-gradient(274deg, #ffc720 0%, #fcd535 49.5%);
+
+  color: #1b1f29;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 150%; /* 21px */
+`;
