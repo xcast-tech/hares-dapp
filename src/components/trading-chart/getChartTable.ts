@@ -51,11 +51,18 @@ export async function getChartTable({
       to
     ).filter((_) => _.length > 0);
 
-    console.log("--- datasInRange", datasInRange);
+    console.log(
+      "--- datasInRange",
+      datasInRange,
+      "nativeTokenPrice",
+      nativeTokenPrice
+    );
 
     const barTable = datasInRange.map((trades) => {
       return convertTradesToBarData(trades, nativeTokenPrice);
     });
+
+    console.log("--- barTable", barTable);
 
     // console.log("tradingchart === getch data", res);
     return { table: barTable || [] } as ChartTable;

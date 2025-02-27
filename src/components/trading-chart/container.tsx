@@ -41,6 +41,7 @@ export const TVChartContainer = ({
   const { ethPrice, bnbPrice } = useAppContext();
 
   useEffect(() => {
+    if (!ethPrice) return;
     if (!chartContainerRef.current) {
       return () => {};
     }
@@ -95,7 +96,7 @@ export const TVChartContainer = ({
         }
       };
     }
-  }, [name, pairIndex]);
+  }, [name, pairIndex, ethPrice]);
 
   return (
     <div className="relative h-full w-full ">

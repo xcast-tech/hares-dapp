@@ -231,7 +231,7 @@ export function getDataFeed({
         const chartTable = await getChartTable({
           token,
           pairIndex: pairIndex,
-          from,
+          from: Math.min(from, list[0]?.timestamp || from),
           to,
           range: +resolution,
           trades: list,
@@ -249,9 +249,9 @@ export function getDataFeed({
         let bars: Bar[] = [];
 
         chartTable.table.forEach((bar: Bar) => {
-          if (bar.time >= from && bar.time < to) {
-            bars = [...bars, { ...bar, time: bar.time * 1000 }];
-          }
+          // if (bar.time >= from && bar.time < to) {
+          bars = [...bars, { ...bar, time: bar.time * 1000 }];
+          // }
         });
 
         console.log(

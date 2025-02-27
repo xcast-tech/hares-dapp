@@ -44,6 +44,7 @@ import BSCIcon from "~@/icons/bsc.svg";
 import styles from "./index.module.scss";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import { TokenInfo } from "@/components/token/info";
+import { TradesSwiper } from "@/components/token/swiper";
 
 console.log("- styles:", styles);
 
@@ -446,6 +447,9 @@ export default function Token(props: IToken) {
       <Head>
         <title>{`${detail?.symbol} | hares.ai`}</title>
       </Head>
+      <StyledHomeTool>
+        <TradesSwiper />
+      </StyledHomeTool>
       <StyledTokenContainer>
         <StyledTokenLeft>
           <StyledTradingInfo>
@@ -457,7 +461,7 @@ export default function Token(props: IToken) {
               </StyledTokenRBHInfo>
             </StyledTokenInfo>
             <StyledTradingChartBox>
-              {!isGraduate ? (
+              {isGraduate ? (
                 <StyledTokenGraduate>
                   The token has already graduated and been migrated to the
                   Uniswap V3 pool.
@@ -593,10 +597,21 @@ export default function Token(props: IToken) {
   );
 }
 
+const StyledHomeTool = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 72px;
+  z-index: 999;
+  background: #020308;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+`;
+
 const StyledTokenContainer = styled.div`
   padding-top: 14px;
   padding-left: 32px;
   padding-right: 32px;
+  padding-bottom: 32px;
   display: flex;
   flex-direction: row;
   gap: 24px;
@@ -664,7 +679,10 @@ const StyledTradeListContainer = styled.div`
 `;
 
 const StyledTradeContainer = styled.div`
+  position: sticky;
+  top: 134px;
   width: 400px;
+  max-height: calc(100vh - 134px);
   display: flex;
   flex-direction: column;
   gap: 24px;
