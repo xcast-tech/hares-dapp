@@ -2,32 +2,33 @@
 import { supabaseClient } from "@/lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler (
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse
 ) {
+  const { address, name, ticker, picture, website, twitter, telegram, desc } =
+    req.body;
 
-  const { address, picture, website, twitter, telegram, desc } = req.body
-
-  const { error } = await supabaseClient.from('TokenInfo').upsert({
+  const { error } = await supabaseClient.from("TokenInfo").upsert({
     address: address.toLowerCase(),
+    name,
+    symbol: ticker,
     picture,
     website,
     twitter,
     telegram,
-    desc
-  })
+    desc,
+  });
 
   if (error) {
     res.json({
       code: 501,
-      data: error
+      data: error,
     });
   }
-  
+
   res.json({
     code: 0,
-    data: 'ok'
+    data: "ok",
   });
-
 }

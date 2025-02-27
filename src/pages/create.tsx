@@ -115,6 +115,8 @@ const Create = () => {
       if (address) {
         await setUpApi({
           address,
+          name: name.trim(),
+          ticker: ticker.trim(),
           picture: picture,
           website: website.trim(),
           twitter: twitter.trim(),

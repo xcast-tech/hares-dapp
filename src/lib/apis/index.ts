@@ -36,6 +36,8 @@ export const tokenListApi = async (data: TokenListApiData) => {
 
 export const setUpApi = async (data: {
   address: string;
+  name: string;
+  ticker: string;
   picture: string;
   website: string;
   twitter: string;
