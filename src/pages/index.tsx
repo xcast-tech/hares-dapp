@@ -20,6 +20,7 @@ import styled from "@emotion/styled";
 import styles from "@/styles/home.module.scss";
 import ArrowDownIcon from "~@/icons/arrow-down.svg";
 import SearchIcon from "~@/icons/search.svg";
+import { TradesSwiper } from "@/components/token/swiper";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -175,7 +176,9 @@ export default function Home() {
               </StyledHomeSearchRight>
             </StyledHomeSearchContainer>
           </StyledHomeSearch>
-          <StyledHomeCarousel></StyledHomeCarousel>
+          <StyledHomeSwiper>
+            <TradesSwiper />
+          </StyledHomeSwiper>
         </StyledHomeTool>
 
         <StyledHomeContent>
@@ -220,6 +223,7 @@ export default function Home() {
 const StyledHome = styled.div`
   display: flex;
   flex-direction: column;
+  padding-bottom: 500px;
 `;
 
 const StyledHomeBanner = styled.div`
@@ -270,7 +274,7 @@ const StyledHomeCreateCoinBtn = styled.button`
   background: #18191e;
 `;
 
-const StyledHomeCreateCoinBtnInner = styled.button`
+const StyledHomeCreateCoinBtnInner = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,6 +300,11 @@ const StyledHomeCreateCoinBtnInner = styled.button`
 const StyledHomeTool = styled.div`
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 72px;
+  z-index: 999;
+  background: #020308;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 `;
 
 const StyledHomeSearch = styled.div`
@@ -361,7 +370,7 @@ const StyledHomeSearchRight = styled.div`
   border-left: 1px solid rgba(255, 255, 255, 0.12);
 `;
 
-const StyledHomeCarousel = styled.div``;
+const StyledHomeSwiper = styled.div``;
 
 const StyledHomeContent = styled.div`
   padding: 32px;

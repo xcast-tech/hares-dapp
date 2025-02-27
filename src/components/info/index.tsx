@@ -72,7 +72,7 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
             Created at{" "}
             {dayjs().to(dayjs((detail?.created_timestamp ?? 0) * 1000))}
           </StyledTokenCreateTime>
-          <StyledTokenDesc>{detail?.desc || "no desc."}</StyledTokenDesc>
+          <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
         </StyledTokenText>
       </StyledTokenInfo>
 

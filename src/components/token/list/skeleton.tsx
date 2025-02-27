@@ -52,7 +52,7 @@ const StyledTokenCard = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  border: 1px solid #eaecef;
+  border: 1px solid rgba(234, 236, 239, 0.12);
   background: #020202;
   padding: 12px;
 `;

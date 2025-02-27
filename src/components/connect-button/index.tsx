@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import DisconnectIcon from "~@/icons/disconnect.svg";
 import Avatar from "boring-avatars";
+import ShinyCard from "@/components/common/shiny";
 
 const WalletConnectButton = () => {
   const { shouldSign, handleSign } = useGlobalCtx();
@@ -46,9 +47,11 @@ const WalletConnectButton = () => {
 
           // 连接钱包
           return (
-            <ConnectBtn disabled={!ready} onClick={openConnectModal}>
-              Connect Wallet
-            </ConnectBtn>
+            <ShinyCard radius={16} duration={3}>
+              <ConnectBtn disabled={!ready} onClick={openConnectModal}>
+                Connect Wallet
+              </ConnectBtn>
+            </ShinyCard>
           );
         }}
       </ConnectButton.Custom>
@@ -78,23 +81,25 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
     walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
 
   return (
-    <ProfileBtn
-      onClick={() => {
-        console.log("ProfileBtn onClick");
-        onClick && onClick(shouldSign);
-      }}
-    >
-      {shouldSign ? (
-        <SignMessage>Sign Message</SignMessage>
-      ) : (
-        <>
-          {/* <BalanceText>{balance}</BalanceText> */}
-          <Avatar className="wallet-avatar" name={address} variant="beam" />
-          <WalletAddress>{truncatedAddress}</WalletAddress>
-          <DisconnectIcon className="disconnect-icon" />
-        </>
-      )}
-    </ProfileBtn>
+    <ShinyCard radius={16} duration={3}>
+      <ProfileBtn
+        onClick={() => {
+          console.log("ProfileBtn onClick");
+          onClick && onClick(shouldSign);
+        }}
+      >
+        {shouldSign ? (
+          <SignMessage>Sign Message</SignMessage>
+        ) : (
+          <>
+            {/* <BalanceText>{balance}</BalanceText> */}
+            <Avatar className="wallet-avatar" name={address} variant="beam" />
+            <WalletAddress>{truncatedAddress}</WalletAddress>
+            <DisconnectIcon className="disconnect-icon" />
+          </>
+        )}
+      </ProfileBtn>
+    </ShinyCard>
   );
 };
 
@@ -105,7 +110,7 @@ const ConnectBtn = styled.button`
   justify-content: center;
   align-items: center;
   border-radius: 16px;
-  border: 1px solid #fff;
+  border: 1px solid rgba(234, 236, 239, 0.12);
   background: rgba(255, 255, 255, 0.05);
 
   color: #eaecef;
@@ -130,7 +135,7 @@ const ProfileBtn = styled.button`
   align-items: center;
   gap: 8px;
   border-radius: 16px;
-  border: 1px solid #fff;
+  border: 1px solid rgba(234, 236, 239, 0.12);
   background: rgba(255, 255, 255, 0.05);
 
   color: #eaecef;

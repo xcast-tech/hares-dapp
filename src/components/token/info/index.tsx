@@ -105,7 +105,7 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
             )}
           </StyledTokenMetaHeadRight>
         </StyledTokenMetaHead>
-        <StyledTokenDesc>{detail?.desc || "no desc."}</StyledTokenDesc>
+        <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
         {detail && (
           <StyledPoolProgress>
             <StyledPoolProgressBar>

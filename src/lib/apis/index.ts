@@ -105,3 +105,11 @@ export const getTokenTopHoldersApi = async (data: HistoryListApiData) => {
   });
   return res?.data;
 };
+
+export const getLatelyTradesApi = async (lastId: number | string) => {
+  const res = await request("/api/trade/lately", {
+    method: "get",
+    params: { lastId },
+  });
+  return res?.data;
+};

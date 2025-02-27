@@ -26,6 +26,8 @@ import AnchorIcon from "~@/icons/accordion.svg";
 import XIcon from "~@/icons/x.svg";
 import TGIcon from "~@/icons/tg.svg";
 import WebsiteIcon from "~@/icons/website.svg";
+import { StarsBG } from "@/components/common/stars";
+import ShinyCard from "@/components/common/shiny";
 
 function Title({
   children,
@@ -136,18 +138,27 @@ const Create = () => {
     <StyledCreate>
       <StyledCreateContainer>
         <StyledCreateTokenPreview>
-          <StyledTokenCard>
-            <StyledTokenCardPic>
-              {picture && <img src={picture} alt="" />}
-            </StyledTokenCardPic>
-            <StyledTokenCardName>{name || "NAME"}</StyledTokenCardName>
-            <StyledTokenCardTicker>${ticker || "TICKER"}</StyledTokenCardTicker>
-            <StyledTokenCardDesc>{desc || "-"}</StyledTokenCardDesc>
-            <StyledTokenCardDivider></StyledTokenCardDivider>
-            <StyledTokenCardPublic>
-              <StyledTokenCardPrice>$0</StyledTokenCardPrice>
-            </StyledTokenCardPublic>
-          </StyledTokenCard>
+          <StarsBG />
+          <ShinyCard radius={16} duration={5}>
+            <StyledTokenCard>
+              <StyledTokenCardPic>
+                <StyledTokenCardPicContainer>
+                  {picture && <img src={picture} alt="" />}
+                </StyledTokenCardPicContainer>
+              </StyledTokenCardPic>
+              <StyledTokenCardContent>
+                <StyledTokenCardName>{name || "NAME"}</StyledTokenCardName>
+                <StyledTokenCardTicker>
+                  ${ticker || "TICKER"}
+                </StyledTokenCardTicker>
+                <StyledTokenCardDesc>{desc || "-"}</StyledTokenCardDesc>
+                <StyledTokenCardDivider></StyledTokenCardDivider>
+                <StyledTokenCardPublic>
+                  <StyledTokenCardPrice>$0</StyledTokenCardPrice>
+                </StyledTokenCardPublic>
+              </StyledTokenCardContent>
+            </StyledTokenCard>
+          </ShinyCard>
         </StyledCreateTokenPreview>
         <StyledCreateTokenMain>
           <StyledCreateTokenTit>start a new coin</StyledCreateTokenTit>
@@ -436,6 +447,7 @@ const StyledCreateContainer = styled.div`
 `;
 
 const StyledCreateTokenPreview = styled.div`
+  position: relative;
   padding: 60px 24px;
   width: 100%;
   max-width: 480px;
@@ -445,23 +457,41 @@ const StyledCreateTokenPreview = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #020308;
+  overflow: hidden;
 `;
 
 const StyledTokenCard = styled.div`
-  padding: 14px;
+  position: relative;
+  z-index: 1;
   width: 300px;
   border-radius: 16px;
-  background: #1a1a1a;
-  border: 1px solid #fff;
+  background: #020308;
+  // box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(234, 236, 239, 0.12);
 `;
 
 const StyledTokenCardPic = styled.div`
   position: relative;
   width: 100%;
   padding-top: 100%;
+
+  background: linear-gradient(
+    151deg,
+    rgba(234, 236, 239, 0.1) 0%,
+    rgba(234, 236, 239, 0) 50.75%
+  );
+`;
+
+const StyledTokenCardPicContainer = styled.div`
+  position: absolute;
+  width: calc(100% - 28px);
+  height: calc(100% - 28px);
+  top: 14px;
+  left: 14px;
   border-radius: 9.15px;
-  background: rgba(255, 255, 255, 0.04);
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  z-index: 1;
   > img {
     position: absolute;
     width: 100%;
@@ -470,7 +500,15 @@ const StyledTokenCardPic = styled.div`
     left: 0;
     object-fit: cover;
     pointer-events: none;
+    z-index: 1;
   }
+`;
+
+const StyledTokenCardContent = styled.div`
+  padding: 14px;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
 `;
 
 const StyledTokenCardName = styled.div`

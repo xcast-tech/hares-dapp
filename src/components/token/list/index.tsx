@@ -9,6 +9,8 @@ import styled from "@emotion/styled";
 import XIcon from "~@/icons/x.svg";
 import TGIcon from "~@/icons/tg.svg";
 import WebsiteIcon from "~@/icons/website.svg";
+import HoverFlipCard from "@/components/common/flip-card";
+import ShinyCard from "@/components/common/shiny";
 
 interface TokenProps {
   detail: IToken;
@@ -37,34 +39,36 @@ function Token({ detail }: TokenProps) {
 
   return (
     <Link href={`/token/${detail?.address}`}>
-      <StyledTokenCard>
-        <StyledTokenCardPic>
-          <img src={detail?.picture} alt="" />
-        </StyledTokenCardPic>
-        <StyledTokenInfo>
-          <StyledTokenName>
-            {detail?.name}({detail?.symbol})
-          </StyledTokenName>
-          <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
-          <StyledTokenDesc>{detail?.desc || "no desc"}</StyledTokenDesc>
-        </StyledTokenInfo>
-        <StyledTokenPublic>
-          <StyledTokenMCA>MC: ${detail?.marketCap}</StyledTokenMCA>
-          {!!socialMedias.length && (
-            <StyledTokenSocialBox>
-              {socialMedias.map((item, index) => {
-                return (
-                  <StyledTokenSocialBtn key={index} fullWidth>
-                    <StyledTokenSocialLink href={item.url} target="_blank">
-                      {item.icon}
-                    </StyledTokenSocialLink>
-                  </StyledTokenSocialBtn>
-                );
-              })}
-            </StyledTokenSocialBox>
-          )}
-        </StyledTokenPublic>
-      </StyledTokenCard>
+      <ShinyCard radius={16} duration={5}>
+        <StyledTokenCard>
+          <StyledTokenCardPic>
+            {detail?.picture && <img src={detail?.picture} alt="" />}
+          </StyledTokenCardPic>
+          <StyledTokenInfo>
+            <StyledTokenName>
+              {detail?.name}({detail?.symbol})
+            </StyledTokenName>
+            <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
+            <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
+          </StyledTokenInfo>
+          <StyledTokenPublic>
+            <StyledTokenMCA>MC: ${detail?.marketCap}</StyledTokenMCA>
+            {!!socialMedias.length && (
+              <StyledTokenSocialBox>
+                {socialMedias.map((item, index) => {
+                  return (
+                    <StyledTokenSocialBtn key={index}>
+                      <StyledTokenSocialLink href={item.url} target="_blank">
+                        {item.icon}
+                      </StyledTokenSocialLink>
+                    </StyledTokenSocialBtn>
+                  );
+                })}
+              </StyledTokenSocialBox>
+            )}
+          </StyledTokenPublic>
+        </StyledTokenCard>
+      </ShinyCard>
     </Link>
   );
 }
@@ -77,7 +81,11 @@ export const TokenList: FC<TokenListProps> = ({ list }) => {
   return (
     <StyledTokenList>
       {list?.map((item, i) => {
-        return <Token key={i} detail={item} />;
+        return (
+          <HoverFlipCard key={i}>
+            <Token detail={item} />
+          </HoverFlipCard>
+        );
       })}
     </StyledTokenList>
   );
@@ -93,13 +101,20 @@ const StyledTokenCard = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  border: 1px solid #eaecef;
+  border: 1px solid rgba(234, 236, 239, 0.12);
   background: #020202;
   padding: 12px;
 `;
 const StyledTokenCardPic = styled.div`
   position: relative;
   padding-top: 100%;
+  background: linear-gradient(
+    151deg,
+    rgba(234, 236, 239, 0.1) 0%,
+    rgba(234, 236, 239, 0) 50.75%
+  );
+  border-radius: 8px;
+  overflow: hidden;
   > img {
     position: absolute;
     top: 0;
@@ -123,6 +138,7 @@ const StyledTokenInfo = styled.div`
 const StyledTokenName = styled.h3`
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 18px;
   font-style: normal;
   font-weight: 700;
@@ -174,9 +190,10 @@ const StyledTokenSocialBox = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  pointer-events: none;
 `;
 
-const StyledTokenSocialBtn = styled(Button)`
+const StyledTokenSocialBtn = styled.div`
   padding: 0;
   width: 20px;
   min-width: 20px;
@@ -208,4 +225,5 @@ const StyledTokenSocialLink = styled.a`
   width: 100%;
   height: 100%;
   text-decoration: none;
+  pointer-events: auto;
 `;

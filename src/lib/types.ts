@@ -56,6 +56,15 @@ export type Trade = {
   timestamp: number;
 };
 
+export type LatelyTrade = Trade & {
+  tokenAddress: {
+    name: string;
+    symbol: string;
+    address: Address;
+    picture: string;
+  };
+};
+
 export type TopHolder =
   Database["public"]["Functions"]["get_top_holders"]["Returns"][0];
 
