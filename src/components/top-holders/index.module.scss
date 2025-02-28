@@ -1,6 +1,5 @@
 .table {
   &-base {
-    margin-top: 16px;
     width: 100%;
   }
   &-header {
@@ -21,6 +20,14 @@
     padding-left: 14px;
     padding-right: 10px;
     background: rgba(255, 255, 255, 0.05);
+
+    @media screen and (max-width: 1024px) {
+      padding-left: 8px;
+      padding-right: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      height: 24px;
+      line-height: 24px;
+    }
   }
   &-body {
     padding: 0 16px;
@@ -33,10 +40,17 @@
   }
   &-cell {
     color: rgba(234, 236, 239, 0.8);
+
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
-    line-height: 150%; /* 18px */
+    line-height: 150%;
+
+    @media screen and (max-width: 1024px) {
+      color: #eaecef;
+      line-height: 18px;
+      padding: 8px;
+    }
     &:hover {
       color: rgba(234, 236, 239, 1);
     }

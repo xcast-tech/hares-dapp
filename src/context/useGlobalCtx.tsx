@@ -19,6 +19,7 @@ import {
   useChainModal,
 } from "@rainbow-me/rainbowkit";
 import { loginSignText, mainChain } from "@/lib/constant";
+import { isMobile as checkIsMobile } from "@/lib/utils";
 
 type ProfileType = {
   address: string;
@@ -32,6 +33,7 @@ interface GlobalContextType {
   tradingLoading: boolean;
   setTradingLoading: (loading: boolean) => void;
   handleSign: () => void;
+  isMobile: boolean;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -47,6 +49,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [signLoading, setSignLoading] = useState(false);
   const [shouldSign, setShouldSign] = useState(false);
   const [tradingLoading, setTradingLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const isLogin = useMemo(() => {
     return (
@@ -142,6 +145,11 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setIsMobile(checkIsMobile());
+  }, []);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -153,6 +161,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         handleSign,
         tradingLoading,
         setTradingLoading,
+        isMobile,
       }}
     >
       {children}

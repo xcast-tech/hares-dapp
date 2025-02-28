@@ -67,57 +67,99 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
 
   return (
     <StyledTokenInfo>
-      <StyledTokenPicBox>
-        <StyledTokenPic src={detail?.picture} alt="" />
-      </StyledTokenPicBox>
-      <StyledTokenMeta>
-        <StyledTokenMetaHead>
-          <StyledTokenMetaHeadLeft>
-            <StyledTokenTit>{detail?.name}</StyledTokenTit>
-            <StyledTokenCreateTime>
-              Created at{" "}
-              {dayjs().to(dayjs((detail?.created_timestamp ?? 0) * 1000))}
-            </StyledTokenCreateTime>
-            <StyledTokenMCA>MCap: $14.23k</StyledTokenMCA>
-          </StyledTokenMetaHeadLeft>
-          <StyledTokenMetaHeadRight>
-            <StyledTokenAddressBtn
-              endContent={<Copy />}
-              onPress={() => {
-                copy(detail?.address ?? "");
-                toast("copied to clipboard");
-              }}
-            >
-              <div className="flex-1">CA: {maskAddress(detail?.address)}</div>
-            </StyledTokenAddressBtn>
-            {!!socialMedias.length && (
-              <StyledTokenSocialBox>
-                {socialMedias.map((item, index) => {
-                  return (
-                    <StyledTokenSocialBtn key={index} fullWidth>
-                      <StyledTokenSocialLink href={item.url} target="_blank">
-                        {item.icon}
-                      </StyledTokenSocialLink>
-                    </StyledTokenSocialBtn>
-                  );
-                })}
-              </StyledTokenSocialBox>
-            )}
-          </StyledTokenMetaHeadRight>
-        </StyledTokenMetaHead>
-        <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
+      <StyledTokenMetaBox>
+        <StyledTokenPicBox>
+          <StyledTokenPic src={detail?.picture} alt="" />
+        </StyledTokenPicBox>
+        <StyledTokenMeta>
+          <StyledTokenMetaHead>
+            <StyledTokenMetaHeadLeft>
+              <StyledTokenTit>{detail?.name}</StyledTokenTit>
+              <StyledTokenCreateTime>
+                Created at{" "}
+                {dayjs().to(dayjs((detail?.created_timestamp ?? 0) * 1000))}
+              </StyledTokenCreateTime>
+              <StyledTokenMCA>MCap: $14.23k</StyledTokenMCA>
+            </StyledTokenMetaHeadLeft>
+            <StyledTokenMetaHeadRight>
+              <StyledTokenAddressBtn
+                endContent={<Copy />}
+                onPress={() => {
+                  copy(detail?.address ?? "");
+                  toast("copied to clipboard");
+                }}
+              >
+                <div className="flex-1">CA: {maskAddress(detail?.address)}</div>
+              </StyledTokenAddressBtn>
+              {!!socialMedias.length && (
+                <StyledTokenSocialBox>
+                  {socialMedias.map((item, index) => {
+                    return (
+                      <StyledTokenSocialBtn key={index} fullWidth>
+                        <StyledTokenSocialLink href={item.url} target="_blank">
+                          {item.icon}
+                        </StyledTokenSocialLink>
+                      </StyledTokenSocialBtn>
+                    );
+                  })}
+                </StyledTokenSocialBox>
+              )}
+            </StyledTokenMetaHeadRight>
+          </StyledTokenMetaHead>
+          <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
+          {detail && (
+            <StyledPoolProgress>
+              <StyledPoolProgressBar>
+                <StyledPoolProgressBarInner
+                  style={{
+                    width: `${
+                      (Number(currentEth) / Number(graduatedPool)) * 100
+                    }%`,
+                  }}
+                ></StyledPoolProgressBarInner>
+              </StyledPoolProgressBar>
+              <StyledPoolProgressText>
+                <span>Bonding curve progress:&nbsp;</span>
+                <b>
+                  {currentEth === graduatedPool
+                    ? graduatedPoolConstant
+                    : formatDecimalNumber(
+                        formatEther((currentEth * BigInt(100)) / BigInt(99))
+                      )}
+                  /&nbsp;
+                  {graduatedPoolConstant} {tokenSymbol}
+                </b>
+              </StyledPoolProgressText>
+            </StyledPoolProgress>
+          )}
+        </StyledTokenMeta>
+      </StyledTokenMetaBox>
+      <MobileStyledTokenMeta>
+        <MobileStyledTokenDesc>{detail?.desc || "-"}</MobileStyledTokenDesc>
+        <MobileStyledTokenAddressBtn
+          endContent={<Copy />}
+          onPress={() => {
+            copy(detail?.address ?? "");
+            toast("copied to clipboard");
+          }}
+        >
+          <div className="flex-1">
+            CA: {maskAddress(detail?.address, 10, 6)}
+          </div>
+        </MobileStyledTokenAddressBtn>
+
         {detail && (
-          <StyledPoolProgress>
-            <StyledPoolProgressBar>
-              <StyledPoolProgressBarInner
+          <MobileStyledPoolProgress>
+            <MobileStyledPoolProgressBar>
+              <MobileStyledPoolProgressBarInner
                 style={{
                   width: `${
                     (Number(currentEth) / Number(graduatedPool)) * 100
                   }%`,
                 }}
-              ></StyledPoolProgressBarInner>
-            </StyledPoolProgressBar>
-            <StyledPoolProgressText>
+              ></MobileStyledPoolProgressBarInner>
+            </MobileStyledPoolProgressBar>
+            <MobileStyledPoolProgressText>
               <span>Bonding curve progress:&nbsp;</span>
               <b>
                 {currentEth === graduatedPool
@@ -128,10 +170,24 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
                 /&nbsp;
                 {graduatedPoolConstant} {tokenSymbol}
               </b>
-            </StyledPoolProgressText>
-          </StyledPoolProgress>
+            </MobileStyledPoolProgressText>
+          </MobileStyledPoolProgress>
         )}
-      </StyledTokenMeta>
+        {!!socialMedias.length && (
+          <MobileStyledTokenSocialBox>
+            {socialMedias.map((item, index) => {
+              return (
+                <MobileStyledTokenSocialBtn key={index} fullWidth>
+                  <MobileStyledTokenSocialLink href={item.url} target="_blank">
+                    {item.icon}
+                    <span>{item.name}</span>
+                  </MobileStyledTokenSocialLink>
+                </MobileStyledTokenSocialBtn>
+              );
+            })}
+          </MobileStyledTokenSocialBox>
+        )}
+      </MobileStyledTokenMeta>
 
       {/* {!!socialMedias.length && <StyledInfoDivider />}
 
@@ -154,11 +210,23 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
 };
 
 const StyledTokenInfo = styled.div`
+  display: flex;
+  @media screen and (max-width: 1024px) {
+    flex-direction: column;
+    gap: 20px;
+  }
+`;
+
+const StyledTokenMetaBox = styled.div`
   padding: 16px;
   width: 100%;
   display: flex;
   align-items: flex-start;
   gap: 16px;
+
+  @media screen and (max-width: 1024px) {
+    padding: 0;
+  }
 `;
 
 const StyledTokenPicBox = styled.div`
@@ -167,6 +235,12 @@ const StyledTokenPicBox = styled.div`
   border-radius: 12px;
   overflow: hidden;
   background-color: #f5f5f5;
+
+  @media screen and (max-width: 1024px) {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+  }
 `;
 
 const StyledTokenPic = styled.img`
@@ -177,15 +251,21 @@ const StyledTokenPic = styled.img`
 
 const StyledTokenMeta = styled.div`
   flex: 1;
-  flex-shrink: 1;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
+
+  @media screen and (max-width: 1024px) {
+  }
 `;
 
 const StyledTokenMetaHead = styled.div`
   display: flex;
   align-items: flex-start;
+  @media screen and (max-width: 1024px) {
+    flex-direction: column;
+  }
 `;
 
 const StyledTokenMetaHeadLeft = styled.div`
@@ -237,6 +317,10 @@ const StyledTokenMetaHeadRight = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledTokenAddressBtn = styled(Button)`
@@ -306,6 +390,10 @@ const StyledTokenDesc = styled.p`
   font-style: normal;
   font-weight: 400;
   line-height: 140%; /* 16.8px */
+
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledPoolProgress = styled.div`
@@ -314,6 +402,10 @@ const StyledPoolProgress = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledPoolProgressBar = styled.div`
@@ -339,5 +431,130 @@ const StyledPoolProgressText = styled.p`
   line-height: 150%; /* 18px */
   > b {
     color: #fcd535;
+  }
+`;
+
+const MobileStyledTokenMeta = styled.div`
+  display: none;
+
+  @media screen and (max-width: 1024px) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+`;
+
+const MobileStyledTokenDesc = styled.p`
+  color: #eaecef;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 16.8px */
+`;
+
+const MobileStyledTokenAddressBtn = styled(Button)`
+  display: flex;
+  height: 40px;
+  padding: 0px 12px;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  border-radius: 4px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+
+  color: #eaecef;
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+`;
+
+const MobileStyledPoolProgress = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const MobileStyledPoolProgressBar = styled.div`
+  width: 100%;
+  display: flex;
+  height: 6px;
+  border-radius: 4px;
+  background: rgba(252, 213, 53, 0.2);
+  overflow: hidden;
+`;
+
+const MobileStyledPoolProgressBarInner = styled.div`
+  height: 100%;
+  border-radius: 4px;
+  background: #fcd535;
+`;
+
+const MobileStyledPoolProgressText = styled.p`
+  color: #eaecef;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 150%; /* 18px */
+  > b {
+    color: #fcd535;
+    font-weight: 500;
+  }
+`;
+
+const MobileStyledTokenSocialBox = styled.div`
+  padding: 16px 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const MobileStyledTokenSocialBtn = styled(Button)`
+  flex-shrink: 0;
+  padding: 0;
+  height: 40px;
+  padding: 0px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex: 1 0 0;
+  border-radius: 4px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+
+  color: #eaecef;
+  text-align: center;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+`;
+
+const MobileStyledTokenSocialLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  > span {
+    color: #eaecef;
+    text-align: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-transform: capitalize;
   }
 `;

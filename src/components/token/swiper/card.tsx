@@ -41,6 +41,10 @@ const StyledLink = styled.a`
   justify-content: center;
   height: 100%;
   border-left: 1px solid rgba(255, 255, 255, 0.12);
+
+  @media screen and (max-width: 1024px) {
+    border-left: 0.5px solid rgba(255, 255, 255, 0.12);
+  }
 `;
 
 const StyledSwiperCard = styled.div`
@@ -62,6 +66,10 @@ const StyledTokenAddress = styled.span`
   font-style: normal;
   font-weight: 500;
   opacity: 0.5;
+
+  @media screen and (max-width: 1024px) {
+    font-size: 11px;
+  }
 `;
 
 const StyledTokenAction = styled.span<{ sell: boolean }>`
@@ -69,6 +77,9 @@ const StyledTokenAction = styled.span<{ sell: boolean }>`
   font-size: 12px;
   font-style: normal;
   font-weight: 500;
+  @media screen and (max-width: 1024px) {
+    font-size: 11px;
+  }
 `;
 
 const StyledBNBReceived = styled.span`
@@ -93,4 +104,9 @@ const StyledTokenName = styled.h3`
   font-style: normal;
   font-weight: 600;
   opacity: 0.8;
+  @media screen and (max-width: 1024px) {
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+  }
 `;

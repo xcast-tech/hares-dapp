@@ -6,13 +6,26 @@
   --background: linear-gradient(0deg, #020308 0%, #020308 100%), #020308;
   --foreground: #ededed;
   --shiny-cta-bg: #000000;
-    --shiny-cta-bg-subtle: #1a1818;
-    --shiny-cta-fg: #ffffff;
-    --shiny-cta-highlight: blue;
-    --shiny-cta-highlight-subtle: #8484ff;
+  --shiny-cta-bg-subtle: #1a1818;
+  --shiny-cta-fg: #ffffff;
+  --shiny-cta-highlight: blue;
+  --shiny-cta-highlight-subtle: #8484ff;
+  --header-h: 72px;
+
+  @media screen and (max-width: 1024px) {
+    --background: radial-gradient(
+        63.94% 63.94% at 50% 0%,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0) 100%
+      ),
+      #020308;
+
+    --header-h: 64px;
+  }
 }
 
-body, html {
+body,
+html {
   color: var(--foreground);
   background: var(--background);
   font-family: "Inter", Arial, Helvetica, sans-serif;

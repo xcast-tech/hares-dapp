@@ -83,4 +83,7 @@ const StyledTradesSwiperContainer = styled.div`
   pointer-events: auto;
   height: 48px;
   background: rgba(255, 255, 255, 0.06);
+  @media screen and (max-width: 1024px) {
+    background: rgba(255, 255, 255, 0.06);
+  }
 `;

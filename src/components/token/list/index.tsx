@@ -11,12 +11,14 @@ import TGIcon from "~@/icons/tg.svg";
 import WebsiteIcon from "~@/icons/website.svg";
 import HoverFlipCard from "@/components/common/flip-card";
 import ShinyCard from "@/components/common/shiny";
+import { useGlobalCtx } from "@/context/useGlobalCtx";
 
 interface TokenProps {
   detail: IToken;
 }
 
 function Token({ detail }: TokenProps) {
+  const { isMobile } = useGlobalCtx();
   const socialMedias = useMemo(() => {
     return [
       {
@@ -39,34 +41,36 @@ function Token({ detail }: TokenProps) {
 
   return (
     <Link href={`/token/${detail?.address}`}>
-      <ShinyCard radius={16} duration={5}>
+      <ShinyCard disabled={isMobile} radius={16} duration={5}>
         <StyledTokenCard>
           <StyledTokenCardPic>
             {detail?.picture && <img src={detail?.picture} alt="" />}
           </StyledTokenCardPic>
-          <StyledTokenInfo>
-            <StyledTokenName>
-              {detail?.name}({detail?.symbol})
-            </StyledTokenName>
-            <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
-            <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
-          </StyledTokenInfo>
-          <StyledTokenPublic>
-            <StyledTokenMCA>MC: ${detail?.marketCap}</StyledTokenMCA>
-            {!!socialMedias.length && (
-              <StyledTokenSocialBox>
-                {socialMedias.map((item, index) => {
-                  return (
-                    <StyledTokenSocialBtn key={index}>
-                      <StyledTokenSocialLink href={item.url} target="_blank">
-                        {item.icon}
-                      </StyledTokenSocialLink>
-                    </StyledTokenSocialBtn>
-                  );
-                })}
-              </StyledTokenSocialBox>
-            )}
-          </StyledTokenPublic>
+          <StyledTokenContent>
+            <StyledTokenInfo>
+              <StyledTokenName>
+                {detail?.name}({detail?.symbol})
+              </StyledTokenName>
+              <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
+              <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
+            </StyledTokenInfo>
+            <StyledTokenPublic>
+              <StyledTokenMCA>MC: ${detail?.marketCap}</StyledTokenMCA>
+              {!!socialMedias.length && (
+                <StyledTokenSocialBox>
+                  {socialMedias.map((item, index) => {
+                    return (
+                      <StyledTokenSocialBtn key={index}>
+                        <StyledTokenSocialLink href={item.url} target="_blank">
+                          {item.icon}
+                        </StyledTokenSocialLink>
+                      </StyledTokenSocialBtn>
+                    );
+                  })}
+                </StyledTokenSocialBox>
+              )}
+            </StyledTokenPublic>
+          </StyledTokenContent>
         </StyledTokenCard>
       </ShinyCard>
     </Link>
@@ -95,6 +99,11 @@ const StyledTokenList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
   gap: 16px;
+  @media screen and (max-width: 1024px) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
 const StyledTokenCard = styled.div`
@@ -104,6 +113,17 @@ const StyledTokenCard = styled.div`
   border: 1px solid rgba(234, 236, 239, 0.12);
   background: #020202;
   padding: 12px;
+
+  @media screen and (max-width: 1024px) {
+    padding: 0;
+    height: 92px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 10px;
+    border: 0.5px solid rgba(234, 236, 239, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+  }
 `;
 const StyledTokenCardPic = styled.div`
   position: relative;
@@ -124,6 +144,29 @@ const StyledTokenCardPic = styled.div`
     object-fit: cover;
     border-radius: 8px;
   }
+
+  @media screen and (max-width: 1024px) {
+    padding: 6px;
+    width: 92px;
+    height: 92px;
+    > img {
+      position: relative;
+      border-radius: 4px;
+    }
+  }
+`;
+
+const StyledTokenContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  @media screen and (max-width: 1024px) {
+    flex: 1;
+    flex-shrink: 0;
+    height: 100%;
+    padding: 12px 0;
+    padding-left: 6px;
+    padding-right: 12px;
+  }
 `;
 
 const StyledTokenInfo = styled.div`
@@ -133,6 +176,9 @@ const StyledTokenInfo = styled.div`
   flex-direction: column;
   gap: 4px;
   border-bottom: 1px solid #1e1e1e;
+  @media screen and (max-width: 1024px) {
+    padding: 0;
+  }
 `;
 
 const StyledTokenName = styled.h3`
@@ -166,12 +212,21 @@ const StyledTokenDesc = styled.p`
   font-weight: 400;
   line-height: 140%; /* 14px */
   opacity: 0.6;
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledTokenPublic = styled.div`
   padding-top: 8px;
   display: flex;
   align-items: center;
+  @media screen and (max-width: 1024px) {
+    padding: 0;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+  }
 `;
 
 const StyledTokenMCA = styled.b`
@@ -184,6 +239,10 @@ const StyledTokenMCA = styled.b`
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+
+  @media screen and (max-width: 1024px) {
+    font-size: 12px;
+  }
 `;
 
 const StyledTokenSocialBox = styled.div`
@@ -191,6 +250,9 @@ const StyledTokenSocialBox = styled.div`
   align-items: center;
   gap: 8px;
   pointer-events: none;
+  @media screen and (max-width: 1024px) {
+    gap: 6px;
+  }
 `;
 
 const StyledTokenSocialBtn = styled.div`
@@ -213,6 +275,17 @@ const StyledTokenSocialBtn = styled.div`
     color: rgba(234, 236, 239, 1);
     svg {
       opacity: 1;
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(234, 236, 239, 0.1);
+    svg {
+      width: 12px;
+      height: 12px;
     }
   }
 `;

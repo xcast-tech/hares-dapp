@@ -17,30 +17,39 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+  useDisclosure,
 } from "@heroui/react";
 import { Twitter } from "../twitter";
 import { Warpcast } from "../wrapcast";
 import { cn } from "@/lib/utils";
 import { Expand } from "../icons/expand";
 import { Close } from "../icons/close";
-import style from "./style.module.css";
 import { HaresAiTwitterLink, HaresAiWarpcastLink } from "@/lib/constant";
 import { useConnect, useDisconnect, useAccountEffect } from "wagmi";
 import ConnectButton from "@/components/connect-button";
 import styled from "@emotion/styled";
 import LogoIcon from "~@/icons/logo.svg";
 import XIcon from "~@/icons/x.svg";
+import MenuIcon from "~@/icons/menu.svg";
 import { usePathname } from "next/navigation";
+import styles from "./style.module.scss";
+import DrawerRight from "@/components/common/drawer/right";
 
 export const Header = () => {
   const [isAboutOpen, setIsAboutOpen] = React.useState(false);
   const pathname = usePathname();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const [expand, setExpand] = useState(false);
+  // const [expand, setExpand] = useState(false);
 
-  const onOpenChange = (open: boolean) => {
-    setIsAboutOpen(open);
-  };
+  // const onOpenChange = (open: boolean) => {
+  //   setIsAboutOpen(open);
+  // };
 
   const navs = useMemo(() => {
     return [
@@ -87,7 +96,7 @@ export const Header = () => {
   });
 
   return (
-    <StyledHeader>
+    <StyledHeader expend={isOpen}>
       <StyledHeaderContainer>
         <StyledHeaderLeft>
           <Link href="/">
@@ -120,7 +129,6 @@ export const Header = () => {
             })}
           </StyledHeaderNavs>
         </StyledHeaderLeft>
-
         <StyledHeaderRight>
           <StyledHeaderRightNavs>
             {rightNavs.map((nav) => {
@@ -137,6 +145,46 @@ export const Header = () => {
             <ConnectButton />
           </StyledConnectBox>
         </StyledHeaderRight>
+
+        <MobileStyledNavs>
+          <MobileStyledCreateCoin>
+            <MobileStyledCreateCoinInner>
+              start a new coin
+            </MobileStyledCreateCoinInner>
+          </MobileStyledCreateCoin>
+          <MobileStyledExpand>
+            <MobileStyledExpandMenu onClick={onOpen}>
+              <MenuIcon className="menu-icon" />
+            </MobileStyledExpandMenu>
+            <DrawerRight isOpen={isOpen} onOpenChange={onOpenChange}>
+              <>
+                <MobileStyledMenuNavs>
+                  {navs.map((nav, idx) => {
+                    return (
+                      <>
+                        {nav.type === "path" ? (
+                          <Link href={nav.href!} key={idx}>
+                            <MobileStyledMenuNav active={nav.active}>
+                              {nav.text}
+                            </MobileStyledMenuNav>
+                          </Link>
+                        ) : (
+                          <MobileStyledMenuNav key={idx} active={nav.active}>
+                            {nav.text}
+                          </MobileStyledMenuNav>
+                        )}
+                        <MobileStyledMenuDivider />
+                      </>
+                    );
+                  })}
+                </MobileStyledMenuNavs>
+                <MobileStyledConnectBox>
+                  <ConnectButton />
+                </MobileStyledConnectBox>
+              </>
+            </DrawerRight>
+          </MobileStyledExpand>
+        </MobileStyledNavs>
 
         {/* <div className="hidden lg:flex-1 lg:flex lg:items-center lg:gap-6">
         <div className="h-4 w-[1px] bg-[#3d3d3d]"></div>
@@ -161,7 +209,7 @@ export const Header = () => {
         </div>
       </div> */}
 
-        <div className={cn("xl:hidden")}>
+        {/* <div className={cn("xl:hidden")}>
           {!expand ? (
             <Expand
               onClick={() => {
@@ -186,34 +234,9 @@ export const Header = () => {
           >
             <div className="absolute z-0 inset-0 backdrop-blur-xl bg-black/80"></div>
             <div className="relative z-10 p-4 bg-[#141414] rounded-b-[16px] border-solid border-b-1 border-[#262626]">
-              <div className={style.connectBtn}>
+              <div>
                 <ConnectButton />
               </div>
-
-              {/* <div className="mt-2">
-              {userInfo ? (
-                <Dropdown placement="bottom">
-                  <DropdownTrigger>
-                    <Button
-                      fullWidth
-                      startContent={<Avatar className="w-6 h-6 text-tiny font-medium" {...(userInfo?.pfpUrl ? { src: userInfo?.pfpUrl } : { name: userInfo?.displayName })} />}
-                      variant="bordered"
-                    >
-                      {userInfo?.displayName}
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu disallowEmptySelection aria-label="Merge options" className="max-w-[300px]" selectionMode="single">
-                    <DropdownItem key="merge" onPress={logout} className="font-medium">
-                      Sign out
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              ) : (
-                <Button fullWidth variant="bordered" onPress={login} className="font-medium">
-                  Connect Facaster
-                </Button>
-              )}
-            </div> */}
 
               <div className="h-px bg-[#262626] my-4"></div>
 
@@ -253,13 +276,13 @@ export const Header = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* <div className={cn("hidden", "xl:flex items-center gap-2")}>
           <ConnectButton />
         </div> */}
 
-        <Modal isOpen={isAboutOpen} onOpenChange={onOpenChange}>
+        {/* <Modal isOpen={isAboutOpen} onOpenChange={onOpenChange}>
           <ModalContent>
             {(onClose) => (
               <>
@@ -300,23 +323,28 @@ export const Header = () => {
               </>
             )}
           </ModalContent>
-        </Modal>
+        </Modal> */}
       </StyledHeaderContainer>
     </StyledHeader>
   );
 };
 
-const StyledHeader = styled.div`
+const StyledHeader = styled.div<{ expend: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1000;
+  z-index: ${(props) => (props.expend ? 40 : 1000)};
   background: rgba(2, 3, 8, 0.9);
 
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   box-sizing: content-box;
+
+  @media screen and (max-width: 1024px) {
+    background: rgba(255, 255, 255, 0.01);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.12);
+  }
 `;
 
 const StyledHeaderContainer = styled.div`
@@ -324,7 +352,11 @@ const StyledHeaderContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 0 60px;
-  height: 72px;
+  height: var(--header-h);
+
+  @media screen and (max-width: 1024px) {
+    padding: 0 10px;
+  }
 `;
 
 const StyledHeaderLeft = styled.div`
@@ -337,6 +369,9 @@ const StyledHeaderLeft = styled.div`
 const StyledHeaderLogo = styled.div`
   width: 80px;
   color: #fcd535;
+  @media screen and (max-width: 1024px) {
+    width: 70px;
+  }
 `;
 
 const StyledHeaderNavs = styled.div`
@@ -350,6 +385,10 @@ const StyledHeaderNavs = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: 150%;
+
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledHeaderNav = styled.button<{ active?: boolean }>`
@@ -368,6 +407,9 @@ const StyledHeaderRight = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledHeaderRightNavs = styled.div`
@@ -391,3 +433,95 @@ const StyledHeaderRightNav = styled.button`
 `;
 
 const StyledConnectBox = styled.div``;
+
+const MobileStyledNavs = styled.div`
+  display: none;
+  @media screen and (max-width: 1024px) {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 20px;
+  }
+`;
+const MobileStyledCreateCoin = styled.div`
+  display: none;
+  @media screen and (max-width: 1024px) {
+    display: flex;
+    height: 36px;
+    padding: 3px;
+    gap: 10px;
+
+    border-radius: 100px;
+    border: 1.5px solid rgba(252, 213, 53, 0.4);
+    background: #090920;
+  }
+`;
+
+const MobileStyledCreateCoinInner = styled.div`
+  display: flex;
+  padding: 0px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex: 1 0 0;
+
+  border-radius: 100px;
+  background: linear-gradient(274deg, #ffc720 0%, #fcd535 49.5%);
+
+  color: #020308;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%; /* 18px */
+  text-transform: capitalize;
+`;
+
+const MobileStyledExpand = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const MobileStyledExpandMenu = styled.button`
+  padding: 0;
+  outline: none;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  .menu-icon {
+    width: 24px;
+    height: 24px;
+    color: #eaecef;
+  }
+`;
+
+const MobileStyledMenuNavs = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const MobileStyledMenuNav = styled.button<{ active?: boolean }>`
+  width: 100%;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  color: #eaecef;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%; /* 27px */
+`;
+
+const MobileStyledMenuDivider = styled.div`
+  width: 100%;
+  height: 1px;
+  background: #2b3139;
+`;
+
+const MobileStyledConnectBox = styled.div`
+  width: 100%;
+`;

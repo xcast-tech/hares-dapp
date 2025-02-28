@@ -9,8 +9,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function maskAddress(address: string = "") {
-  return `${address.slice(0, 5)}...${address.slice(-5)}`;
+export function maskAddress(address: string = "", prefix = 5, suffix = 5) {
+  return `${address.slice(0, prefix)}...${address.slice(-suffix)}`;
 }
 
 export function getDomain() {

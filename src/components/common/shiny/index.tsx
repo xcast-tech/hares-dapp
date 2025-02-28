@@ -4,14 +4,18 @@ import styled from "@emotion/styled";
 interface ShinyCardProps {
   radius?: number;
   duration?: number;
+  disabled?: boolean;
   children: React.ReactNode;
 }
 const ShinyCard: FC<ShinyCardProps> = ({
   radius = 16,
   duration = 3,
+  disabled,
   children,
 }) => {
-  return (
+  return disabled ? (
+    children
+  ) : (
     <StyledShinyCard radius={radius} duration={duration}>
       {children}
     </StyledShinyCard>

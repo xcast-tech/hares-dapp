@@ -1,0 +1,30 @@
+.drawer {
+  &-base {
+    display: flex;
+    width: 220px;
+    // height: 100vh;
+    padding: 60px 24px;
+
+    border-radius: 0;
+    border: 1px solid #2b3139;
+    background: #181a1f;
+  }
+  &-backdrop {
+  }
+  &-wrapper {
+  }
+  &-header {
+  }
+  &-body {
+    padding: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    flex-shrink: 0;
+  }
+  &-footer {
+  }
+  &-close-button {
+  }
+}

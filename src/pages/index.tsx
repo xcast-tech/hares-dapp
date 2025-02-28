@@ -237,6 +237,9 @@ const StyledHomeBanner = styled.div`
   justify-content: center;
   gap: 16px;
   background: rgba(255, 255, 255, 0.01);
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledHomeBannerTitle = styled.h1`
@@ -306,8 +309,8 @@ const StyledHomeTool = styled.div`
   display: flex;
   flex-direction: column;
   position: sticky;
-  top: 72px;
-  z-index: 999;
+  top: var(--header-h);
+  z-index: 39;
   background: #020308;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 `;
@@ -316,6 +319,11 @@ const StyledHomeSearch = styled.div`
   height: 54px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  @media screen and (max-width: 1024px) {
+    border-top: 0.5px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.01);
+  }
 `;
 
 const StyledHomeSearchContainer = styled.div`
@@ -326,6 +334,10 @@ const StyledHomeSearchContainer = styled.div`
   background: rgba(255, 255, 255, 0.01);
   border-left: 1px solid rgba(255, 255, 255, 0.12);
   border-right: 1px solid rgba(255, 255, 255, 0.12);
+  @media screen and (max-width: 1024px) {
+    margin: 0;
+    border: none;
+  }
 `;
 
 const StyledHomeSearchLeft = styled.div`
@@ -341,6 +353,15 @@ const StyledHomeSearchLeft = styled.div`
     height: 14px;
     color: #eaecef;
     opacity: 0.4;
+  }
+
+  @media screen and (max-width: 1024px) {
+    padding: 0 10px;
+    gap: 10px;
+    svg {
+      width: 16px;
+      height: 16px;
+    }
   }
 `;
 
@@ -366,6 +387,11 @@ const StyledHomeSearchInput = styled.input`
   &::placeholder {
     color: rgba(234, 236, 239, 0.4);
   }
+
+  @media screen and (max-width: 1024px) {
+    font-size: 12px;
+    line-height: 150%; /* 18px */
+  }
 `;
 
 const StyledHomeSearchRight = styled.div`
@@ -373,6 +399,9 @@ const StyledHomeSearchRight = styled.div`
   display: flex;
   align-items: center;
   border-left: 1px solid rgba(255, 255, 255, 0.12);
+  @media screen and (max-width: 1024px) {
+    border-left: 0.5px solid rgba(255, 255, 255, 0.12);
+  }
 `;
 
 const StyledHomeSwiper = styled.div``;
@@ -382,4 +411,7 @@ const StyledHomeContent = styled.div`
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
+  @media screen and (max-width: 1024px) {
+    padding: 10px;
+  }
 `;

@@ -1,0 +1,8 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <path fill="none" stroke-linejoin="miter" stroke-linecap="round" stroke-miterlimit="4"
+    stroke-width="3.1746" stroke="currentColor"
+    d="M10.92 18.54l-5.079 5.079M5.841 23.619l5.079 5.079M5.841 23.619h13.968c2.805 0 5.079-2.274 5.079-5.079v-1.27"></path>
+  <path fill="none" stroke-linejoin="miter" stroke-linecap="round" stroke-miterlimit="4"
+    stroke-width="3.1746" stroke="currentColor"
+    d="M21.080 13.46l5.079-5.079M26.159 8.381l-5.079-5.079M26.159 8.381h-13.968c-2.805 0-5.079 2.274-5.079 5.079v1.27"></path>
+</svg>

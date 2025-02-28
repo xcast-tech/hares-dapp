@@ -3,7 +3,7 @@ import { HeroUIProvider } from "@heroui/react";
 import type { NextPage } from "next";
 import { Header } from "@/components/header";
 import Providers from "@/lib/provider";
-import "@/styles/globals.css";
+import "@/styles/globals.scss";
 import type { AppProps } from "next/app";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -79,5 +79,5 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 }
 
 const StyledMain = styled.main`
-  padding-top: 72px;
+  padding-top: var(--header-h);
 `;

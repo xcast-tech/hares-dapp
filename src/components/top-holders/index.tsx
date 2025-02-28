@@ -61,7 +61,7 @@ export const TopHolders = ({
     <StyledTopHolders>
       <StyledTopHoldersHeader>
         <TopHoldersIcon />
-        <span>Trades</span>
+        <span>Top Holders</span>
       </StyledTopHoldersHeader>
       <Table
         classNames={{
@@ -69,6 +69,9 @@ export const TopHolders = ({
           table: styles["table"],
           thead: styles["table-header"],
           tbody: styles["table-body"],
+          th: styles["table-column"],
+          tr: styles["table-row"],
+          td: styles["table-cell"],
         }}
         removeWrapper
         disableAnimation
@@ -102,6 +105,14 @@ const StyledTopHolders = styled.div`
   padding: 16px 0;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: transparent;
+  @media screen and (max-width: 1024px) {
+    border: none;
+    border-radius: 0;
+  }
 `;
 
 const StyledTopHoldersHeader = styled.h1`
@@ -121,6 +132,10 @@ const StyledTopHoldersHeader = styled.h1`
     height: 20px;
     color: #eaecef;
   }
+
+  @media screen and (max-width: 1024px) {
+    padding: 0;
+  }
 `;
 
 const StyledAccountPanel = styled.a`
@@ -134,6 +149,9 @@ const StyledAccountPanel = styled.a`
     text-decoration-thickness: auto;
     text-underline-offset: auto;
     text-underline-position: from-font;
+    @media screen and (max-width: 1024px) {
+      text-decoration: none;
+    }
   }
 `;
 

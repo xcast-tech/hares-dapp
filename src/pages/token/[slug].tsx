@@ -9,8 +9,9 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  useDisclosure,
 } from "@heroui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Info } from "@/components/info";
 import { getTokenTopHoldersApi } from "@/lib/apis";
 import { useFarcasterContext } from "@/hooks/farcaster";
@@ -46,6 +47,15 @@ import { useGlobalCtx } from "@/context/useGlobalCtx";
 import { TokenInfo } from "@/components/token/info";
 import { TradesSwiper } from "@/components/token/swiper";
 import CommonInput from "@/components/common/input";
+import InfoIcon from "~@/icons/info.svg";
+import ChartIcon from "~@/icons/chart.svg";
+import TradeIcon from "~@/icons/trade.svg";
+import TXsIcon from "~@/icons/txs.svg";
+import ShareIcon from "~@/icons/share.svg";
+import { isMobile } from "@/lib/utils";
+import DrawerBottom from "@/components/common/drawer/bottom";
+import { useRouter } from "next/router";
+import { usePathname, useSearchParams } from "next/navigation";
 
 console.log("- styles:", styles);
 
@@ -88,6 +98,10 @@ export default function Token(props: IToken) {
   const { login, userInfo } = useFarcasterContext();
   const { buy, sell, getTokenBalance } = useHaresContract();
   const { address, shouldSign, handleSign } = useGlobalCtx();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  // const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   const { data: balance } = useBalance({ address });
 
@@ -235,7 +249,7 @@ export default function Token(props: IToken) {
     return balance;
   }
 
-  const onOpenChange = (open: boolean) => {
+  const onSlippageModalOpenChange = (open: boolean) => {
     setSlippageModalOpen(open);
   };
 
@@ -323,6 +337,7 @@ export default function Token(props: IToken) {
                 {buyOptions.map((option, i) => {
                   return (
                     <StyledChip
+                      className={`${i === 0 ? "reset-btn" : ""}`}
                       key={i}
                       onClick={() => {
                         setBuyInputValue(String(option.value));
@@ -430,6 +445,178 @@ export default function Token(props: IToken) {
     </StyledActionContainer>
   );
 
+  const sectionsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [scrollDirection, setScrollDirection] = useState("down");
+  const lastScrollY = useRef(0);
+  const [activeTab, setActiveTab] = useState("info");
+
+  const mobileTabs = useMemo(() => {
+    return [
+      {
+        icon: <InfoIcon />,
+        label: "Info",
+        active: activeTab === "info",
+        hash: "info",
+        idx: 0,
+        // onClick: () => {
+        //   if (sectionsRef.current[0]) {
+        //     window.scrollTo({
+        //       top: sectionsRef.current[0].offsetTop - 82,
+        //       behavior: "smooth",
+        //     });
+        //   }
+        // },
+      },
+      {
+        icon: <ChartIcon />,
+        label: "Chart",
+        active: activeTab === "chart",
+        hash: "chart",
+        idx: 1,
+        // onClick: () => {
+        //   if (sectionsRef.current[1]) {
+        //     window.scrollTo({
+        //       top: sectionsRef.current[1].offsetTop - 82,
+        //       behavior: "smooth",
+        //     });
+        //   }
+        // },
+      },
+      {
+        icon: <TradeIcon />,
+        label: "Trade",
+        active: false,
+        primary: true,
+      },
+      {
+        icon: <TXsIcon />,
+        label: "TXs",
+        active: activeTab === "history",
+        hash: "history",
+        idx: 2,
+        // onClick: () => {
+        //   if (sectionsRef.current[2]) {
+        //     window.scrollTo({
+        //       top: sectionsRef.current[2].offsetTop - 82,
+        //       behavior: "smooth",
+        //     });
+        //   }
+        // },
+      },
+      {
+        icon: <ShareIcon />,
+        label: "Share",
+        active: activeTab === "holders",
+        hash: "holders",
+        idx: 3,
+        // onClick: () => {
+        //   if (sectionsRef.current[3]) {
+        //     window.scrollTo({
+        //       top: sectionsRef.current[3].offsetTop - 82,
+        //       behavior: "smooth",
+        //     });
+        //   }
+        // },
+      },
+    ];
+  }, [activeTab]);
+
+  // Track scroll direction
+  // useEffect(() => {
+  //   if (!isMobile) return;
+  //   const handleScroll = () => {
+  //     const currentScrollY = window.scrollY;
+  //     if (currentScrollY > lastScrollY.current) {
+  //       setScrollDirection("down");
+  //     } else if (currentScrollY < lastScrollY.current) {
+  //       setScrollDirection("up");
+  //     }
+  //     lastScrollY.current = currentScrollY;
+  //   };
+
+  //   window.addEventListener("scroll", handleScroll, { passive: true });
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [isMobile]);
+
+  // useEffect(() => {
+  //   if (!isMobile) return;
+  //   // Handle intersection based on scroll direction
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       entries.forEach((entry) => {
+  //         if (entry.isIntersecting) {
+  //           const id = entry.target.id;
+  //           if (window.location.hash !== `#${id}`) {
+  //             setActiveTab(id);
+  //             console.log(" observer id:", id);
+  //             window.history.replaceState(null, "", `#${id}`);
+  //           }
+  //         }
+  //       });
+  //     },
+  //     {
+  //       root: null,
+  //       rootMargin: "-100px 0px 0px 0px",
+  //       threshold: 0,
+  //     }
+  //   );
+
+  //   sectionsRef.current.forEach((section) => {
+  //     if (section) {
+  //       observer.observe(section);
+  //     }
+  //   });
+
+  //   return () => {
+  //     if (sectionsRef.current) {
+  //       sectionsRef.current.forEach((section) => {
+  //         if (section) {
+  //           observer.unobserve(section);
+  //         }
+  //       });
+  //     }
+  //   };
+  // }, [isMobile]);
+
+  // useEffect(() => {
+  //   if (!isMobile) return;
+
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       entries.forEach((entry) => {
+  //         if (entry.isIntersecting) {
+  //           const id = entry.target.id;
+  //           if (window.location.hash !== `#${id}`) {
+  //             window.history.replaceState(null, "", `#${id}`);
+  //           }
+  //         }
+  //       });
+  //     },
+  //     {
+  //       root: null,
+  //       rootMargin: "-100px 0px 0px 0px",
+  //       threshold: 0,
+  //     }
+  //   );
+
+  //   sectionsRef.current.forEach((section) => {
+  //     if (section) {
+  //       observer.observe(section);
+  //     }
+  //   });
+
+  //   return () => {
+  //     if (sectionsRef.current) {
+  //       sectionsRef.current.forEach((section) => {
+  //         if (section) {
+  //           observer.unobserve(section);
+  //         }
+  //       });
+  //     }
+  //   };
+  // }, [isMobile]);
+
   useEffect(() => {
     console.log("ca address", { ca, address });
     if (ca && address) {
@@ -454,13 +641,23 @@ export default function Token(props: IToken) {
       <StyledTokenContainer>
         <StyledTokenLeft>
           <StyledTradingInfo>
-            <StyledTokenInfo>
+            <StyledTokenInfo
+              id="info"
+              ref={(el) => {
+                sectionsRef.current[0] = el;
+              }}
+            >
               <TokenInfo detail={detail} />
-              <StyledTokenRBHInfo>
-                <b>{detail?.symbol}:&nbsp;</b>
-                <span>{ca}</span>
-              </StyledTokenRBHInfo>
             </StyledTokenInfo>
+            <StyledTokenRBHInfo
+              id="chart"
+              ref={(el) => {
+                sectionsRef.current[1] = el;
+              }}
+            >
+              <b>{detail?.symbol}:&nbsp;</b>
+              <span>{ca}</span>
+            </StyledTokenRBHInfo>
             <StyledTradingChartBox>
               {isGraduate ? (
                 <StyledTokenGraduate>
@@ -497,56 +694,61 @@ export default function Token(props: IToken) {
             symbol={detail.symbol}
             className="hidden xl:block"
           /> */}
-          <StyledTradeListContainer>
+          <StyledTradeListContainer
+            id="history"
+            ref={(el) => {
+              sectionsRef.current[2] = el;
+            }}
+          >
             <TradeList list={historyList} symbol={detail.symbol} />
           </StyledTradeListContainer>
+          {/* <MobileStyledTradeListContainer>
+            <MobileTradeList list={historyList} symbol={detail.symbol} />
+          </MobileStyledTradeListContainer> */}
         </StyledTokenLeft>
         <StyledTradeContainer>
-          {tradeComponent}
-          <StyledTradeTopHolders>
+          <StyledTradeAction>{tradeComponent}</StyledTradeAction>
+          <StyledTradeTopHolders
+            id="holders"
+            ref={(el) => {
+              sectionsRef.current[3] = el;
+            }}
+          >
             <TopHolders list={topHolders} devAddress={detail.creatorAddress} />
           </StyledTradeTopHolders>
         </StyledTradeContainer>
-
-        {/* <TradeList
-          list={historyList}
-          symbol={detail.symbol}
-          className="xl:hidden"
-        /> */}
-
-        {/* <div
-          className={cn("fixed z-10 left-0 right-0 bottom-4 px-4", "xl:hidden")}
-        >
-          <Button
-            fullWidth
-            color="primary"
-            className="rounded-[40px]"
-            onPress={() => {
-              setTradeModalOpen(true);
-            }}
-          >
-            Trade
-          </Button>
-
-          <Modal
-            isOpen={tradeModalOpen}
-            onOpenChange={(open) => {
-              setTradeModalOpen(open);
-            }}
-            placement="bottom"
-          >
-            <ModalContent>
-              {(onClose) => (
-                <>
-                  <ModalBody>
-                    <div className="pt-8 pb-6">{tradeComponent}</div>
-                  </ModalBody>
-                </>
-              )}
-            </ModalContent>
-          </Modal>
-        </div> */}
       </StyledTokenContainer>
+      <MobileStyledTokenTabsBar>
+        <MobileStyledTokenTabsBarContainer>
+          {mobileTabs.map((tab, index) => {
+            return tab.primary ? (
+              <MobileStyledTokenTabsBarPrimaryItem key={index}>
+                <MobileStyledTokenTabsBarPrimaryItemBtn onClick={onOpen}>
+                  {tab.icon}
+                </MobileStyledTokenTabsBarPrimaryItemBtn>
+              </MobileStyledTokenTabsBarPrimaryItem>
+            ) : (
+              <MobileStyledTokenTabsBarItem
+                active={tab.active}
+                key={index}
+                onClick={() => {
+                  const _idx = tab.idx || 0;
+                  if (sectionsRef.current[_idx]) {
+                    window.scrollTo({
+                      top: sectionsRef.current[_idx].offsetTop - 82,
+                      behavior: "smooth",
+                    });
+                    setActiveTab(tab.hash!);
+                  }
+                }}
+              >
+                {tab.icon}
+                <span>{tab.label}</span>
+              </MobileStyledTokenTabsBarItem>
+            );
+          })}
+        </MobileStyledTokenTabsBarContainer>
+      </MobileStyledTokenTabsBar>
 
       <Modal
         classNames={{
@@ -558,7 +760,7 @@ export default function Token(props: IToken) {
           footer: styles["slippage-modal-footer"],
         }}
         isOpen={slippageModalOpen}
-        onOpenChange={onOpenChange}
+        onOpenChange={onSlippageModalOpenChange}
       >
         <ModalContent>
           {(onClose) => (
@@ -597,6 +799,9 @@ export default function Token(props: IToken) {
           )}
         </ModalContent>
       </Modal>
+      <DrawerBottom isOpen={isOpen} onOpenChange={onOpenChange}>
+        <MobileStyledTradeAction>{tradeComponent}</MobileStyledTradeAction>
+      </DrawerBottom>
     </>
   );
 }
@@ -609,6 +814,10 @@ const StyledHomeTool = styled.div`
   z-index: 999;
   background: #020308;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledTokenContainer = styled.div`
@@ -619,6 +828,12 @@ const StyledTokenContainer = styled.div`
   display: flex;
   flex-direction: row;
   gap: 24px;
+
+  @media screen and (max-width: 1024px) {
+    padding: 18px 20px;
+    padding-bottom: 72px;
+    flex-direction: column;
+  }
 `;
 
 const StyledTokenLeft = styled.div`
@@ -627,6 +842,10 @@ const StyledTokenLeft = styled.div`
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
+
+  @media screen and (max-width: 1024px) {
+    border: none;
+  }
 `;
 
 const StyledTradingInfo = styled.div`
@@ -634,11 +853,16 @@ const StyledTradingInfo = styled.div`
 `;
 
 const StyledTradingChartBox = styled.div`
-  padding: 16px;
+  // padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   background: rgba(255, 255, 255, 0.05);
+
+  @media screen and (max-width: 1024px) {
+    padding: 0;
+    background: transparent;
+  }
 `;
 
 const StyledTradingChartContainer = styled.div`
@@ -676,20 +900,47 @@ const StyledTokenRBHInfo = styled.div`
     color: #eaecef;
     font-weight: 700;
   }
+
+  @media screen and (max-width: 1024px) {
+    display: block;
+    padding: 12px 0;
+    white-space: wrap;
+    word-break: break-all;
+  }
 `;
 
 const StyledTradeListContainer = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 `;
 
+// const MobileStyledTradeListContainer = styled.div`
+//   display: none;
+//   @media screen and (max-width: 1024px) {
+//     display: block;
+//     border-top: 1px solid rgba(255, 255, 255, 0.12);
+//   }
+// `;
+
 const StyledTradeContainer = styled.div`
   position: sticky;
-  top: 134px;
+  top: calc(var(--header-h) + 48px + 10px);
   width: 400px;
-  max-height: calc(100vh - 134px);
+  max-height: calc(100vh - (var(--header-h) + 48px + 10px));
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @media screen and (max-width: 1024px) {
+    position: static;
+    max-height: none;
+    width: 100%;
+  }
+`;
+
+const StyledTradeAction = styled.div`
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledActionContainer = styled.div`
@@ -703,6 +954,14 @@ const StyledActionContainer = styled.div`
   border: 1px solid #2b3139;
   background: #181a1f;
   overflow: hidden;
+
+  @media screen and (max-width: 1024px) {
+    padding: 6px;
+
+    border-radius: 34px 34px 0px 0px;
+    border: 1px solid #2b3139;
+    background: #181a1f;
+  }
 `;
 
 const StyledActionTrade = styled.div`
@@ -712,6 +971,10 @@ const StyledActionTrade = styled.div`
   gap: 12px;
   padding: 8px 16px;
   padding-top: 24px;
+
+  @media screen and (max-width: 1024px) {
+    padding: 24px 8px;
+  }
 `;
 
 const StyledActionTradeTop = styled.div`
@@ -825,6 +1088,16 @@ const StyledTokenActionTradePlaceOptions = styled.ul`
   display: flex;
   align-items: center;
   gap: 4px;
+
+  @media screen and (max-width: 1024px) {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+
+    .reset-btn {
+      grid-column: 1 / -1;
+    }
+  }
 `;
 
 const StyledChip = styled(Chip)`
@@ -844,6 +1117,17 @@ const StyledChip = styled(Chip)`
   &:hover {
     opacity: 1;
   }
+
+  @media screen and (max-width: 1024px) {
+    max-width: 100%;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 12px;
+    color: rgba(234, 236, 239, 0.8);
+
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+  }
 `;
 
 const StyledTokenActionTradePlaceSubmit = styled(Button)`
@@ -862,10 +1146,17 @@ const StyledTokenActionTradePlaceSubmit = styled(Button)`
   font-weight: 700;
   line-height: 150%; /* 22.5px */
   text-transform: capitalize;
+
+  @media screen and (max-width: 1024px) {
+    margin-top: 12px;
+  }
 `;
 
 const StyledTradeTopHolders = styled.div`
   width: 100%;
+  @media screen and (max-width: 1024px) {
+    min-height: 300px;
+  }
 `;
 
 const StyledModalDesc = styled.div`
@@ -895,3 +1186,64 @@ const StyledModalButton = styled(Button)`
   font-weight: 800;
   line-height: 150%; /* 21px */
 `;
+
+const MobileStyledTokenTabsBar = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 39;
+  pointer-events: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--background);
+`;
+
+const MobileStyledTokenTabsBarContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 16px 16px;
+  pointer-events: auto;
+`;
+
+const MobileStyledTokenTabsBarItem = styled.div<{ active?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #eaecef;
+  text-align: center;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  opacity: ${({ active }) => (active ? 1 : 0.5)};
+  > svg {
+    width: 22px;
+    height: 22px;
+  }
+`;
+
+const MobileStyledTokenTabsBarPrimaryItem = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MobileStyledTokenTabsBarPrimaryItemBtn = styled.button`
+  display: flex;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #fcd535;
+  color: #181a1f;
+  > svg {
+    width: 20px;
+    height: 20px;
+  }
+`;
+
+const MobileStyledTradeAction = styled.div``;

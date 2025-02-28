@@ -6,7 +6,7 @@ import Avatar from "boring-avatars";
 import ShinyCard from "@/components/common/shiny";
 
 const WalletConnectButton = () => {
-  const { shouldSign, handleSign } = useGlobalCtx();
+  const { shouldSign, handleSign, isMobile } = useGlobalCtx();
   return (
     <>
       {/* <ConnectButton /> */}
@@ -47,7 +47,7 @@ const WalletConnectButton = () => {
 
           // 连接钱包
           return (
-            <ShinyCard radius={16} duration={3}>
+            <ShinyCard disabled={isMobile} radius={16} duration={3}>
               <ConnectBtn disabled={!ready} onClick={openConnectModal}>
                 Connect Wallet
               </ConnectBtn>
@@ -76,12 +76,13 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
   walletAddress,
   onClick,
 }) => {
+  const { isMobile } = useGlobalCtx();
   // Truncate wallet address
   const truncatedAddress =
     walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
 
   return (
-    <ShinyCard radius={16} duration={3}>
+    <ShinyCard disabled={isMobile} radius={16} duration={3}>
       <ProfileBtn
         onClick={() => {
           console.log("ProfileBtn onClick");
@@ -123,6 +124,11 @@ const ConnectBtn = styled.button`
 
   &:disabled {
     opacity: 0.5;
+  }
+
+  @media screen and (max-width: 1024px) {
+    padding: 0px 12px;
+    width: 100%;
   }
 `;
 
@@ -166,6 +172,10 @@ const ProfileBtn = styled.button`
 
   &:disabled {
     opacity: 0.5;
+  }
+
+  @media screen and (max-width: 1024px) {
+    width: 100%;
   }
 `;
 

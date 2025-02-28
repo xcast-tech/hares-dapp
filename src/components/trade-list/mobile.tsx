@@ -22,7 +22,11 @@ interface TradeListProps {
   className?: string;
 }
 
-export const TradeList = ({ list, symbol, className }: TradeListProps) => {
+export const MobileTradeList = ({
+  list,
+  symbol,
+  className,
+}: TradeListProps) => {
   console.log("TradeList", { list, symbol });
 
   const columns = useMemo(() => {
@@ -42,10 +46,6 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
       {
         key: "trueOrderSize",
         title: symbol,
-      },
-      {
-        key: "timestamp",
-        title: "Date",
       },
     ];
   }, [tokenSymbol, symbol]);
@@ -86,13 +86,6 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
           </StyledTextPanel>
         );
 
-      case "timestamp":
-        return (
-          <StyledTextPanel>
-            {dayjs().to(dayjs((cellValue as number) * 1000))}
-          </StyledTextPanel>
-        );
-
       default:
         return cellValue;
     }
@@ -104,59 +97,53 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
         <TradesIcon />
         <span>Trades</span>
       </StyledTradeListHeader>
-      <StyledTradeListTable>
-        <Table
-          classNames={{
-            base: styles["table-base"],
-            table: styles["table"],
-            thead: styles["table-header"],
-            tbody: styles["table-body"],
-            th: styles["table-column"],
-            tr: styles["table-row"],
-            td: styles["table-cell"],
-          }}
-          removeWrapper
-          disableAnimation
-          isHeaderSticky
-          aria-label="Trade history"
-        >
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.key}>{column.title}</TableColumn>
-            )}
-          </TableHeader>
-          <TableBody emptyContent="No transaction data.">
-            {list.map((item) => {
-              return (
-                <TableRow key={item.id}>
-                  {(columnKey) => (
-                    <TableCell>
-                      {renderCell(item, columnKey as keyof Trade)}
-                    </TableCell>
-                  )}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </StyledTradeListTable>
+      <Table
+        classNames={{
+          base: styles["table-base"],
+          table: styles["table"],
+          thead: styles["table-header"],
+          tbody: styles["table-body"],
+        }}
+        removeWrapper
+        disableAnimation
+        isHeaderSticky
+        aria-label="Trade history"
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn className={styles["table-column"]} key={column.key}>
+              {column.title}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent="No transaction data.">
+          {list.map((item) => {
+            return (
+              <TableRow className={styles["table-row"]} key={item.id}>
+                {(columnKey) => (
+                  <TableCell className={styles["table-cell"]}>
+                    {renderCell(item, columnKey as keyof Trade)}
+                  </TableCell>
+                )}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </StyledTradeList>
   );
 };
 
 const StyledTradeList = styled.div`
-  padding: 14px 0;
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
   background: transparent;
-  @media screen and (max-width: 1024px) {
-    padding: 16px 0;
-  }
 `;
 
 const StyledTradeListHeader = styled.h1`
-  padding: 0 16px;
+  padding: 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -172,30 +159,15 @@ const StyledTradeListHeader = styled.h1`
     height: 20px;
     color: #eaecef;
   }
-
-  @media screen and (max-width: 1024px) {
-    padding: 0;
-  }
-`;
-
-const StyledTradeListTable = styled.div`
-  width: 100%;
-  @media screen and (max-width: 1024px) {
-    overflow-x: auto;
-  }
 `;
 
 const StyledAccountPanel = styled.a`
-  text-decoration-line: underline;
-  text-decoration-style: solid;
-  text-decoration-skip-ink: none;
-  text-decoration-thickness: auto;
-  text-underline-offset: auto;
-  text-underline-position: from-font;
-
-  @media screen and (max-width: 1024px) {
-    text-decoration: none;
-  }
+  // text-decoration-line: underline;
+  // text-decoration-style: solid;
+  // text-decoration-skip-ink: none;
+  // text-decoration-thickness: auto;
+  // text-underline-offset: auto;
+  // text-underline-position: from-font;
 `;
 
 const StyledTypePanel = styled.span<{ mode: number }>`
