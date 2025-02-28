@@ -24,13 +24,13 @@ const DrawerRight: React.FC<DrawerRightProps> = ({
       isDismissable={false}
       isKeyboardDismissDisabled={true}
       classNames={{
-        base: styles["drawer-base"],
-        wrapper: styles["drawer-wrapper"],
-        backdrop: styles["drawer-backdrop"],
-        header: styles["drawer-header"],
-        body: styles["drawer-body"],
-        footer: styles["drawer-footer"],
-        closeButton: styles["drawer-close-button"],
+        base: styles["drawer1-base"],
+        wrapper: styles["drawer1-wrapper"],
+        backdrop: styles["drawer1-backdrop"],
+        header: styles["drawer1-header"],
+        body: styles["drawer1-body"],
+        footer: styles["drawer1-footer"],
+        closeButton: styles["drawer1-close-button"],
       }}
     >
       <DrawerContent>
