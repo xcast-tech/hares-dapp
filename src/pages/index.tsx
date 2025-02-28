@@ -21,6 +21,7 @@ import styles from "@/styles/home.module.scss";
 import ArrowDownIcon from "~@/icons/arrow-down.svg";
 import SearchIcon from "~@/icons/search.svg";
 import { TradesSwiper } from "@/components/token/swiper";
+import ReactiveCard from "@/components/common/reactive-card";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -127,6 +128,7 @@ export default function Home() {
       </Head>
       <StyledHome>
         <StyledHomeBanner>
+          <ReactiveCard></ReactiveCard>
           <StyledHomeBannerTitle>Build And Build For Fun</StyledHomeBannerTitle>
           <StyledHomeCreateCoin>
             <Link href="/create">
@@ -227,6 +229,7 @@ const StyledHome = styled.div`
 `;
 
 const StyledHomeBanner = styled.div`
+  position: relative;
   padding: 50px 0;
   width: 100%;
   display: flex;
@@ -256,9 +259,11 @@ const StyledHomeBannerTitle = styled.h1`
 `;
 
 const StyledHomeCreateCoin = styled.div`
+  position: relative;
   width: 100%;
   display: flex;
   justify-content: center;
+  z-index: 1;
 `;
 
 const StyledHomeCreateCoinBtn = styled.button`
