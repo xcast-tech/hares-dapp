@@ -45,6 +45,7 @@ import styles from "./index.module.scss";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import { TokenInfo } from "@/components/token/info";
 import { TradesSwiper } from "@/components/token/swiper";
+import CommonInput from "@/components/common/input";
 
 console.log("- styles:", styles);
 
@@ -280,7 +281,7 @@ export default function Token(props: IToken) {
               setSlippageModalOpen(true);
             }}
           >
-            set max slippage
+            set slippage
           </StyledTokenActionTradeSlippageBtn>
         </StyledActionTradeTop>
         <StyledTokenActionTradePlace>
@@ -547,35 +548,38 @@ export default function Token(props: IToken) {
         </div> */}
       </StyledTokenContainer>
 
-      <Modal isOpen={slippageModalOpen} onOpenChange={onOpenChange}>
+      <Modal
+        classNames={{
+          base: styles["slippage-modal-base"],
+          backdrop: styles["slippage-modal-backdrop"],
+          wrapper: styles["slippage-modal-wrapper"],
+          header: styles["slippage-modal-header"],
+          body: styles["slippage-modal-body"],
+          footer: styles["slippage-modal-footer"],
+        }}
+        isOpen={slippageModalOpen}
+        onOpenChange={onOpenChange}
+      >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                set max. slippage (%)
-              </ModalHeader>
+              <ModalHeader>set slippage (%)</ModalHeader>
               <ModalBody>
-                <div>
-                  <Input
-                    type="number"
-                    value={editSlippage}
-                    onChange={(event) => {
-                      setEditSlippage(event.target.value);
-                    }}
-                    autoFocus={false}
-                  />
-                  <div className="text-xs mt-1">
-                    this is the maximum amount of slippage you are willing to
-                    accept when placing trades.
-                  </div>
-                </div>
+                <CommonInput
+                  type="number"
+                  value={editSlippage}
+                  onChange={(event) => {
+                    setEditSlippage(event.target.value);
+                  }}
+                  autoFocus={false}
+                />
+                <StyledModalDesc>
+                  this is the maximum amount of slippage you are willing to
+                  accept when placing trades.
+                </StyledModalDesc>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Close
-                </Button>
-                <Button
-                  color="primary"
+                <StyledModalButton
                   onPress={() => {
                     const num = +editSlippage;
                     if (num < 0 || num > 100) {
@@ -587,7 +591,7 @@ export default function Token(props: IToken) {
                   }}
                 >
                   OK
-                </Button>
+                </StyledModalButton>
               </ModalFooter>
             </>
           )}
@@ -862,4 +866,32 @@ const StyledTokenActionTradePlaceSubmit = styled(Button)`
 
 const StyledTradeTopHolders = styled.div`
   width: 100%;
+`;
+
+const StyledModalDesc = styled.div`
+  color: #eaecef;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 18.2px */
+  opacity: 0.8;
+`;
+
+const StyledModalButton = styled(Button)`
+  width: 100%;
+  display: flex;
+  height: 48px;
+  padding: 0px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  align-self: stretch;
+  border-radius: 24px;
+  background: linear-gradient(274deg, #ffc720 0%, #fcd535 49.5%);
+
+  color: #1b1f29;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 150%; /* 21px */
 `;

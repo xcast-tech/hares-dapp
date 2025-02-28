@@ -1,0 +1,36 @@
+.textarea {
+  &-base {
+    position: relative;
+    margin-top: 12px !important;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background-color: transparent;
+  }
+  &-label {
+    display: none !important;
+  }
+  &-main-wrapper {
+  }
+  &-input-wrapper {
+    padding: 16px;
+    background-color: transparent !important;
+  }
+  &-inner-wrapper {
+  }
+  &-input {
+    min-height: 60px;
+    color: #eaecef;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px; /* 142.857% */
+    &::placeholder {
+      color: rgba(234, 236, 239, 0.5);
+    }
+  }
+  &-clear-button {
+  }
+  &-helper-wrapper {
+  }
+}

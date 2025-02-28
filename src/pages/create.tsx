@@ -28,6 +28,8 @@ import TGIcon from "~@/icons/tg.svg";
 import WebsiteIcon from "~@/icons/website.svg";
 import { StarsBG } from "@/components/common/stars";
 import ShinyCard from "@/components/common/shiny";
+import CommonInput from "@/components/common/input";
+import CommonTextarea from "@/components/common/textarea";
 
 function Title({
   children,
@@ -170,17 +172,7 @@ const Create = () => {
               <StyledCreateTokenFormTitle required>
                 Name
               </StyledCreateTokenFormTitle>
-              <Input
-                classNames={{
-                  base: styles["input-base"],
-                  label: styles["input-label"],
-                  mainWrapper: styles["input-main-wrapper"],
-                  inputWrapper: styles["input-wrapper"],
-                  innerWrapper: styles["input-inner-wrapper"],
-                  input: styles["input"],
-                  clearButton: styles["input-clear-button"],
-                  helperWrapper: styles["input-helper-wrapper"],
-                }}
+              <CommonInput
                 labelPlacement="outside"
                 isRequired
                 label="Name"
@@ -197,17 +189,7 @@ const Create = () => {
               <StyledCreateTokenFormTitle required>
                 Ticker
               </StyledCreateTokenFormTitle>
-              <Input
-                classNames={{
-                  base: styles["input-base"],
-                  label: styles["input-label"],
-                  mainWrapper: styles["input-main-wrapper"],
-                  inputWrapper: styles["input-wrapper"],
-                  innerWrapper: styles["input-inner-wrapper"],
-                  input: styles["input"],
-                  clearButton: styles["input-clear-button"],
-                  helperWrapper: styles["input-helper-wrapper"],
-                }}
+              <CommonInput
                 labelPlacement="outside"
                 isRequired
                 label="Ticker"
@@ -224,16 +206,7 @@ const Create = () => {
               <StyledCreateTokenFormTitle>
                 Description
               </StyledCreateTokenFormTitle>
-              <Textarea
-                classNames={{
-                  base: styles["textarea-base"],
-                  label: styles["textarea-label"],
-                  mainWrapper: styles["textarea-main-wrapper"],
-                  inputWrapper: styles["textarea-input-wrapper"],
-                  innerWrapper: styles["textarea-inner-wrapper"],
-                  input: styles["textarea-input"],
-                  clearButton: styles["textarea-clear-button"],
-                }}
+              <CommonTextarea
                 label="description"
                 name="description"
                 placeholder="-"
@@ -247,17 +220,7 @@ const Create = () => {
               <StyledCreateTokenFormTitle required>
                 Image
               </StyledCreateTokenFormTitle>
-              <Input
-                classNames={{
-                  base: styles["input-base"],
-                  label: styles["input-label"],
-                  mainWrapper: styles["input-main-wrapper"],
-                  inputWrapper: styles["input-wrapper"],
-                  innerWrapper: styles["input-inner-wrapper"],
-                  input: styles["input-file"],
-                  clearButton: styles["input-clear-button"],
-                  helperWrapper: styles["input-helper-wrapper"],
-                }}
+              <CommonInput
                 isRequired
                 name="file"
                 type="file"
@@ -308,21 +271,11 @@ const Create = () => {
                   <StyledCreateTokenFormTitle>
                     Social Links
                   </StyledCreateTokenFormTitle>
-                  <Input
-                    classNames={{
-                      base: styles["input-base"],
-                      label: styles["input-label"],
-                      mainWrapper: styles["input-main-wrapper"],
-                      inputWrapper: styles["input-wrapper"],
-                      innerWrapper: styles["input-inner-wrapper"],
-                      input: styles["input"],
-                      clearButton: styles["input-clear-button"],
-                      helperWrapper: styles["input-helper-wrapper"],
-                    }}
+                  <CommonInput
                     name="twitter"
                     type="text"
                     placeholder="-"
-                    value={ticker}
+                    value={twitter}
                     startContent={
                       <StyledInputStartIcon>
                         <XIcon />
@@ -332,17 +285,7 @@ const Create = () => {
                     onChange={(e) => setTwitter(e.target.value)}
                   />
 
-                  <Input
-                    classNames={{
-                      base: styles["input-base"],
-                      label: styles["input-label"],
-                      mainWrapper: styles["input-main-wrapper"],
-                      inputWrapper: styles["input-wrapper"],
-                      innerWrapper: styles["input-inner-wrapper"],
-                      input: styles["input"],
-                      clearButton: styles["input-clear-button"],
-                      helperWrapper: styles["input-helper-wrapper"],
-                    }}
+                  <CommonInput
                     placeholder="-"
                     startContent={
                       <StyledInputStartIcon>
@@ -356,17 +299,7 @@ const Create = () => {
                     onChange={(e) => setTelegram(e.target.value)}
                   />
 
-                  <Input
-                    classNames={{
-                      base: styles["input-base"],
-                      label: styles["input-label"],
-                      mainWrapper: styles["input-main-wrapper"],
-                      inputWrapper: styles["input-wrapper"],
-                      innerWrapper: styles["input-inner-wrapper"],
-                      input: styles["input"],
-                      clearButton: styles["input-clear-button"],
-                      helperWrapper: styles["input-helper-wrapper"],
-                    }}
+                  <CommonInput
                     placeholder="-"
                     startContent={
                       <StyledInputStartIcon>
@@ -384,17 +317,7 @@ const Create = () => {
                   <StyledCreateTokenFormTitle>
                     Dev Buy
                   </StyledCreateTokenFormTitle>
-                  <Input
-                    classNames={{
-                      base: styles["input-base"],
-                      label: styles["input-label"],
-                      mainWrapper: styles["input-main-wrapper"],
-                      inputWrapper: styles["input-wrapper"],
-                      innerWrapper: styles["input-inner-wrapper"],
-                      input: styles["input"],
-                      clearButton: styles["input-clear-button"],
-                      helperWrapper: styles["input-helper-wrapper"],
-                    }}
+                  <CommonInput
                     name="devBuy"
                     type="number"
                     endContent={
