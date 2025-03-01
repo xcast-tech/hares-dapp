@@ -11,8 +11,10 @@
   --shiny-cta-highlight: blue;
   --shiny-cta-highlight-subtle: #8484ff;
   --header-h: 72px;
+}
 
-  @media screen and (max-width: 1024px) {
+@media screen and (max-width: 1024px) {
+  :root {
     --background: radial-gradient(
         63.94% 63.94% at 50% 0%,
         rgba(255, 255, 255, 0.12) 0%,

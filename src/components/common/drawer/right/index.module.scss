@@ -1,13 +1,13 @@
-.drawer1 {
+.drawer {
   &-base {
-    display: flex;
-    width: 220px;
+    display: flex !important;
+    width: 220px !important;
     // height: 100vh;
-    padding: 60px 24px;
+    padding: 60px 24px !important;
 
-    border-radius: 0;
-    border: 1px solid #2b3139;
-    background: #181a1f;
+    border-radius: 0 !important;
+    border: 1px solid #2b3139 !important;
+    background: #181a1f !important;
   }
   &-backdrop {
   }
@@ -16,12 +16,12 @@
   &-header {
   }
   &-body {
-    padding: 0;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-    flex-shrink: 0;
+    padding: 0 !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 40px !important;
+    flex-shrink: 0 !important;
   }
   &-footer {
   }
