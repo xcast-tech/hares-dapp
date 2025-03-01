@@ -26,7 +26,9 @@ export const TradesMarquee: FC<TradesMarqueeProps> = ({ speed = 3 }) => {
     const res = await getLatelyTradesApi(lastIdRef.current);
     if (res.code === 0) {
       if (res.data.list.length > 0) {
-        setTrades((prev) => removeDuplicateTrades([...res.data.list, ...prev]));
+        setTrades((prev) =>
+          removeDuplicateTrades([...res.data.list, ...prev]).slice(0, 10)
+        );
         lastIdRef.current = res.data.list[0].id;
       }
     }

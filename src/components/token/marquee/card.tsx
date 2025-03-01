@@ -17,7 +17,6 @@ export function MarqueeTokenCard({ trade }: TradeProps) {
     <>
       <StyledLink href={`/token/${trade.tokenAddress.address}`} target="_blank">
         <StyledMarqueeTokenCard>
-          <span>{trade.id}</span>
           <Avatar className="wallet-avatar" name={trade.from} variant="beam" />
           <StyledTokenAddress>{maskAddress(trade.from)}</StyledTokenAddress>
           <StyledTokenAction sell={isSell}>

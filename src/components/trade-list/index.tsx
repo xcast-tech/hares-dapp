@@ -1,6 +1,11 @@
 import { mainChain, tokenSymbol } from "@/lib/constant";
 import { Trade } from "@/lib/types";
-import { cn, formatTokenBalance, maskAddress } from "@/lib/utils";
+import {
+  cn,
+  formatDecimalNumber,
+  formatTokenBalance,
+  maskAddress,
+} from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -75,7 +80,7 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
       case "trueEth":
         return (
           <StyledTextPanel>
-            {Number(formatEther(BigInt(cellValue), "wei")).toFixed(4)}
+            {formatDecimalNumber(formatEther(BigInt(cellValue)))}
           </StyledTextPanel>
         );
 

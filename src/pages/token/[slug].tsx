@@ -29,7 +29,7 @@ import {
 } from "@/lib/utils";
 import { useHaresContract } from "@/hooks/useHaresContract";
 import { toast } from "react-toastify";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, usePublicClient } from "wagmi";
 import { useAppContext } from "@/context/useAppContext";
 import TradingView from "@/components/tradingview";
 import Head from "next/head";
@@ -56,6 +56,7 @@ import { isMobile } from "@/lib/utils";
 import DrawerBottom from "@/components/common/drawer/bottom";
 import { useRouter } from "next/router";
 import { usePathname, useSearchParams } from "next/navigation";
+import { debounce } from "lodash-es";
 
 console.log("- styles:", styles);
 
@@ -96,9 +97,11 @@ export default function Token(props: IToken) {
   const detail = props;
   const { ethPrice } = useAppContext();
   const { login, userInfo } = useFarcasterContext();
-  const { buy, sell, getTokenBalance } = useHaresContract();
+  const { buy, simulateBuy, sell, simulateSell, getTokenBalance } =
+    useHaresContract();
   const { address, shouldSign, handleSign } = useGlobalCtx();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const publicClient = usePublicClient();
   // const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -114,6 +117,12 @@ export default function Token(props: IToken) {
   const [editSlippage, setEditSlippage] = useState("");
   const [historyList, setHistoryList] = useState<Trade[]>([]);
 
+  const [simulateBuying, setSimulateBuying] = useState(false);
+  const [simulateBuyTokens, setSimulateBuyTokens] = useState<bigint>(BigInt(0));
+  const [simulateSelling, setSimulateSelling] = useState(false);
+  const [simulateSellTokens, setSimulateSellTokens] = useState<bigint>(
+    BigInt(0)
+  );
   const [buyInputValue, setBuyInputValue] = useState<string>();
   const [sellInputValue, setSellInputValue] = useState<string>();
   const [tabKey, setTabKey] = useState<string | number>(TabKeys.buy);
@@ -186,6 +195,35 @@ export default function Token(props: IToken) {
       fetchTopHolders(ca);
     }
   }
+
+  async function handleSimulateBuy(value: string) {
+    if (!address) return 0;
+    const amount = +(value || "");
+    if (amount <= 0) return 0;
+    const res = await simulateBuy(ca, amount, +slippage / 100);
+    setSimulateBuying(false);
+    setSimulateBuyTokens(res?.result || BigInt(0));
+  }
+
+  const handleSimulateBuyDebounce = debounce(handleSimulateBuy, 1000);
+
+  async function handleSimulateSell(value: string) {
+    if (!address) return 0;
+    const amount = +(value || "");
+    if (amount <= 0) return 0;
+    try {
+      const res = await simulateSell(ca, amount, +slippage / 100);
+      console.log("handleSimulateSell res", res);
+      setSimulateSelling(false);
+      setSimulateSellTokens(res?.result || BigInt(0));
+    } catch (error: any) {
+      console.log("handleSimulateSell error", error);
+      setSimulateSelling(false);
+      setSimulateSellTokens(BigInt(0));
+    }
+  }
+
+  const handleSimulateSellDebounce = debounce(handleSimulateSell, 1000);
 
   async function handleBuy() {
     if (!address) {
@@ -303,10 +341,13 @@ export default function Token(props: IToken) {
             <StyledTokenActionTradePlaceInner>
               <StyledTokenActionTradePlaceInputBox>
                 <StyledTokenActionTradePlaceInput
+                  key="buyInput"
                   value={buyInputValue}
                   placeholder="0.00"
                   onChange={(e) => {
                     setBuyInputValue(e.target.value);
+                    setSimulateBuying(true);
+                    return handleSimulateBuyDebounce(e.target.value);
                   }}
                   type="number"
                   autoFocus={false}
@@ -323,14 +364,9 @@ export default function Token(props: IToken) {
               {buyInputValue && !isGraduate && (
                 <StyledTokenReceived>
                   {detail?.symbol} received:{" "}
-                  {formatDecimalNumber(
-                    formatEther(
-                      getEthBuyQuote(
-                        Number(totalSupply) / 1e18,
-                        Number(buyInputValue)
-                      )
-                    )
-                  )}
+                  {simulateBuying
+                    ? "-"
+                    : formatDecimalNumber(formatEther(simulateBuyTokens))}
                 </StyledTokenReceived>
               )}
               <StyledTokenActionTradePlaceOptions>
@@ -341,6 +377,8 @@ export default function Token(props: IToken) {
                       key={i}
                       onClick={() => {
                         setBuyInputValue(String(option.value));
+                        setSimulateBuying(true);
+                        handleSimulateBuy(String(option.value));
                       }}
                     >
                       {option.label}
@@ -371,9 +409,12 @@ export default function Token(props: IToken) {
             <StyledTokenActionTradePlaceInner>
               <StyledTokenActionTradePlaceInputBox>
                 <StyledTokenActionTradePlaceInput
+                  key="sellInput"
                   value={sellInputValue}
                   onChange={(e) => {
                     setSellInputValue(e.target.value);
+                    setSimulateSelling(true);
+                    return handleSimulateSellDebounce(e.target.value);
                   }}
                   type="number"
                   autoFocus={false}
@@ -390,14 +431,9 @@ export default function Token(props: IToken) {
               {sellInputValue && !isGraduate && (
                 <StyledTokenReceived>
                   {tokenSymbol} received:{" "}
-                  {formatDecimalNumber(
-                    formatEther(
-                      getTokenSellQuote(
-                        Number(totalSupply) / 1e18,
-                        Number(sellInputValue)
-                      )
-                    )
-                  )}
+                  {simulateSelling
+                    ? "-"
+                    : formatDecimalNumber(formatEther(simulateSellTokens))}
                 </StyledTokenReceived>
               )}
               <StyledTokenActionTradePlaceOptions>
@@ -407,12 +443,16 @@ export default function Token(props: IToken) {
                       key={i}
                       onClick={async () => {
                         const balance = await fetchTokenBalance(ca, address!);
-                        const amount = formatToFourDecimalPlaces(
+                        const amount = formatDecimalNumber(
                           formatEther(
                             (balance * BigInt(option.value * 100)) / BigInt(100)
-                          )
+                          ),
+                          0,
+                          4
                         );
                         setSellInputValue(amount);
+                        setSimulateSelling(true);
+                        return handleSimulateSell(amount);
                       }}
                     >
                       {option.label}

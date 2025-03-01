@@ -116,6 +116,38 @@ export function useHaresContract() {
     return res[0];
   }
 
+  async function simulateBuy(token: Address, eth: number, slipage: number) {
+    if (!address) {
+      return;
+    }
+    const currentSupply = await getCurrentSupply(token);
+    let minOrderSize = BigInt(0);
+    let sqrtPriceLimitX96 = BigInt(0);
+    const buyQuote = Number(getEthBuyQuote(Number(currentSupply) / 1e18, eth));
+    const isGraduated = currentSupply > primaryMarketSupply;
+    if (isGraduated) {
+      // publicMarket
+      const poolAddress = await getTokenPoolAddress(token);
+      const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
+      const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
+      sqrtPriceLimitX96 = BigInt(
+        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true)
+      );
+      // sqrtPriceLimitX96 = sqrtPriceX96;
+    } else {
+      // primaryMarket
+      minOrderSize = BigInt(Math.floor(buyQuote * (1 - slipage)));
+    }
+
+    return publicClient?.simulateContract({
+      address: token,
+      abi: ABIs.HaresAbi,
+      functionName: "buy",
+      args: [address, address, minOrderSize, sqrtPriceLimitX96, zeroHash],
+      value: parseEther(eth.toString()),
+    });
+  }
+
   async function buy(
     token: Address,
     eth: number,
@@ -146,6 +178,7 @@ export function useHaresContract() {
     }
 
     const gasPrice = await publicClient?.getGasPrice();
+
     const tx = await writeContractAsync({
       address: token,
       abi: ABIs.HaresAbi,
@@ -159,6 +192,45 @@ export function useHaresContract() {
       hash: tx,
     });
     return tx;
+  }
+
+  async function simulateSell(
+    token: Address,
+    tokenToSell: number,
+    slipage: number
+  ) {
+    if (!address) {
+      return;
+    }
+    const currentSupply = await getCurrentSupply(token);
+    const sellQuote = Number(
+      getTokenSellQuote(Number(currentSupply) / 1e18, tokenToSell)
+    );
+
+    let minOrderSize = BigInt(0);
+    let sqrtPriceLimitX96 = BigInt(0);
+    if (currentSupply > primaryMarketSupply) {
+      const poolAddress = await getTokenPoolAddress(token);
+      const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
+      const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
+      sqrtPriceLimitX96 = BigInt(
+        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, false)
+      );
+    } else {
+      minOrderSize = BigInt(Math.floor(sellQuote * (1 - slipage)));
+    }
+
+    return publicClient?.simulateContract({
+      address: token,
+      abi: ABIs.HaresAbi,
+      functionName: "sell",
+      args: [
+        parseEther(tokenToSell.toString()),
+        address,
+        minOrderSize,
+        sqrtPriceLimitX96,
+      ],
+    });
   }
 
   async function sell(
@@ -240,7 +312,9 @@ export function useHaresContract() {
     getTokenPoolAddress,
     getCurrentSqrtPriceX96,
     buy,
+    simulateBuy,
     sell,
+    simulateSell,
     getTokenBalance,
   };
 }

@@ -96,7 +96,7 @@ export async function initialWatchEvents(
         }
       }
 
-      const tradeTime = formatTimestampInSecond(new Date().getTime());
+      const tradeTime = formatTimestampInSecond(Date.now());
       // check trades in current bar
       for (const pairIndex of channelToSubscription.keys()) {
         const subscriptionItem = channelToSubscription.get(pairIndex);
@@ -116,7 +116,7 @@ export async function initialWatchEvents(
           sortedTrades,
           rangeInSecond,
           formatTimestampInSecond(lastBar.time) - rangeInSecond,
-          tradeTime
+          tradeTime + 1
         ).filter((_) => _.length > 0);
 
         const bars = datasInRange.map((trades) => {
