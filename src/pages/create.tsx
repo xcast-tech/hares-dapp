@@ -9,6 +9,7 @@ import {
   Card,
   Select,
   SelectItem,
+  CircularProgress,
 } from "@heroui/react";
 import React, { FormEvent, PropsWithChildren, useRef, useState } from "react";
 import Image from "next/image";
@@ -31,6 +32,16 @@ import ShinyCard from "@/components/common/shiny";
 import CommonInput from "@/components/common/input";
 import CommonTextarea from "@/components/common/textarea";
 
+const createBlobUrl = (file: File | Blob): string => {
+  const blobUrl = URL.createObjectURL(file);
+
+  return blobUrl;
+};
+
+const cleanBlobUrl = (blobUrl: string) => {
+  URL.revokeObjectURL(blobUrl);
+};
+
 function Title({
   children,
   className,
@@ -51,6 +62,7 @@ const Create = () => {
   const [ticker, setTicker] = useState("");
   const [desc, setDesc] = useState("");
   const [picture, setPicture] = useState("");
+  const [fileBlobUrl, setFileBlobUrl] = useState<string | null>(null);
 
   const [twitter, setTwitter] = useState("");
   const [telegram, setTelegram] = useState("");
@@ -58,6 +70,9 @@ const Create = () => {
 
   const [devBuyAmount, setDevBuyAmount] = useState("");
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const disabledSubmit = !name || !ticker || !picture || loading || uploading;
 
   async function handleCreateToken(name: string, symbol: string) {
     if (!name || !symbol) {
@@ -198,6 +213,12 @@ const Create = () => {
                 placeholder="-"
                 value={ticker}
                 errorMessage="This field is required"
+                startContent={
+                  <StyledTickerInputStartContent>
+                    <span>$</span>
+                    <StyledTickerInputDivider />
+                  </StyledTickerInputStartContent>
+                }
                 onChange={(e) => setTicker(e.target.value)}
               />
             </div>
@@ -230,6 +251,9 @@ const Create = () => {
                   const file = e?.nativeEvent?.target?.files?.[0];
                   console.log("---- upload image file", file);
                   if (file) {
+                    setUploading(true);
+                    fileBlobUrl && cleanBlobUrl(fileBlobUrl);
+                    setFileBlobUrl(createBlobUrl(file));
                     const res = await uploadImage({ file });
 
                     if (res?.code === 0) {
@@ -240,11 +264,21 @@ const Create = () => {
                   } else {
                     setPicture("");
                   }
+                  setUploading(false);
                 }}
               />
-              {picture && (
+              {fileBlobUrl && (
                 <StyledCreateTokenFormImagePreview>
-                  <img src={picture} alt="" />
+                  <StyledCreateTokenFormImagePreviewLoading
+                    disabled={!uploading}
+                  >
+                    <StyledCircularProgress
+                      aria-label="uploading..."
+                      size="sm"
+                      color="primary"
+                    />
+                  </StyledCreateTokenFormImagePreviewLoading>
+                  <img src={fileBlobUrl} alt="" />
                 </StyledCreateTokenFormImagePreview>
               )}
             </div>
@@ -342,6 +376,7 @@ const Create = () => {
               <StyledCreateTokenFormSubmitButton
                 type="submit"
                 isLoading={loading}
+                disabled={disabledSubmit}
               >
                 create coin
               </StyledCreateTokenFormSubmitButton>
@@ -358,6 +393,10 @@ export default Create;
 const StyledCreate = styled.div`
   padding-top: 24px;
   padding-bottom: 24px;
+
+  @media screen and (max-width: 1024px) {
+    padding-bottom: 120px;
+  }
 `;
 
 const StyledCreateContainer = styled.div`
@@ -367,6 +406,10 @@ const StyledCreateContainer = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 24px;
+
+  @media screen and (max-width: 1024px) {
+    padding: 0 10px;
+  }
 `;
 
 const StyledCreateTokenPreview = styled.div`
@@ -381,6 +424,10 @@ const StyledCreateTokenPreview = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #020308;
   overflow: hidden;
+
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledTokenCard = styled.div`
@@ -503,6 +550,13 @@ const StyledCreateTokenMain = styled.div`
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.01);
+
+  @media screen and (max-width: 1024px) {
+    padding: 0;
+    width: 100%;
+    border: none;
+    background: transparent;
+  }
 `;
 
 const StyledCreateTokenTit = styled.h2`
@@ -536,7 +590,26 @@ const StyledCreateTokenFormTitle = styled(Title)`
   }
 `;
 
+const StyledTickerInputStartContent = styled.div`
+  color: #eaecef;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 142.857% */
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`;
+
+const StyledTickerInputDivider = styled.div`
+  width: 1px;
+  height: 16px;
+  background: #3d3d3d;
+`;
+
 const StyledCreateTokenFormImagePreview = styled.div`
+  position: relative;
   margin-top: 12px;
   width: 120px;
   height: 120px;
@@ -549,6 +622,23 @@ const StyledCreateTokenFormImagePreview = styled.div`
     pointer-events: none;
   }
 `;
+
+const StyledCreateTokenFormImagePreviewLoading = styled.div<{
+  disabled: boolean;
+}>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  display: ${(props) => (props.disabled ? "none" : "flex")};
+  align-items: center;
+  justify-content: center;
+`;
+
+const StyledCircularProgress = styled(CircularProgress)``;
 
 const StyledAccordionItemSection = styled.div`
   width: 100%;
@@ -600,6 +690,16 @@ const StyledTokenActionInputIcon = styled.img`
 
 const StyledCreateTokenFormBottom = styled.div`
   width: 100%;
+  @media screen and (max-width: 1024px) {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 39;
+    padding: 24px 10px;
+    background: var(--background);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
 `;
 
 const StyledCreateTokenFormSubmitButton = styled(Button)`
@@ -619,4 +719,9 @@ const StyledCreateTokenFormSubmitButton = styled(Button)`
   font-style: normal;
   font-weight: 800;
   line-height: 150%; /* 21px */
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;

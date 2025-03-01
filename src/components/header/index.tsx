@@ -147,11 +147,13 @@ export const Header = () => {
         </StyledHeaderRight>
 
         <MobileStyledNavs>
-          <MobileStyledCreateCoin>
-            <MobileStyledCreateCoinInner>
-              start a new coin
-            </MobileStyledCreateCoinInner>
-          </MobileStyledCreateCoin>
+          <Link href="/create">
+            <MobileStyledCreateCoin>
+              <MobileStyledCreateCoinInner>
+                start a new coin
+              </MobileStyledCreateCoinInner>
+            </MobileStyledCreateCoin>
+          </Link>
           <MobileStyledExpand>
             <MobileStyledExpandMenu onClick={onOpen}>
               <MenuIcon className="menu-icon" />

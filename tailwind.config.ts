@@ -28,7 +28,7 @@ export default {
         light: {
           colors: {
             primary: {
-              DEFAULT: "#6A3CD6",
+              DEFAULT: "#FCD535",
             },
             success: {
               DEFAULT: "#05DD6B",
@@ -41,7 +41,7 @@ export default {
         dark: {
           colors: {
             primary: {
-              DEFAULT: "#6A3CD6",
+              DEFAULT: "#FCD535",
             },
             success: {
               DEFAULT: "#05DD6B",
