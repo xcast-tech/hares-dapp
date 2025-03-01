@@ -20,7 +20,7 @@ import styled from "@emotion/styled";
 import styles from "@/styles/home.module.scss";
 import ArrowDownIcon from "~@/icons/arrow-down.svg";
 import SearchIcon from "~@/icons/search.svg";
-import { TradesSwiper } from "@/components/token/swiper";
+import { TradesMarquee } from "@/components/token/marquee";
 import ReactiveCard from "@/components/common/reactive-card";
 
 export default function Home() {
@@ -179,7 +179,7 @@ export default function Home() {
             </StyledHomeSearchContainer>
           </StyledHomeSearch>
           <StyledHomeSwiper>
-            <TradesSwiper />
+            <TradesMarquee />
           </StyledHomeSwiper>
         </StyledHomeTool>
 

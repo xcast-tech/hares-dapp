@@ -45,7 +45,7 @@ import BSCIcon from "~@/icons/bsc.svg";
 import styles from "./index.module.scss";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import { TokenInfo } from "@/components/token/info";
-import { TradesSwiper } from "@/components/token/swiper";
+import { TradesMarquee } from "@/components/token/marquee";
 import CommonInput from "@/components/common/input";
 import InfoIcon from "~@/icons/info.svg";
 import ChartIcon from "~@/icons/chart.svg";
@@ -636,7 +636,7 @@ export default function Token(props: IToken) {
         <title>{`${detail?.symbol} | hares.ai`}</title>
       </Head>
       <StyledHomeTool>
-        <TradesSwiper />
+        <TradesMarquee />
       </StyledHomeTool>
       <StyledTokenContainer>
         <StyledTokenLeft>
@@ -1196,6 +1196,10 @@ const MobileStyledTokenTabsBar = styled.div`
   pointer-events: none;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   background: var(--background);
+  display: none;
+  @media screen and (max-width: 1024px) {
+    display: block;
+  }
 `;
 
 const MobileStyledTokenTabsBarContainer = styled.div`

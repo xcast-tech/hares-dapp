@@ -10,13 +10,14 @@ interface TradeProps {
   trade: LatelyTrade;
 }
 
-export function SwiperCard({ trade }: TradeProps) {
+export function MarqueeTokenCard({ trade }: TradeProps) {
   const isSell = trade.type === 1;
   const amount = formatDecimalNumber(formatEther(BigInt(trade.trueEth)));
   return (
     <>
       <StyledLink href={`/token/${trade.tokenAddress.address}`} target="_blank">
-        <StyledSwiperCard>
+        <StyledMarqueeTokenCard>
+          <span>{trade.id}</span>
           <Avatar className="wallet-avatar" name={trade.from} variant="beam" />
           <StyledTokenAddress>{maskAddress(trade.from)}</StyledTokenAddress>
           <StyledTokenAction sell={isSell}>
@@ -29,7 +30,7 @@ export function SwiperCard({ trade }: TradeProps) {
           <StyledTokenName>
             {trade.tokenAddress.name}({trade.tokenAddress.symbol})
           </StyledTokenName>
-        </StyledSwiperCard>
+        </StyledMarqueeTokenCard>
       </StyledLink>
     </>
   );
@@ -47,7 +48,7 @@ const StyledLink = styled.a`
   }
 `;
 
-const StyledSwiperCard = styled.div`
+const StyledMarqueeTokenCard = styled.div`
   padding: 0 32px;
   display: flex;
   align-items: center;
