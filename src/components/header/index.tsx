@@ -57,6 +57,7 @@ export const Header = () => {
         text: "Board",
         href: "/",
         type: "path",
+        active: pathname === "/",
       },
       {
         text: "Create Coin",

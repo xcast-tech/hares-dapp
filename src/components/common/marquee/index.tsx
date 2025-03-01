@@ -48,6 +48,10 @@ const StyledMarquee = styled.div`
     #090a0e calc(100% - 5rem),
     transparent
   );
+
+  @media screen and (max-width: 1024px) {
+    mask-image: none;
+  }
 `;
 
 const StyledMarqueeTrack = styled.div`
@@ -59,4 +63,8 @@ const StyledMarqueeTrack = styled.div`
   gap: var(--marquee-gap, 0);
   animation: marquee-move var(--marquee-speed, 20s) linear infinite
     var(--marquee-direction, forwards);
+  animation-play-state: running;
+  &:hover {
+    animation-play-state: paused;
+  }
 `;

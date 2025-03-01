@@ -47,7 +47,12 @@ const WalletConnectButton = () => {
 
           // 连接钱包
           return (
-            <ShinyCard disabled={isMobile} radius={16} duration={3}>
+            <ShinyCard
+              color="#fff"
+              disabled={isMobile}
+              radius={16}
+              duration={3}
+            >
               <ConnectBtn disabled={!ready} onClick={openConnectModal}>
                 Connect Wallet
               </ConnectBtn>
@@ -82,7 +87,7 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
     walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
 
   return (
-    <ShinyCard disabled={isMobile} radius={16} duration={3}>
+    <ShinyCard color="#fff" disabled={isMobile} radius={16} duration={3}>
       <ProfileBtn
         onClick={() => {
           console.log("ProfileBtn onClick");

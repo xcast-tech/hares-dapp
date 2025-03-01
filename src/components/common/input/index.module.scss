@@ -18,6 +18,9 @@
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background-color: transparent;
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.8);
+    }
   }
   &-label {
     display: none !important;

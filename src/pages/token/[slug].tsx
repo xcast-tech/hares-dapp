@@ -131,8 +131,6 @@ export default function Token(props: IToken) {
 
   const [topHolders, setTopHolders] = useState<TopHolder[]>([]);
 
-  const [tradeModalOpen, setTradeModalOpen] = useState(false);
-
   const tabColor = tabKey === "buy" ? "success" : "danger";
 
   const buyOptions = [
@@ -991,7 +989,7 @@ const StyledActionContainer = styled.div`
   align-items: center;
 
   border-radius: 34px;
-  border: 1px solid #2b3139;
+  // border: 1px solid #2b3139;
   background: #181a1f;
   overflow: hidden;
 
@@ -1250,12 +1248,14 @@ const MobileStyledTokenTabsBarContainer = styled.div`
 `;
 
 const MobileStyledTokenTabsBarItem = styled.div<{ active?: boolean }>`
+  padding-top: 3px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
   color: #eaecef;
   text-align: center;
+  justify-content: space-between;
   font-size: 9px;
   font-style: normal;
   font-weight: 400;

@@ -22,6 +22,7 @@ import ArrowDownIcon from "~@/icons/arrow-down.svg";
 import SearchIcon from "~@/icons/search.svg";
 import { TradesMarquee } from "@/components/token/marquee";
 import ReactiveCard from "@/components/common/reactive-card";
+import ShinyCard from "@/components/common/shiny";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -132,11 +133,13 @@ export default function Home() {
           <StyledHomeBannerTitle>Build And Build For Fun</StyledHomeBannerTitle>
           <StyledHomeCreateCoin>
             <Link href="/create">
-              <StyledHomeCreateCoinBtn>
-                <StyledHomeCreateCoinBtnInner>
-                  Start A New Coin
-                </StyledHomeCreateCoinBtnInner>
-              </StyledHomeCreateCoinBtn>
+              <ShinyCard color="#fcd535" radius={100} duration={3}>
+                <StyledHomeCreateCoinBtn>
+                  <StyledHomeCreateCoinBtnInner>
+                    Start A New Coin
+                  </StyledHomeCreateCoinBtnInner>
+                </StyledHomeCreateCoinBtn>
+              </ShinyCard>
             </Link>
           </StyledHomeCreateCoin>
         </StyledHomeBanner>
@@ -161,18 +164,31 @@ export default function Home() {
                   // }}
                   classNames={{
                     base: styles["select-base"],
+                    popoverContent: styles["select-popover-content"],
+                    listboxWrapper: styles["select-listbox-wrapper"],
                     trigger: styles["select-trigger"],
                     mainWrapper: styles["select-main-wrapper"],
                     innerWrapper: styles["select-inner-wrapper"],
                     value: styles["select-value"],
+                    label: styles["select-label"],
                     selectorIcon: styles["select-selector-icon"],
+                    listbox: styles["select-listbox"],
                   }}
                   selectedKeys={[sort]}
                   selectorIcon={<ArrowDownIcon />}
                   onSelectionChange={handleSortChange}
                 >
                   {sortOptions.map((opt) => (
-                    <SelectItem key={opt.value}>{opt.label}</SelectItem>
+                    <SelectItem
+                      classNames={{
+                        base: styles["select-item-base"],
+                        title: styles["select-item-title"],
+                        wrapper: styles["select-item-wrapper"],
+                      }}
+                      key={opt.value}
+                    >
+                      {opt.label}
+                    </SelectItem>
                   ))}
                 </Select>
               </StyledHomeSearchRight>
@@ -270,12 +286,9 @@ const StyledHomeCreateCoin = styled.div`
 `;
 
 const StyledHomeCreateCoinBtn = styled.button`
-  display: flex;
   width: 240px;
+  height: 42px;
   padding: 3px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
 
   border-radius: 100px;
   border: 1.5px solid rgba(252, 213, 53, 0.4);
@@ -287,8 +300,7 @@ const StyledHomeCreateCoinBtnInner = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 3px;
-  gap: 10px;
+  height: 100%;
 
   color: #18191e;
   font-size: 15px;

@@ -41,10 +41,12 @@ function Token({ detail }: TokenProps) {
 
   return (
     <Link href={`/token/${detail?.address}`}>
-      <ShinyCard disabled={isMobile} radius={16} duration={5}>
+      <ShinyCard color="#fff" disabled={isMobile} radius={16} duration={5}>
         <StyledTokenCard>
           <StyledTokenCardPic>
-            {detail?.picture && <img src={detail?.picture} alt="" />}
+            <StyledTokenCardPicContainer>
+              {detail?.picture && <img src={detail?.picture} alt="" />}
+            </StyledTokenCardPicContainer>
           </StyledTokenCardPic>
           <StyledTokenContent>
             <StyledTokenInfo>
@@ -128,13 +130,33 @@ const StyledTokenCard = styled.div`
 const StyledTokenCardPic = styled.div`
   position: relative;
   padding-top: 100%;
+  overflow: hidden;
+
+  @media screen and (max-width: 1024px) {
+    padding: 6px;
+    width: 92px;
+    height: 92px;
+    > img {
+      position: relative;
+      border-radius: 4px;
+    }
+  }
+`;
+
+const StyledTokenCardPicContainer = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 8px;
+  overflow: hidden;
   background: linear-gradient(
     151deg,
     rgba(234, 236, 239, 0.1) 0%,
     rgba(234, 236, 239, 0) 50.75%
   );
-  border-radius: 8px;
-  overflow: hidden;
+  z-index: 1;
   > img {
     position: absolute;
     top: 0;
@@ -146,13 +168,8 @@ const StyledTokenCardPic = styled.div`
   }
 
   @media screen and (max-width: 1024px) {
-    padding: 6px;
-    width: 92px;
-    height: 92px;
-    > img {
-      position: relative;
-      border-radius: 4px;
-    }
+    position: static;
+    background: rgba(255, 255, 255, 0.04);
   }
 `;
 
@@ -178,6 +195,7 @@ const StyledTokenInfo = styled.div`
   border-bottom: 1px solid #1e1e1e;
   @media screen and (max-width: 1024px) {
     padding: 0;
+    border-bottom: none;
   }
 `;
 

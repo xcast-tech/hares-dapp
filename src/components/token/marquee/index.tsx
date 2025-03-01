@@ -45,7 +45,7 @@ export const TradesMarquee: FC<TradesMarqueeProps> = ({ speed = 3 }) => {
   const extendedSlides = React.useMemo(() => [...trades, ...trades], [trades]);
 
   return (
-    <StyledTokenMarquee>
+    <StyledTokenMarquee visible={!!trades.length}>
       <SeamlessMarquee speed={extendedSlides.length * speed}>
         <>
           {extendedSlides.map((slide, index) => (
@@ -59,8 +59,13 @@ export const TradesMarquee: FC<TradesMarqueeProps> = ({ speed = 3 }) => {
   );
 };
 
-const StyledTokenMarquee = styled.div`
+const StyledTokenMarquee = styled.div<{ visible: boolean }>`
+  display: ${({ visible }) => (visible ? "block" : "none")};
   width: 100%;
   height: 48px;
   background: rgba(255, 255, 255, 0.06);
+
+  @media screen and (max-width: 1024px) {
+    height: 40px;
+  }
 `;

@@ -5,18 +5,28 @@ interface ShinyCardProps {
   radius?: number;
   duration?: number;
   disabled?: boolean;
+  color?: string;
   children: React.ReactNode;
 }
 const ShinyCard: FC<ShinyCardProps> = ({
   radius = 16,
   duration = 3,
+  color = "#fcd535",
   disabled,
   children,
 }) => {
   return disabled ? (
     children
   ) : (
-    <StyledShinyCard radius={radius} duration={duration}>
+    <StyledShinyCard
+      style={
+        {
+          "--shiny-cta-highlight": color,
+        } as React.CSSProperties
+      }
+      radius={radius}
+      duration={duration}
+    >
       {children}
     </StyledShinyCard>
   );
@@ -75,7 +85,7 @@ const StyledShinyCard = styled.div<{ radius?: number; duration?: number }>`
   --shiny-cta-bg: #000000;
   --shiny-cta-bg-subtle: #1a1818;
   --shiny-cta-fg: #ffffff;
-  --shiny-cta-highlight: #fcd535;
+  // --shiny-cta-highlight: #fcd535;
   --shiny-cta-highlight-subtle: #8484ff;
   --transition: 800ms cubic-bezier(0.25, 1, 0.5, 1);
   --animation: gradient-angle linear infinite;
@@ -108,5 +118,5 @@ const StyledShinyCard = styled.div<{ radius?: number; duration?: number }>`
         transparent calc(var(--gradient-percent) * 4)
       )
       border-box;
-  box-shadow: inset 0 0 0 1px var(--shiny-cta-bg-subtle);
+  box-shadow: inset 0 0 0 5px var(--shiny-cta-bg-subtle);
 `;

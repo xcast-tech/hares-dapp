@@ -343,6 +343,7 @@ const StyledTokenAddressBtn = styled(Button)`
   line-height: normal;
   &:hover {
     color: rgba(234, 236, 239, 1);
+    background: rgba(255, 255, 255, 0.1);
   }
 `;
 
@@ -363,13 +364,14 @@ const StyledTokenSocialBtn = styled(Button)`
   color: rgba(234, 236, 239, 0.8);
   border-radius: 4px;
   border: 0.5px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   svg {
     width: 14px;
     height: 14px;
   }
   &:hover {
     color: rgba(234, 236, 239, 1);
+    background: rgba(255, 255, 255, 0.1);
   }
 `;
 

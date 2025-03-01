@@ -11,7 +11,13 @@ import {
   SelectItem,
   CircularProgress,
 } from "@heroui/react";
-import React, { FormEvent, PropsWithChildren, useRef, useState } from "react";
+import React, {
+  FormEvent,
+  PropsWithChildren,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import { useHaresContract } from "@/hooks/useHaresContract";
 import { toast } from "react-toastify";
@@ -31,6 +37,7 @@ import { StarsBG } from "@/components/common/stars";
 import ShinyCard from "@/components/common/shiny";
 import CommonInput from "@/components/common/input";
 import CommonTextarea from "@/components/common/textarea";
+import { useGlobalCtx } from "@/context/useGlobalCtx";
 
 const createBlobUrl = (file: File | Blob): string => {
   const blobUrl = URL.createObjectURL(file);
@@ -58,6 +65,8 @@ function Title({
 const Create = () => {
   const router = useRouter();
   const { createToken: createBondingCurveToken } = useHaresContract();
+  const { address, shouldSign, handleSign } = useGlobalCtx();
+
   const [name, setName] = useState("");
   const [ticker, setTicker] = useState("");
   const [desc, setDesc] = useState("");
@@ -73,6 +82,26 @@ const Create = () => {
   const [uploading, setUploading] = useState(false);
 
   const disabledSubmit = !name || !ticker || !picture || loading || uploading;
+
+  const socialMedias = useMemo(() => {
+    return [
+      {
+        name: "twitter",
+        url: twitter,
+        icon: <XIcon />,
+      },
+      {
+        name: "telegram",
+        url: telegram,
+        icon: <TGIcon />,
+      },
+      {
+        name: "website",
+        url: website,
+        icon: <WebsiteIcon />,
+      },
+    ].filter((item) => !!item.url);
+  }, [twitter, telegram, website]);
 
   async function handleCreateToken(name: string, symbol: string) {
     if (!name || !symbol) {
@@ -165,13 +194,31 @@ const Create = () => {
               </StyledTokenCardPic>
               <StyledTokenCardContent>
                 <StyledTokenCardName>{name || "NAME"}</StyledTokenCardName>
-                <StyledTokenCardTicker>
+                <StyledTokenCardTicker title={ticker}>
                   ${ticker || "TICKER"}
                 </StyledTokenCardTicker>
-                <StyledTokenCardDesc>{desc || "-"}</StyledTokenCardDesc>
+                <StyledTokenCardDesc title={desc}>
+                  {desc || "-"}
+                </StyledTokenCardDesc>
                 <StyledTokenCardDivider></StyledTokenCardDivider>
                 <StyledTokenCardPublic>
                   <StyledTokenCardPrice>$0</StyledTokenCardPrice>
+                  {!!socialMedias.length && (
+                    <StyledTokenSocialBox>
+                      {socialMedias.map((item, index) => {
+                        return (
+                          <StyledTokenSocialBtn key={index}>
+                            <StyledTokenSocialLink
+                              href={item.url}
+                              target="_blank"
+                            >
+                              {item.icon}
+                            </StyledTokenSocialLink>
+                          </StyledTokenSocialBtn>
+                        );
+                      })}
+                    </StyledTokenSocialBox>
+                  )}
                 </StyledTokenCardPublic>
               </StyledTokenCardContent>
             </StyledTokenCard>
@@ -285,6 +332,7 @@ const Create = () => {
 
             <Accordion
               selectionMode="multiple"
+              fullWidth
               itemClasses={{
                 base: styles["accordion-base"],
                 title: styles["accordion-title"],
@@ -378,7 +426,11 @@ const Create = () => {
                 isLoading={loading}
                 disabled={disabledSubmit}
               >
-                create coin
+                {!address || shouldSign ? (
+                  <span>Sign In First</span>
+                ) : (
+                  <span>create coin</span>
+                )}
               </StyledCreateTokenFormSubmitButton>
             </StyledCreateTokenFormBottom>
           </StyledCreateTokenForm>
@@ -504,6 +556,9 @@ const StyledTokenCardTicker = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const StyledTokenCardDesc = styled.div`
@@ -513,6 +568,13 @@ const StyledTokenCardDesc = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 140%; /* 16.013px */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-all;
 `;
 
 const StyledTokenCardDivider = styled.div`
@@ -724,4 +786,60 @@ const StyledCreateTokenFormSubmitButton = styled(Button)`
     opacity: 0.5;
     cursor: not-allowed;
   }
+`;
+
+const StyledTokenSocialBox = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  @media screen and (max-width: 1024px) {
+    gap: 6px;
+  }
+`;
+
+const StyledTokenSocialBtn = styled.div`
+  padding: 0;
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: rgba(234, 236, 239, 0.1);
+  svg {
+    width: 10px;
+    height: 10px;
+    color: #eaecef;
+    opacity: 0.4;
+  }
+  &:hover {
+    color: rgba(234, 236, 239, 1);
+    svg {
+      opacity: 1;
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: rgba(234, 236, 239, 0.1);
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+`;
+
+const StyledTokenSocialLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  pointer-events: auto;
 `;
