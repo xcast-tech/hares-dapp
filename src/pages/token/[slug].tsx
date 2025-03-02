@@ -862,7 +862,10 @@ const StyledTokenContainer = styled.div`
   padding-top: calc(var(--header-h) + 14px);
   padding-left: 32px;
   padding-right: 32px;
-  padding-bottom: 32px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 1264px;
+  margin: 0 auto;
   display: flex;
   flex-direction: row;
   gap: 24px;
@@ -885,6 +888,7 @@ const StyledTokenLeft = styled.div`
   flex-direction: column;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 32px;
 
   @media screen and (max-width: 1024px) {
     border: none;

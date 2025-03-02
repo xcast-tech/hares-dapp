@@ -82,24 +82,9 @@ interface TokenListProps {
 }
 
 export const TokenList: FC<TokenListProps> = ({ list }) => {
-  const _list = [
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-    list[0],
-  ];
   return (
     <StyledTokenList>
-      {_list?.map((item, i) => {
+      {list?.map((item, i) => {
         return (
           <HoverFlipCard key={i}>
             <Token detail={item} />
@@ -146,6 +131,17 @@ const StyledTokenCard = styled.div`
       rgba(255, 255, 255, 0.4) 80%,
       rgba(234, 236, 239, 0.12)
     );
+    @media screen and (max-width: 1024px) {
+      width: 0.5px;
+      top: 8px;
+      height: calc(100% - 16px);
+      background-image: linear-gradient(
+        to bottom,
+        rgba(234, 236, 239, 0.12) 30%,
+        rgba(255, 255, 255, 0.4) 80%,
+        rgba(234, 236, 239, 0.12)
+      );
+    }
   }
   &::after {
     content: "";
@@ -160,6 +156,17 @@ const StyledTokenCard = styled.div`
       rgba(255, 255, 255, 0.8) 40%,
       rgba(234, 236, 239, 0.12)
     );
+    @media screen and (max-width: 1024px) {
+      width: 0.5px;
+      top: 8px;
+      height: calc(100% - 16px);
+      background-image: linear-gradient(
+        to bottom,
+        rgba(234, 236, 239, 0.12) 0%,
+        rgba(255, 255, 255, 0.8) 30%,
+        rgba(234, 236, 239, 0.12)
+      );
+    }
   }
   // background-image: url(/card-border.png);
   // background-size: cover;
@@ -172,7 +179,7 @@ const StyledTokenCard = styled.div`
     flex-direction: row;
     align-items: center;
     border-radius: 10px;
-    border: 0.5px solid rgba(234, 236, 239, 0.12);
+    border: 0.5px solid rgba(234, 236, 239, 0.2);
     background: rgba(255, 255, 255, 0.04);
   }
 `;
@@ -185,10 +192,6 @@ const StyledTokenCardPic = styled.div`
     padding: 6px;
     width: 92px;
     height: 92px;
-    > img {
-      position: relative;
-      border-radius: 4px;
-    }
   }
 `;
 
@@ -219,6 +222,10 @@ const StyledTokenCardPicContainer = styled.div`
   @media screen and (max-width: 1024px) {
     position: static;
     background: rgba(255, 255, 255, 0.04);
+    > img {
+      position: relative;
+      border-radius: 4px;
+    }
   }
 `;
 

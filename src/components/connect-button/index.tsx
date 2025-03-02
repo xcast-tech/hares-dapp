@@ -47,9 +47,11 @@ const WalletConnectButton = () => {
           // 连接钱包
           return (
             <ConnectBtnBox>
-              <ConnectBtn disabled={!ready} onClick={openConnectModal}>
-                Connect Wallet
-              </ConnectBtn>
+              <ConnectBtnBoxInner>
+                <ConnectBtn disabled={!ready} onClick={openConnectModal}>
+                  Connect Wallet
+                </ConnectBtn>
+              </ConnectBtnBoxInner>
             </ConnectBtnBox>
           );
         }}
@@ -81,32 +83,53 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
     walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
 
   return (
-    <ConnectBtnBox>
-      <ProfileBtn
-        onClick={() => {
-          console.log("ProfileBtn onClick");
-          onClick && onClick(shouldSign);
-        }}
-      >
-        {shouldSign ? (
-          <SignMessage>Sign Message</SignMessage>
-        ) : (
-          <>
-            {/* <BalanceText>{balance}</BalanceText> */}
-            <Avatar className="wallet-avatar" name={address} variant="beam" />
-            <WalletAddress>{truncatedAddress}</WalletAddress>
-            <DisconnectIcon className="disconnect-icon" />
-          </>
-        )}
-      </ProfileBtn>
-    </ConnectBtnBox>
+    <>
+      <ConnectBtnBox>
+        <ConnectBtnBoxInner>
+          <ProfileBtn
+            onClick={() => {
+              console.log("ProfileBtn onClick");
+              onClick && onClick(shouldSign);
+            }}
+          >
+            {shouldSign ? (
+              <SignMessage>Sign Message</SignMessage>
+            ) : (
+              <>
+                {/* <BalanceText>{balance}</BalanceText> */}
+                <Avatar
+                  className="wallet-avatar"
+                  name={address}
+                  variant="beam"
+                />
+                <WalletAddress>{truncatedAddress}</WalletAddress>
+                <DisconnectIcon className="disconnect-icon" />
+              </>
+            )}
+          </ProfileBtn>
+        </ConnectBtnBoxInner>
+      </ConnectBtnBox>
+    </>
   );
 };
 
 const ConnectBtnBox = styled.div`
+  padding: 1px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
+  background-image: linear-gradient(
+    60deg,
+    rgba(234, 236, 239, 0.2) 0%,
+    rgba(234, 236, 239, 0.2) 80%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
 `;
+
+const ConnectBtnBoxInner = styled.div`
+  border-radius: 16px;
+  background: var(--background);
+  height: 40px;
+`;
+
 const ConnectBtn = styled.button`
   display: flex;
   height: 40px;
@@ -114,7 +137,12 @@ const ConnectBtn = styled.button`
   justify-content: center;
   align-items: center;
   border-radius: 16px;
-  border: 1px solid rgba(234, 236, 239, 0.12);
+  // border: 1px solid rgba(234, 236, 239, 0.12);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 80%,
+    rgba(255, 255, 255, 0.4) 100%
+  );
 
   color: #eaecef;
 
@@ -136,6 +164,7 @@ const ConnectBtn = styled.button`
 
 // finish style like rainbowkit wallet button
 const ProfileBtn = styled.button`
+  position: relative;
   display: flex;
   height: 40px;
   padding: 0px 12px;
@@ -143,7 +172,14 @@ const ProfileBtn = styled.button`
   align-items: center;
   gap: 8px;
   border-radius: 16px;
-  border: 1px solid rgba(234, 236, 239, 0.12);
+  // border: 1px solid rgba(234, 236, 239, 0.2);
+
+  border-image: linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.2) 80%,
+      rgba(255, 255, 255, 0.5)
+    )
+    10;
 
   color: #eaecef;
 

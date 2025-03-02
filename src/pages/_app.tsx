@@ -16,6 +16,7 @@ import { cn, getDomain } from "@/lib/utils";
 import { Inter, Climate_Crisis } from "next/font/google";
 
 import styled from "@emotion/styled";
+import { usePathname } from "next/navigation";
 
 dayjs.extend(relativeTime);
 (BigInt.prototype as any).toJSON = function () {
@@ -41,6 +42,8 @@ const climateCrisis = Climate_Crisis({
 });
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const pathname = usePathname();
+
   useEffect(() => {
     document.body.classList.add(inter.className);
     document.body.classList.add(climateCrisis.variable);
@@ -62,7 +65,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
               <StyledMain className="dark">
                 <Component {...pageProps} />
               </StyledMain>
-              <Header />
+              <Header enityOffset={pathname === "/" ? 200 : 0} />
               <ToastContainer
                 theme="dark"
                 position="bottom-right"

@@ -23,6 +23,7 @@ import SearchIcon from "~@/icons/search.svg";
 import { TradesMarquee } from "@/components/token/marquee";
 import ReactiveCard from "@/components/common/reactive-card";
 import ShinyCard from "@/components/common/shiny";
+import DotsLoadingIcon from "~@/icons/dots-loading.svg";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -93,6 +94,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    if (!paginationDomRef.current) return;
     const callback = (entries: IntersectionObserverEntry[]) => {
       if (!end && !loading && entries[0].isIntersecting) {
         fetchList({
@@ -110,7 +112,16 @@ export default function Home() {
     return () => {
       intersectionObserverRef.current?.disconnect();
     };
-  }, [loading, end, list, page, pageSize, sort, search]);
+  }, [
+    loading,
+    end,
+    list,
+    page,
+    pageSize,
+    sort,
+    search,
+    paginationDomRef.current,
+  ]);
 
   useEffect(() => {
     setEnd(false);
@@ -210,14 +221,13 @@ export default function Home() {
             )
           )}
 
-          {loading && (
-            <SkeletonTokenList
-              list={Array(pageSize).fill({})}
-              className="mt-4"
-            />
-          )}
+          {loading && <SkeletonTokenList list={Array(pageSize).fill({})} />}
 
-          <div ref={paginationDomRef}></div>
+          {!end && !loading && (
+            <StyledPaginationBox ref={paginationDomRef}>
+              <DotsLoadingIcon />
+            </StyledPaginationBox>
+          )}
         </StyledHomeContent>
       </StyledHome>
       {/* <div
@@ -241,8 +251,7 @@ export default function Home() {
 const StyledHome = styled.div`
   display: flex;
   flex-direction: column;
-  padding-bottom: 500px;
-  background-image: url("/main-bg.png");
+  background-image: url("/home-bg.png");
   background-size: 100% auto;
   background-repeat: no-repeat;
   @media screen and (max-width: 1024px) {
@@ -346,6 +355,7 @@ const StyledHomeSearch = styled.div`
     border-top: 0.5px solid rgba(255, 255, 255, 0.12);
     border-bottom: 0.5px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.01);
+    padding: 0 12px;
   }
 `;
 
@@ -435,9 +445,18 @@ const StyledHomeContent = styled.div`
   padding: 32px;
   margin: 0 auto;
   width: 100%;
-  max-width: 1200px;
-  box-sizing: content-box;
+  max-width: 1264px;
+  min-height: calc(100vh - 302px - 100px);
+  // box-sizing: content-box;
   @media screen and (max-width: 1024px) {
     padding: 10px;
+    min-height: calc(100vh - var(--header-h) - 100px);
   }
+`;
+
+const StyledPaginationBox = styled.div`
+  padding: 32px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

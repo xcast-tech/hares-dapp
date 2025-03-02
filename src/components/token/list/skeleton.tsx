@@ -8,12 +8,14 @@ interface TokenProps {}
 function Token({}: TokenProps) {
   return (
     <StyledTokenCard>
-      <StyledTokenCardPic></StyledTokenCardPic>
+      <StyledTokenCardPic>
+        <StyledTokenCardPicInner></StyledTokenCardPicInner>
+      </StyledTokenCardPic>
       <StyledTokenInfo>
         <StyledTokenName></StyledTokenName>
         <StyledTokenCA></StyledTokenCA>
         <StyledTokenDesc></StyledTokenDesc>
-        <StyledTokenDesc></StyledTokenDesc>
+        {/* <StyledTokenDesc></StyledTokenDesc> */}
       </StyledTokenInfo>
       <StyledTokenPublic>
         <StyledTokenMCA></StyledTokenMCA>
@@ -52,19 +54,71 @@ const StyledSkeleton = styled.div`
 `;
 
 const StyledTokenCard = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  border: 1px solid rgba(234, 236, 239, 0.12);
   background: #020202;
   padding: 12px;
+  border: 1px solid rgba(234, 236, 239, 0.2);
+  &::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: 0;
+    width: 1px;
+    height: calc(100% - 24px);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(234, 236, 239, 0.12) 30%,
+      rgba(255, 255, 255, 0.4) 80%,
+      rgba(234, 236, 239, 0.12)
+    );
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 0;
+    width: 1px;
+    height: calc(100% - 24px);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(234, 236, 239, 0.12) 0%,
+      rgba(255, 255, 255, 0.8) 40%,
+      rgba(234, 236, 239, 0.12)
+    );
+  }
 `;
 
 const StyledTokenCardPic = styled.div`
   position: relative;
   padding-top: 100%;
+`;
+
+const StyledTokenCardPicInner = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border-radius: 8px;
-  background: #1e1e1e;
+  background: linear-gradient(
+    151deg,
+    rgba(234, 236, 239, 0.1) 0%,
+    rgba(234, 236, 239, 0) 50.75%
+  );
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+  }
 `;
 
 const StyledTokenInfo = styled.div`
@@ -73,27 +127,27 @@ const StyledTokenInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  border-bottom: 1px solid #1e1e1e;
+  background: transparent;
 `;
 
 const StyledTokenName = styled.h3`
   height: 22px;
   border-radius: 4px;
-  background: #1e1e1e;
+  background: transparent;
 `;
 
 const StyledTokenCA = styled.p`
-  margin: 2px 0;
-  height: 12px;
+  margin-top: 2px;
+  height: 10px;
   border-radius: 4px;
-  background: #1e1e1e;
+  background: transparent;
 `;
 
 const StyledTokenDesc = styled.p`
   margin-top: 2px;
-  height: 12px;
+  height: 16px;
   border-radius: 4px;
-  background: #1e1e1e;
+  background: transparent;
 `;
 
 const StyledTokenPublic = styled.div`
@@ -107,7 +161,7 @@ const StyledTokenMCA = styled.b`
   width: 50px;
   height: 10px;
   border-radius: 4px;
-  background: #1e1e1e;
+  background: transparent;
 `;
 
 const StyledTokenSocialBox = styled.div`
@@ -122,5 +176,5 @@ const StyledTokenSocialBtn = styled.div`
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  background: #1e1e1e;
+  background: transparent;
 `;

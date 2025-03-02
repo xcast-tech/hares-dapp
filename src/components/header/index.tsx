@@ -1,4 +1,4 @@
-import React, { use, useMemo, useState } from "react";
+import React, { FC, use, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Avatar,
@@ -40,10 +40,15 @@ import { usePathname } from "next/navigation";
 import styles from "./style.module.scss";
 import DrawerRight from "@/components/common/drawer/right";
 
-export const Header = () => {
+interface HeaderProps {
+  enityOffset?: number;
+}
+export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
   const [isAboutOpen, setIsAboutOpen] = React.useState(false);
   const pathname = usePathname();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const headerRef = useRef<HTMLDivElement>(null);
 
   // const [expand, setExpand] = useState(false);
 
@@ -96,8 +101,27 @@ export const Header = () => {
     },
   });
 
+  useEffect(() => {
+    if (!headerRef.current) return;
+    const handleScroll = () => {
+      if (headerRef.current) {
+        if (window.scrollY >= enityOffset) {
+          headerRef.current.classList.add("enity");
+        } else {
+          headerRef.current.classList.remove("enity");
+        }
+      }
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [headerRef.current, enityOffset]);
+
   return (
-    <StyledHeader expend={isOpen}>
+    <StyledHeader ref={headerRef} expend={isOpen}>
       <StyledHeaderContainer>
         <StyledHeaderLeft>
           <Link href="/">
@@ -338,11 +362,15 @@ const StyledHeader = styled.div<{ expend: boolean }>`
   left: 0;
   width: 100%;
   z-index: ${(props) => (props.expend ? 40 : 1000)};
-  background: rgba(2, 3, 8, 0.9);
+  background: transparent;
 
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   box-sizing: content-box;
+
+  &.enity {
+    background: rgba(2, 3, 8, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
 
   @media screen and (max-width: 1024px) {
     background: rgba(255, 255, 255, 0.01);
@@ -354,11 +382,11 @@ const StyledHeaderContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 60px;
+  padding: 0 32px;
   height: var(--header-h);
   width: 100%;
-  max-width: 1200px;
-  box-sizing: content-box;
+  max-width: 1264px;
+  // box-sizing: content-box;
   margin: 0 auto;
 
   @media screen and (max-width: 1024px) {
