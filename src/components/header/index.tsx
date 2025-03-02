@@ -74,6 +74,7 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
         key: "babt",
         text: "About BABT",
         type: "modal",
+        active: pathname === "/babt",
       },
     ];
   }, [pathname]);

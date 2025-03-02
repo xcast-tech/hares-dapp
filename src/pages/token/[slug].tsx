@@ -892,6 +892,7 @@ const StyledTokenLeft = styled.div`
 
   @media screen and (max-width: 1024px) {
     border: none;
+    margin-bottom: 0;
   }
 `;
 

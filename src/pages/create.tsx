@@ -445,6 +445,7 @@ export default Create;
 const StyledCreate = styled.div`
   padding-bottom: 24px;
   padding-top: calc(var(--header-h) + 24px);
+  min-height: 100vh;
 
   @media screen and (max-width: 1024px) {
     padding-bottom: 120px;
@@ -452,7 +453,7 @@ const StyledCreate = styled.div`
 `;
 
 const StyledCreateContainer = styled.div`
-  max-width: 1440px;
+  max-width: 1264px;
   margin: 0 auto;
   padding: 0 24px;
   display: flex;
