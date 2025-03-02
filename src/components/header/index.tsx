@@ -46,7 +46,7 @@ interface HeaderProps {
 export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
   const [isAboutOpen, setIsAboutOpen] = React.useState(false);
   const pathname = usePathname();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +73,8 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
       {
         key: "babt",
         text: "About BABT",
-        type: "modal",
+        type: "path",
+        href: "/babt",
         active: pathname === "/babt",
       },
     ];
@@ -134,8 +135,15 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
             {navs.map((nav) => {
               if (nav.type === "path") {
                 return (
-                  <Link href={nav.href ?? "/"} key={nav.text}>
-                    <StyledHeaderNav active={nav.active}>
+                  <Link href={nav.href ?? "/"} key={nav.text} passHref>
+                    <StyledHeaderNav
+                      active={nav.active}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("click nav", nav.text);
+                      }}
+                    >
                       {nav.text}
                     </StyledHeaderNav>
                   </Link>
@@ -192,7 +200,10 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
                       <>
                         {nav.type === "path" ? (
                           <Link href={nav.href!} key={idx}>
-                            <MobileStyledMenuNav active={nav.active}>
+                            <MobileStyledMenuNav
+                              active={nav.active}
+                              onClick={onClose}
+                            >
                               {nav.text}
                             </MobileStyledMenuNav>
                           </Link>

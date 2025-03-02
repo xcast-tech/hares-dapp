@@ -466,7 +466,8 @@ const StyledCreateContainer = styled.div`
 `;
 
 const StyledCreateTokenPreview = styled.div`
-  position: relative;
+  position: sticky;
+  top: calc(var(--header-h) + 24px);
   padding: 60px 24px;
   width: 100%;
   max-width: 480px;
