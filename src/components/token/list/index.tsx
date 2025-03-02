@@ -41,40 +41,38 @@ function Token({ detail }: TokenProps) {
 
   return (
     <Link href={`/token/${detail?.address}`}>
-      <ShinyCard color="#fff" disabled={isMobile} radius={16} duration={5}>
-        <StyledTokenCard>
-          <StyledTokenCardPic>
-            <StyledTokenCardPicContainer>
-              {detail?.picture && <img src={detail?.picture} alt="" />}
-            </StyledTokenCardPicContainer>
-          </StyledTokenCardPic>
-          <StyledTokenContent>
-            <StyledTokenInfo>
-              <StyledTokenName>
-                {detail?.name}({detail?.symbol})
-              </StyledTokenName>
-              <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
-              <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
-            </StyledTokenInfo>
-            <StyledTokenPublic>
-              <StyledTokenMCA>MC: ${detail?.marketCap}</StyledTokenMCA>
-              {!!socialMedias.length && (
-                <StyledTokenSocialBox>
-                  {socialMedias.map((item, index) => {
-                    return (
-                      <StyledTokenSocialBtn key={index}>
-                        <StyledTokenSocialLink href={item.url} target="_blank">
-                          {item.icon}
-                        </StyledTokenSocialLink>
-                      </StyledTokenSocialBtn>
-                    );
-                  })}
-                </StyledTokenSocialBox>
-              )}
-            </StyledTokenPublic>
-          </StyledTokenContent>
-        </StyledTokenCard>
-      </ShinyCard>
+      <StyledTokenCard>
+        <StyledTokenCardPic>
+          <StyledTokenCardPicContainer>
+            {detail?.picture && <img src={detail?.picture} alt="" />}
+          </StyledTokenCardPicContainer>
+        </StyledTokenCardPic>
+        <StyledTokenContent>
+          <StyledTokenInfo>
+            <StyledTokenName>
+              {detail?.name}({detail?.symbol})
+            </StyledTokenName>
+            <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
+            <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
+          </StyledTokenInfo>
+          <StyledTokenPublic>
+            <StyledTokenMCA>MC: ${detail?.marketCap}</StyledTokenMCA>
+            {!!socialMedias.length && (
+              <StyledTokenSocialBox>
+                {socialMedias.map((item, index) => {
+                  return (
+                    <StyledTokenSocialBtn key={index}>
+                      <StyledTokenSocialLink href={item.url} target="_blank">
+                        {item.icon}
+                      </StyledTokenSocialLink>
+                    </StyledTokenSocialBtn>
+                  );
+                })}
+              </StyledTokenSocialBox>
+            )}
+          </StyledTokenPublic>
+        </StyledTokenContent>
+      </StyledTokenCard>
     </Link>
   );
 }
@@ -84,9 +82,24 @@ interface TokenListProps {
 }
 
 export const TokenList: FC<TokenListProps> = ({ list }) => {
+  const _list = [
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+    list[0],
+  ];
   return (
     <StyledTokenList>
-      {list?.map((item, i) => {
+      {_list?.map((item, i) => {
         return (
           <HoverFlipCard key={i}>
             <Token detail={item} />
@@ -99,8 +112,11 @@ export const TokenList: FC<TokenListProps> = ({ list }) => {
 
 const StyledTokenList = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 16px;
+  @media screen and (max-width: 1200px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
   @media screen and (max-width: 1024px) {
     display: flex;
     flex-direction: column;
@@ -109,12 +125,45 @@ const StyledTokenList = styled.div`
 `;
 
 const StyledTokenCard = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   border-radius: 16px;
-  border: 1px solid rgba(234, 236, 239, 0.12);
+  border: 1px solid transparent;
   background: #020202;
   padding: 12px;
+  border: 1px solid rgba(234, 236, 239, 0.2);
+  &::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: 0;
+    width: 1px;
+    height: calc(100% - 24px);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(234, 236, 239, 0.12) 30%,
+      rgba(255, 255, 255, 0.4) 80%,
+      rgba(234, 236, 239, 0.12)
+    );
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 0;
+    width: 1px;
+    height: calc(100% - 24px);
+    background-image: linear-gradient(
+      to bottom,
+      rgba(234, 236, 239, 0.12) 0%,
+      rgba(255, 255, 255, 0.8) 40%,
+      rgba(234, 236, 239, 0.12)
+    );
+  }
+  // background-image: url(/card-border.png);
+  // background-size: cover;
+  // background-repeat: no-repeat;
 
   @media screen and (max-width: 1024px) {
     padding: 0;
@@ -203,7 +252,7 @@ const StyledTokenName = styled.h3`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 18px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
@@ -225,10 +274,10 @@ const StyledTokenCA = styled.p`
 
 const StyledTokenDesc = styled.p`
   color: #eaecef;
-  font-size: 10px;
+  font-size: 13.154px;
   font-style: normal;
   font-weight: 400;
-  line-height: 140%; /* 14px */
+  line-height: 140%; /* 18.415px */
   opacity: 0.6;
   @media screen and (max-width: 1024px) {
     display: none;

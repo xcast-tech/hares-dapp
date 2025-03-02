@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: linear-gradient(0deg, #020308 0%, #020308 100%), #020308;
+  --background: #020308;
   --foreground: #ededed;
   --shiny-cta-bg: #000000;
   --shiny-cta-bg-subtle: #1a1818;
@@ -15,12 +15,12 @@
 
 @media screen and (max-width: 1024px) {
   :root {
-    --background: radial-gradient(
+    /* --background: radial-gradient(
         63.94% 63.94% at 50% 0%,
         rgba(255, 255, 255, 0.12) 0%,
         rgba(255, 255, 255, 0) 100%
       ),
-      #020308;
+      #020308; */
 
     --header-h: 64px;
   }

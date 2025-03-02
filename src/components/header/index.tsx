@@ -356,6 +356,10 @@ const StyledHeaderContainer = styled.div`
   justify-content: center;
   padding: 0 60px;
   height: var(--header-h);
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: content-box;
+  margin: 0 auto;
 
   @media screen and (max-width: 1024px) {
     padding: 0 10px;

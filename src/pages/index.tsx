@@ -242,11 +242,18 @@ const StyledHome = styled.div`
   display: flex;
   flex-direction: column;
   padding-bottom: 500px;
+  background-image: url("/main-bg.png");
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  @media screen and (max-width: 1024px) {
+    padding-top: calc(var(--header-h));
+  }
 `;
 
 const StyledHomeBanner = styled.div`
   position: relative;
   padding: 50px 0;
+  padding-top: calc(var(--header-h) + 50px);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -287,7 +294,7 @@ const StyledHomeCreateCoin = styled.div`
 
 const StyledHomeCreateCoinBtn = styled.button`
   width: 240px;
-  height: 42px;
+  height: 50px;
   padding: 3px;
 
   border-radius: 100px;
@@ -328,7 +335,11 @@ const StyledHomeTool = styled.div`
 `;
 
 const StyledHomeSearch = styled.div`
+  width: 100%;
   height: 54px;
+  display: flex;
+  padding: 0 32px;
+  justify-content: center;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   @media screen and (max-width: 1024px) {
@@ -339,9 +350,11 @@ const StyledHomeSearch = styled.div`
 `;
 
 const StyledHomeSearchContainer = styled.div`
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   align-items: center;
-  margin: 0 60px;
   height: 100%;
   background: rgba(255, 255, 255, 0.01);
   border-left: 1px solid rgba(255, 255, 255, 0.12);
@@ -423,6 +436,7 @@ const StyledHomeContent = styled.div`
   margin: 0 auto;
   width: 100%;
   max-width: 1200px;
+  box-sizing: content-box;
   @media screen and (max-width: 1024px) {
     padding: 10px;
   }

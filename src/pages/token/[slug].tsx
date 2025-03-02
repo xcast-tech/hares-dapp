@@ -859,7 +859,7 @@ const StyledHomeTool = styled.div`
 `;
 
 const StyledTokenContainer = styled.div`
-  padding-top: 14px;
+  padding-top: calc(var(--header-h) + 14px);
   padding-left: 32px;
   padding-right: 32px;
   padding-bottom: 32px;
@@ -869,8 +869,13 @@ const StyledTokenContainer = styled.div`
 
   @media screen and (max-width: 1024px) {
     padding: 18px 20px;
+    padding-top: calc(var(--header-h) + 18px);
     padding-bottom: 72px;
     flex-direction: column;
+    gap: 0;
+    background-image: url(/mobile-bg.png);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
   }
 `;
 

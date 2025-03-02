@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import DisconnectIcon from "~@/icons/disconnect.svg";
 import Avatar from "boring-avatars";
-import ShinyCard from "@/components/common/shiny";
 
 const WalletConnectButton = () => {
   const { shouldSign, handleSign, isMobile } = useGlobalCtx();
@@ -47,16 +46,11 @@ const WalletConnectButton = () => {
 
           // 连接钱包
           return (
-            <ShinyCard
-              color="#fff"
-              disabled={isMobile}
-              radius={16}
-              duration={3}
-            >
+            <ConnectBtnBox>
               <ConnectBtn disabled={!ready} onClick={openConnectModal}>
                 Connect Wallet
               </ConnectBtn>
-            </ShinyCard>
+            </ConnectBtnBox>
           );
         }}
       </ConnectButton.Custom>
@@ -87,7 +81,7 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
     walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
 
   return (
-    <ShinyCard color="#fff" disabled={isMobile} radius={16} duration={3}>
+    <ConnectBtnBox>
       <ProfileBtn
         onClick={() => {
           console.log("ProfileBtn onClick");
@@ -105,10 +99,14 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
           </>
         )}
       </ProfileBtn>
-    </ShinyCard>
+    </ConnectBtnBox>
   );
 };
 
+const ConnectBtnBox = styled.div`
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+`;
 const ConnectBtn = styled.button`
   display: flex;
   height: 40px;
@@ -117,7 +115,6 @@ const ConnectBtn = styled.button`
   align-items: center;
   border-radius: 16px;
   border: 1px solid rgba(234, 236, 239, 0.12);
-  background: rgba(255, 255, 255, 0.05);
 
   color: #eaecef;
 
@@ -147,7 +144,6 @@ const ProfileBtn = styled.button`
   gap: 8px;
   border-radius: 16px;
   border: 1px solid rgba(234, 236, 239, 0.12);
-  background: rgba(255, 255, 255, 0.05);
 
   color: #eaecef;
 

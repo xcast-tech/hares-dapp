@@ -443,8 +443,8 @@ const Create = () => {
 export default Create;
 
 const StyledCreate = styled.div`
-  padding-top: 24px;
   padding-bottom: 24px;
+  padding-top: calc(var(--header-h) + 24px);
 
   @media screen and (max-width: 1024px) {
     padding-bottom: 120px;

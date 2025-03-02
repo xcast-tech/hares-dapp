@@ -6,6 +6,14 @@
   height: 100%;
   background-color: transparent;
   border-radius: 0;
+  &[data-hover="true"] {
+    background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.12) 100%
+      ),
+      #020308 !important;
+  }
 }
 
 .select-popover-content {

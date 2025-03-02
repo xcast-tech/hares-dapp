@@ -44,8 +44,11 @@ export const SkeletonTokenList: FC<TokenListProps> = ({ list, className }) => {
 
 const StyledSkeleton = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 16px;
+  @media screen and (max-width: 1200px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
 `;
 
 const StyledTokenCard = styled.div`
