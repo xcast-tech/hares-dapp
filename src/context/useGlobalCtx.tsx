@@ -33,7 +33,10 @@ interface GlobalContextType {
   tradingLoading: boolean;
   setTradingLoading: (loading: boolean) => void;
   handleSign: () => void;
+  isActionReady: boolean;
+  isCorrectChain: boolean;
   isMobile: boolean;
+  handleSwitchNetwork: () => Promise<void>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -51,11 +54,25 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [tradingLoading, setTradingLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  const isCorrectChain = useMemo(() => {
+    return chain?.id === mainChain.id;
+  }, [chain, mainChain]);
+
+  const isActionReady = useMemo(() => {
+    return Boolean(isConnected && address && !shouldSign);
+  }, [isConnected, address, shouldSign]);
+
   const isLogin = useMemo(() => {
     return (
       profile?.address?.toLocaleLowerCase() === address?.toLocaleLowerCase()
     );
   }, [profile, address]);
+
+  const handleSwitchNetwork = async () => {
+    await switchChainAsync({
+      chainId: mainChain.id,
+    });
+  };
 
   const handleSign = async () => {
     try {
@@ -65,8 +82,9 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      console.log("--- isCorrectChain", isCorrectChain);
       // switchNetwork;
-      if (chain?.id !== mainChain.id) {
+      if (!isCorrectChain) {
         await switchChainAsync({
           chainId: mainChain.id,
         });
@@ -157,10 +175,13 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         address,
         profile,
         isLoading,
+        isActionReady,
+        isCorrectChain,
         shouldSign,
         handleSign,
         tradingLoading,
         setTradingLoading,
+        handleSwitchNetwork,
         isMobile,
       }}
     >

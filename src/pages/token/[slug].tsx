@@ -24,6 +24,7 @@ import {
   formatToFourDecimalPlaces,
   formatTokenBalance,
   getEthBuyQuote,
+  getTokenMarketCap,
   getTokenSellQuote,
   removeDuplicateTrades,
 } from "@/lib/utils";
@@ -99,7 +100,14 @@ export default function Token(props: IToken) {
   const { login, userInfo } = useFarcasterContext();
   const { buy, simulateBuy, sell, simulateSell, getTokenBalance } =
     useHaresContract();
-  const { address, shouldSign, handleSign } = useGlobalCtx();
+  const {
+    address,
+    isActionReady,
+    shouldSign,
+    handleSign,
+    isCorrectChain,
+    handleSwitchNetwork,
+  } = useGlobalCtx();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const publicClient = usePublicClient();
   // const router = useRouter();
@@ -176,6 +184,7 @@ export default function Token(props: IToken) {
   ];
 
   function handleNewTrade(trades: Trade[]) {
+    console.log("--- new handleNewTrade", trades);
     if (trades?.length > 0) {
       const newTrade = trades[trades.length - 1];
       if (trades.length === 1) {
@@ -374,10 +383,10 @@ export default function Token(props: IToken) {
                       className={`${i === 0 ? "reset-btn" : ""}`}
                       key={i}
                       onClick={() => {
-                        if (!address || shouldSign) {
-                          handleSign();
-                          return;
-                        }
+                        // if (!isActionReady) {
+                        //   handleSign();
+                        //   return;
+                        // }
                         setBuyInputValue(String(option.value));
                         setSimulateBuying(true);
                         handleSimulateBuy(String(option.value));
@@ -391,10 +400,13 @@ export default function Token(props: IToken) {
               <StyledTokenActionTradePlaceSubmit
                 fullWidth
                 color="success"
-                onPress={() => {
-                  if (!address || shouldSign) {
+                onPress={async () => {
+                  if (!isActionReady) {
                     handleSign();
                     return;
+                  }
+                  if (!isCorrectChain) {
+                    await handleSwitchNetwork();
                   }
                   handleBuy();
                 }}
@@ -444,10 +456,10 @@ export default function Token(props: IToken) {
                     <StyledChip
                       key={i}
                       onClick={async () => {
-                        if (!address || shouldSign) {
-                          handleSign();
-                          return;
-                        }
+                        // if (!isActionReady) {
+                        //   handleSign();
+                        //   return;
+                        // }
                         const balance = await fetchTokenBalance(ca, address!);
                         const amount = Number(
                           formatEther(
@@ -467,10 +479,13 @@ export default function Token(props: IToken) {
               <StyledTokenActionTradePlaceSubmit
                 fullWidth
                 color="danger"
-                onPress={() => {
-                  if (!address || shouldSign) {
+                onPress={async () => {
+                  if (!isActionReady) {
                     handleSign();
                     return;
+                  }
+                  if (!isCorrectChain) {
+                    await handleSwitchNetwork();
                   }
                   handleSell();
                 }}
@@ -662,16 +677,29 @@ export default function Token(props: IToken) {
   // }, [isMobile]);
 
   useEffect(() => {
-    console.log("ca address", { ca, address });
     if (ca && address) {
       fetchTokenBalance(ca, address);
     }
   }, [ca, address]);
 
+  const handleReset = () => {
+    setBuyInputValue("");
+    setSellInputValue("");
+    setSimulateBuyTokens(BigInt(0));
+    setSimulateSellTokens(BigInt(0));
+    setHistoryList([]);
+    setTotalSupply("0");
+    setTokenBalance(BigInt(0));
+    setTopHolders([]);
+  };
+
   useEffect(() => {
     if (ca) {
       fetchTopHolders(ca);
     }
+    return () => {
+      handleReset();
+    };
   }, [ca]);
 
   return (
@@ -709,7 +737,7 @@ export default function Token(props: IToken) {
                   Uniswap V3 pool.
                 </StyledTokenGraduate>
               ) : null}
-              <StyledTradingChartContainer>
+              <StyledTradingChartContainer isIframeMode={isGraduate === 1}>
                 {/* <TradingView
                 className="w-full h-[500px] bg-black"
                 symbol={detail.symbol}
@@ -718,6 +746,7 @@ export default function Token(props: IToken) {
                 onNewTrade={handleNewTrade}
               /> */}
                 <TradingChart
+                  isGraduated={isGraduate === 1}
                   param={{
                     name: detail.name,
                     ticker: detail.symbol,
@@ -919,12 +948,14 @@ const StyledTradingChartBox = styled.div`
   }
 `;
 
-const StyledTradingChartContainer = styled.div`
+const StyledTradingChartContainer = styled.div<{ isIframeMode: boolean }>`
   width: 100%;
-  height: 360px;
+  height: ${(props) => (props.isIframeMode ? "360px" : "420px")};
 `;
 
 const StyledTokenGraduate = styled.div`
+  padding: 0 16px;
+  padding-top: 16px;
   color: #fcd535;
   font-size: 14px;
   font-style: normal;

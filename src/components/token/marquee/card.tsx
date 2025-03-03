@@ -16,7 +16,7 @@ export function MarqueeTokenCard({ trade }: TradeProps) {
   const amount = formatDecimalNumber(formatEther(BigInt(trade.trueEth)));
   return (
     <>
-      <StyledLink href={`/token/${trade.tokenAddress.address}`} target="_blank">
+      <StyledLink href={`/token/${trade.tokenAddress.address}`}>
         <StyledMarqueeTokenCard>
           <Avatar className="wallet-avatar" name={trade.from} variant="beam" />
           <StyledTokenAddress>{maskAddress(trade.from)}</StyledTokenAddress>
@@ -36,7 +36,7 @@ export function MarqueeTokenCard({ trade }: TradeProps) {
   );
 }
 
-const StyledLink = styled.a`
+const StyledLink = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: center;

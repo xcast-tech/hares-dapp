@@ -18,7 +18,7 @@ import { removeDuplicateTrades } from "@/lib/utils";
 let subsriberCache: Function[] = [];
 
 const lastTradesCache = new Map<
-  number,
+  string,
   {
     from: number;
     to: number;
@@ -28,7 +28,7 @@ const lastTradesCache = new Map<
 
 // 更新缓存的方法
 const updateCache = (
-  pairIndex: number,
+  key: string,
   data: {
     from: number;
     to: number;
@@ -36,7 +36,7 @@ const updateCache = (
   }
 ) => {
   const _trades = removeDuplicateTrades(data.trades);
-  lastTradesCache.set(pairIndex, {
+  lastTradesCache.set(key, {
     from: data.from,
     to: data.to,
     trades: _trades,
@@ -69,12 +69,13 @@ const loadTrades = async (
   currentFrom: number,
   currentTo: number
 ) => {
-  const _lastTradesCache = lastTradesCache.get(pairIndex);
+  const key = `${token}-${pairIndex}`;
+  const _lastTradesCache = lastTradesCache.get(key);
   // 1. 没有缓存数据时，请求当前 to 之前的所有数据
   if (!_lastTradesCache) {
     const { list, noData } = await fetchTradeDatas(token, 0, currentTo);
     return {
-      list: updateCache(pairIndex, {
+      list: updateCache(key, {
         from: noData ? 0 : Math.min(list[0].timestamp, currentFrom),
         to: currentTo,
         trades: list,
@@ -91,7 +92,7 @@ const loadTrades = async (
       currentTo
     );
     return {
-      list: updateCache(pairIndex, {
+      list: updateCache(key, {
         from: _lastTradesCache.from,
         to: noData
           ? currentTo
@@ -111,7 +112,7 @@ const loadTrades = async (
     );
 
     return {
-      list: updateCache(pairIndex, {
+      list: updateCache(key, {
         from: noData ? 0 : Math.max(list[0].timestamp, currentFrom),
         to: _lastTradesCache.to,
         trades: [...list, ..._lastTradesCache.trades],
@@ -254,19 +255,19 @@ export function getDataFeed({
           // }
         });
 
-        console.log(
-          "--- chartTable",
-          chartTable.table,
-          "bars",
-          bars,
-          "format bars",
-          bars.map((item) => {
-            return {
-              ...item,
-              timestamp: new Date(item.time).toISOString(),
-            };
-          })
-        );
+        // console.log(
+        //   "--- chartTable",
+        //   chartTable.table,
+        //   "bars",
+        //   bars,
+        //   "format bars",
+        //   bars.map((item) => {
+        //     return {
+        //       ...item,
+        //       timestamp: new Date(item.time).toISOString(),
+        //     };
+        //   })
+        // );
 
         if (firstDataRequest) {
           lastBarsCache.set(symbolInfo.name, {

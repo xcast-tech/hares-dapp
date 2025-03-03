@@ -1,4 +1,10 @@
-import { cn, formatThousandNumber, maskAddress } from "@/lib/utils";
+import {
+  cn,
+  formatNumber,
+  formatThousandNumber,
+  getTokenMarketCap,
+  maskAddress,
+} from "@/lib/utils";
 import Image from "next/image";
 import dayjs from "dayjs";
 import React, { FC, useMemo } from "react";
@@ -12,6 +18,7 @@ import WebsiteIcon from "~@/icons/website.svg";
 import HoverFlipCard from "@/components/common/flip-card";
 import ShinyCard from "@/components/common/shiny";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
+import { useAppContext } from "@/context/useAppContext";
 
 interface TokenProps {
   detail: IToken;
@@ -19,6 +26,14 @@ interface TokenProps {
 
 function Token({ detail }: TokenProps) {
   const { isMobile } = useGlobalCtx();
+  const { ethPrice } = useAppContext();
+  const marketCap = useMemo(() => {
+    if (!ethPrice || !detail) return "-";
+    return formatNumber(
+      getTokenMarketCap(BigInt(detail?.totalSupply ?? "0"), ethPrice)
+    );
+  }, [detail, ethPrice]);
+
   const socialMedias = useMemo(() => {
     return [
       {
@@ -56,7 +71,7 @@ function Token({ detail }: TokenProps) {
             <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
           </StyledTokenInfo>
           <StyledTokenPublic>
-            <StyledTokenMCA>MC: ${detail?.marketCap}</StyledTokenMCA>
+            <StyledTokenMCA>MC: ${marketCap}</StyledTokenMCA>
             {!!socialMedias.length && (
               <StyledTokenSocialBox>
                 {socialMedias.map((item, index) => {

@@ -30,15 +30,9 @@ const WalletConnectButton = () => {
             return (
               <CryptoBalanceDisplay
                 address={account.address}
-                shouldSign={shouldSign}
                 balance={account.displayBalance}
                 walletAddress={account.address}
-                onClick={(sign) => {
-                  console.log("CryptoBalanceDisplay onClick shouldSign:", sign);
-                  if (sign) {
-                    handleSign();
-                    return;
-                  }
+                onClick={() => {
                   openAccountModal();
                 }}
               />
@@ -64,20 +58,25 @@ export default WalletConnectButton;
 
 interface WalletInfoProps {
   address?: string;
-  shouldSign?: boolean;
   balance?: string;
   walletAddress: string;
-  onClick?: (shouldSign?: boolean) => void;
+  onClick?: () => void;
 }
 
 const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
   address,
-  shouldSign,
   balance,
   walletAddress,
   onClick,
 }) => {
-  const { isMobile } = useGlobalCtx();
+  const {
+    shouldSign,
+    handleSign,
+    isMobile,
+    isActionReady,
+    isCorrectChain,
+    handleSwitchNetwork,
+  } = useGlobalCtx();
   // Truncate wallet address
   const truncatedAddress =
     walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
@@ -87,12 +86,21 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
       <ConnectBtnBox>
         <ConnectBtnBoxInner>
           <ProfileBtn
-            onClick={() => {
+            onClick={async () => {
+              if (!isActionReady) {
+                handleSign();
+                return;
+              }
+              if (!isCorrectChain) {
+                await handleSwitchNetwork();
+              }
               console.log("ProfileBtn onClick");
-              onClick && onClick(shouldSign);
+              onClick && onClick();
             }}
           >
-            {shouldSign ? (
+            {!isCorrectChain ? (
+              <SignMessage>Wrong Network</SignMessage>
+            ) : shouldSign ? (
               <SignMessage>Sign Message</SignMessage>
             ) : (
               <>

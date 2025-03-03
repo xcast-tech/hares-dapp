@@ -8,6 +8,8 @@ import { Website } from "@/components/website";
 import { Copy } from "@/components/copy";
 import {
   formatDecimalNumber,
+  formatNumber,
+  getTokenMarketCap,
   getTokenSellQuote,
   maskAddress,
 } from "@/lib/utils";
@@ -27,6 +29,7 @@ import styled from "@emotion/styled";
 import XIcon from "~@/icons/x.svg";
 import TGIcon from "~@/icons/tg.svg";
 import WebsiteIcon from "~@/icons/website.svg";
+import { useAppContext } from "@/context/useAppContext";
 
 interface InfoProps {
   className?: string;
@@ -34,6 +37,7 @@ interface InfoProps {
 }
 
 export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
+  const { ethPrice } = useAppContext();
   const currentEth = detail
     ? detail?.isGraduate
       ? graduatedPool
@@ -42,6 +46,13 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
           Number(detail?.totalSupply) / 1e18
         )
     : BigInt(0);
+
+  const marketCap = useMemo(() => {
+    if (!ethPrice || !detail) return "-";
+    return formatNumber(
+      getTokenMarketCap(BigInt(detail?.totalSupply ?? "0"), ethPrice)
+    );
+  }, [detail, ethPrice]);
 
   const socialMedias = useMemo(() => {
     return [
@@ -79,7 +90,7 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
                 Created at{" "}
                 {dayjs().to(dayjs((detail?.created_timestamp ?? 0) * 1000))}
               </StyledTokenCreateTime>
-              <StyledTokenMCA>MCap: $14.23k</StyledTokenMCA>
+              <StyledTokenMCA>MCap: ${marketCap}</StyledTokenMCA>
             </StyledTokenMetaHeadLeft>
             <StyledTokenMetaHeadRight>
               <StyledTokenAddressBtn

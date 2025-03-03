@@ -91,6 +91,7 @@ export const TVChartContainer = ({
       });
 
       return () => {
+        console.log("---remove chart---");
         if (tvWidgetRef.current) {
           tvWidgetRef.current.remove();
         }
@@ -99,7 +100,7 @@ export const TVChartContainer = ({
   }, [name, pairIndex, ethPrice]);
 
   return (
-    <div className="relative h-full w-full ">
+    <div className="relative h-full w-full">
       {tradingLoading ? (
         <div className="z-9999 absolute left-0 top-0 flex h-full w-full items-center justify-center bg-tizz-background">
           <ReactLoading

@@ -83,4 +83,5 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
 const StyledMain = styled.main`
   // padding-top: var(--header-h);
+  min-height: 100vh;
 `;

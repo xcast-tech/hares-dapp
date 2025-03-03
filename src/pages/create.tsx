@@ -65,7 +65,14 @@ function Title({
 const Create = () => {
   const router = useRouter();
   const { createToken: createBondingCurveToken } = useHaresContract();
-  const { address, shouldSign, handleSign } = useGlobalCtx();
+  const {
+    address,
+    shouldSign,
+    handleSign,
+    isActionReady,
+    isCorrectChain,
+    handleSwitchNetwork,
+  } = useGlobalCtx();
 
   const [name, setName] = useState("");
   const [ticker, setTicker] = useState("");
@@ -153,6 +160,15 @@ const Create = () => {
     if (!picture) {
       toast("Please upload image");
       return;
+    }
+
+    if (!isActionReady) {
+      handleSign();
+      return;
+    }
+
+    if (!isCorrectChain) {
+      await handleSwitchNetwork();
     }
 
     try {
@@ -426,7 +442,7 @@ const Create = () => {
                 isLoading={loading}
                 disabled={disabledSubmit}
               >
-                {!address || shouldSign ? (
+                {!isActionReady ? (
                   <span>Sign In First</span>
                 ) : (
                   <span>create coin</span>

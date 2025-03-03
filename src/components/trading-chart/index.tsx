@@ -10,13 +10,16 @@ import {
 import { coinInfo } from "./types";
 import { TVChartContainer } from "@/components/trading-chart/container";
 import { Trade } from "@/lib/types";
+import styled from "@emotion/styled";
 
 interface TradingChartProps {
+  isGraduated: boolean;
   param: coinInfo;
   tradesCallBack: (trades: Trade[]) => void;
 }
 
 export const TradingChart: React.FC<TradingChartProps> = ({
+  isGraduated,
   param,
   tradesCallBack,
 }) => {
@@ -24,7 +27,11 @@ export const TradingChart: React.FC<TradingChartProps> = ({
 
   console.log("tradingview chart", param);
 
-  return (
+  return isGraduated ? (
+    <StyledIframe
+      src={`https://www.gmgn.cc/kline/bsc/${param.token}?interval=5`}
+    ></StyledIframe>
+  ) : (
     <>
       {/* <Script
         src="/libraries/charting_library/charting_library.standalone.js"
@@ -48,3 +55,8 @@ export const TradingChart: React.FC<TradingChartProps> = ({
     </>
   );
 };
+
+const StyledIframe = styled.iframe`
+  width: 100%;
+  height: 100%;
+`;

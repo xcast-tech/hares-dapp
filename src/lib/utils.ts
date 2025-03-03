@@ -44,7 +44,7 @@ export function formatNumber(value: string | number): string {
     num = parseFloat(value);
     if (isNaN(num)) return value;
   } else {
-    num = value;
+    num = Number(value.toFixed(4));
   }
 
   const units: [number, string][] = [
@@ -202,6 +202,17 @@ export function getKChartData(
     currentPrice = close;
   }
   return kChartData;
+}
+
+export function getTokenMarketCap(totalSupply: bigint, ethPrice: number) {
+  console.log("totalSupply", totalSupply);
+  console.log("ethPrice", ethPrice);
+  const price =
+    (Number(getTokenSellQuote(Math.min(Number(totalSupply), 8e26) / 1e18, 1)) /
+      1e18) *
+    ethPrice;
+
+  return Number(formatEther(totalSupply)) * price;
 }
 
 export function convertTradeToBars(
