@@ -224,6 +224,7 @@ export function useHaresContract() {
       address: token,
       abi: ABIs.HaresAbi,
       functionName: "sell",
+      account: address,
       args: [
         parseEther(tokenToSell.toString()),
         address,

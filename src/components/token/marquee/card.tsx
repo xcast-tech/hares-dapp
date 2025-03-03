@@ -5,6 +5,7 @@ import { LatelyTrade } from "@/lib/types";
 import styled from "@emotion/styled";
 import Avatar from "boring-avatars";
 import { formatEther } from "viem";
+import { mainChain } from "@/lib/constant";
 
 interface TradeProps {
   trade: LatelyTrade;
@@ -23,7 +24,7 @@ export function MarqueeTokenCard({ trade }: TradeProps) {
             {isSell ? "Sell" : "Buy"}
           </StyledTokenAction>
           <StyledBNBReceived>
-            {amount} {trade.tokenAddress.symbol} of
+            {amount} {mainChain.nativeCurrency.symbol} of
           </StyledBNBReceived>
           <StyledTokenPic src={trade.tokenAddress.picture} alt="" />
           <StyledTokenName>

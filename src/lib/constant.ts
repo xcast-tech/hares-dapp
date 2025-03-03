@@ -53,4 +53,5 @@ export const graduatedPoolConstant = "19.11"; // 18.91 / 0.99
 
 export const primaryMarketSupply = parseEther((8e8).toString()); // 800,000,000
 
-export const loginSignText = "Sign to continue";
+export const loginSignText =
+  "Sign in to bab.fun. Discover the most authentic token launchpad, powered by Binance BAB Token. This action only verifies your wallet ownership and will not incur any gas fees.";

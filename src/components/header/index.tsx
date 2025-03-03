@@ -83,7 +83,7 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
   const rightNavs = [
     {
       type: "link",
-      link: "https://twitter.com/haresai",
+      link: "https://x.com/BABDOTFUN",
       icon: <XIcon />,
     },
   ];
@@ -135,15 +135,8 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
             {navs.map((nav) => {
               if (nav.type === "path") {
                 return (
-                  <Link href={nav.href ?? "/"} key={nav.text} passHref>
-                    <StyledHeaderNav
-                      active={nav.active}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log("click nav", nav.text);
-                      }}
-                    >
+                  <Link href={nav.href ?? "/"} key={nav.text}>
+                    <StyledHeaderNav active={nav.active}>
                       {nav.text}
                     </StyledHeaderNav>
                   </Link>

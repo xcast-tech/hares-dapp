@@ -47,17 +47,17 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
     return [
       {
         name: "twitter",
-        url: detail?.twitter || "1",
+        url: detail?.twitter || "",
         icon: <XIcon />,
       },
       {
         name: "telegram",
-        url: detail?.telegram || "1",
+        url: detail?.telegram || "",
         icon: <TGIcon />,
       },
       {
         name: "website",
-        url: detail?.website || "1",
+        url: detail?.website || "",
         icon: <WebsiteIcon />,
       },
     ].filter((item) => !!item.url);

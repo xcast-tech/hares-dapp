@@ -23,17 +23,17 @@ function Token({ detail }: TokenProps) {
     return [
       {
         name: "twitter",
-        url: detail?.twitter || "1",
+        url: detail?.twitter || "",
         icon: <XIcon />,
       },
       {
         name: "telegram",
-        url: detail?.telegram || "1",
+        url: detail?.telegram || "",
         icon: <TGIcon />,
       },
       {
         name: "website",
-        url: detail?.website || "1",
+        url: detail?.website || "",
         icon: <WebsiteIcon />,
       },
     ].filter((item) => !!item.url);
@@ -50,7 +50,7 @@ function Token({ detail }: TokenProps) {
         <StyledTokenContent>
           <StyledTokenInfo>
             <StyledTokenName>
-              {detail?.name}({detail?.symbol})
+              {detail?.name}(${detail?.symbol})
             </StyledTokenName>
             <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
             <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
@@ -281,11 +281,21 @@ const StyledTokenCA = styled.p`
 
 const StyledTokenDesc = styled.p`
   color: #eaecef;
-  font-size: 13.154px;
+  font-size: 13px;
   font-style: normal;
+  height: 38px;
   font-weight: 400;
   line-height: 140%; /* 18.415px */
   opacity: 0.6;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-all;
+
   @media screen and (max-width: 1024px) {
     display: none;
   }
@@ -308,7 +318,7 @@ const StyledTokenMCA = styled.b`
   font-size: 11px;
   font-style: normal;
   font-weight: 700;
-  line-height: 140%; /* 15.4px */
+  line-height: 20px; /* 15.4px */
   background: linear-gradient(90deg, #ffc720 0%, #fcd535 100%);
   background-clip: text;
   -webkit-background-clip: text;

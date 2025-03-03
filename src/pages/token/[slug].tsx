@@ -374,6 +374,10 @@ export default function Token(props: IToken) {
                       className={`${i === 0 ? "reset-btn" : ""}`}
                       key={i}
                       onClick={() => {
+                        if (!address || shouldSign) {
+                          handleSign();
+                          return;
+                        }
                         setBuyInputValue(String(option.value));
                         setSimulateBuying(true);
                         handleSimulateBuy(String(option.value));
@@ -440,14 +444,16 @@ export default function Token(props: IToken) {
                     <StyledChip
                       key={i}
                       onClick={async () => {
+                        if (!address || shouldSign) {
+                          handleSign();
+                          return;
+                        }
                         const balance = await fetchTokenBalance(ca, address!);
-                        const amount = formatDecimalNumber(
+                        const amount = Number(
                           formatEther(
                             (balance * BigInt(option.value * 100)) / BigInt(100)
-                          ),
-                          0,
-                          4
-                        );
+                          )
+                        ).toFixed(4);
                         setSellInputValue(amount);
                         setSimulateSelling(true);
                         return handleSimulateSell(amount);
