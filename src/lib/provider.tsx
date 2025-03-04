@@ -9,7 +9,7 @@ import { wagmiConfig } from "./wagmi";
 const client = new QueryClient();
 
 const rainbowKitTheme = {
-  accentColor: "#6A3CD6",
+  accentColor: "#FCD535",
 };
 
 function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
