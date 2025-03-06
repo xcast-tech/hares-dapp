@@ -298,7 +298,7 @@ export function removeDuplicateTrades(trades: Trade[]) {
   });
 }
 
-function predictAddress(factory: string, bytecodeHash: string, salt: string): string {
+function predictAddress(factory: Address, bytecodeHash: `0x${string}`, salt: `0x${string}`): string {
   const hashInput = encodePacked(["bytes1", "address", "bytes32", "bytes32"], ["0xff", factory, salt, bytecodeHash]);
 
   const hash = keccak256(hashInput);
