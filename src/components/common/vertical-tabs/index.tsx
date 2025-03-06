@@ -5,8 +5,13 @@ import styled from "@emotion/styled";
 interface VerticalTabsProps {
   value: string;
   onChange: (value: string) => void;
+  onClick?: (value: string) => void;
 }
-const VerticalTabs: FC<VerticalTabsProps> = ({ value = "about", onChange }) => {
+const VerticalTabs: FC<VerticalTabsProps> = ({
+  value = "about",
+  onChange,
+  onClick,
+}) => {
   const [activeTab, setActiveTab] = useState(value);
   const [indicatorStyle, setIndicatorStyle] = useState({ top: 0, height: 0 });
   const tabRefs: { [key: string]: React.RefObject<HTMLButtonElement | null> } =
@@ -19,12 +24,13 @@ const VerticalTabs: FC<VerticalTabsProps> = ({ value = "about", onChange }) => {
   const tabsMap: Record<string, string> = {
     about: "tab1",
     fun: "tab2",
-    "start-fun": "tab3",
+    start: "tab3",
   };
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
     onChange(tabId);
+    onClick?.(tabId);
   };
 
   useEffect(() => {
@@ -73,8 +79,8 @@ const VerticalTabs: FC<VerticalTabsProps> = ({ value = "about", onChange }) => {
 
           <TabButton
             ref={tabRefs.tab3}
-            active={activeTab === "start-fun"}
-            onClick={() => handleTabClick("start-fun")}
+            active={activeTab === "start"}
+            onClick={() => handleTabClick("start")}
           >
             Ready to Start Using BAB.FUN?
           </TabButton>

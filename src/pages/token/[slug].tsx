@@ -147,20 +147,20 @@ export default function Token(props: IToken) {
       value: 0,
     },
     {
-      label: `0.01 ${tokenSymbol}`,
-      value: 0.01,
-    },
-    {
       label: `0.02 ${tokenSymbol}`,
       value: 0.02,
     },
     {
-      label: `0.05 ${tokenSymbol}`,
-      value: 0.05,
-    },
-    {
       label: `0.1 ${tokenSymbol}`,
       value: 0.1,
+    },
+    {
+      label: `0.2 ${tokenSymbol}`,
+      value: 0.2,
+    },
+    {
+      label: `1 ${tokenSymbol}`,
+      value: 1,
     },
   ];
 
@@ -734,7 +734,7 @@ export default function Token(props: IToken) {
               {isGraduate ? (
                 <StyledTokenGraduate>
                   The token has already graduated and been migrated to the
-                  Uniswap V3 pool.
+                  PancakeSwap V3 pool.
                 </StyledTokenGraduate>
               ) : null}
               <StyledTradingChartContainer isIframeMode={isGraduate === 1}>

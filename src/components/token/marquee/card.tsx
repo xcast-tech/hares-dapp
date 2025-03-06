@@ -28,7 +28,7 @@ export function MarqueeTokenCard({ trade }: TradeProps) {
           </StyledBNBReceived>
           <StyledTokenPic src={trade.tokenAddress.picture} alt="" />
           <StyledTokenName>
-            {trade.tokenAddress.name}({trade.tokenAddress.symbol})
+            {trade.tokenAddress.name}(${trade.tokenAddress.symbol})
           </StyledTokenName>
         </StyledMarqueeTokenCard>
       </StyledLink>

@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import Link from "next/link";
 import VerticalTabs from "@/components/common/vertical-tabs";
 import { useSearchParams } from "next/navigation";
+import { debounce, throttle } from "lodash-es";
 
 const BabtComponent = () => {
   const searchParams = useSearchParams();
@@ -12,37 +13,74 @@ const BabtComponent = () => {
   const tabsMap: Record<string, number> = {
     about: 0,
     fun: 1,
-    "start-fun": 2,
+    start: 2,
   };
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
     window.history.replaceState(null, "", `#${tabId}`);
   };
 
-  useEffect(() => {
-    const idx = tabsMap[activeTab];
+  const handleScrollTo = (tabId: string) => {
+    const idx = tabsMap[tabId];
     if (sectionsRef.current[idx]) {
       window.scrollTo({
         top: sectionsRef.current[idx].offsetTop - 118,
         behavior: "smooth",
       });
     }
-  }, [activeTab]);
+  };
+
+  // useEffect(() => {
+  //   const idx = tabsMap[activeTab];
+  //   if (sectionsRef.current[idx]) {
+  //     window.scrollTo({
+  //       top: sectionsRef.current[idx].offsetTop - 118,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // }, [activeTab]);
 
   useEffect(() => {
     // Parse the hash from the URL
     const hash = window.location.hash.substring(1); // Remove the '#' character
     if (hash && tabsMap[hash] !== undefined) {
       setActiveTab(hash);
+      handleScrollTo(hash);
     }
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      sectionsRef.current.forEach((section, index) => {
+        if (section && scrollTop >= section.offsetTop - 118) {
+          const id = section.getAttribute("id");
+          setActiveTab(id || "about");
+          window.history.replaceState(null, "", `#${id || "about"}`);
+        }
+      });
+    };
+
+    const throttleScroll = throttle(handleScroll, 100);
+
+    window.addEventListener("scroll", throttleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", throttleScroll);
+    };
+  }, [sectionsRef.current]);
+
   return (
     <BabtMain>
       <BabtBG1 src="/babt-bg-1.png" alt="BABT Background 1" />
       <BabtBG2 src="/babt-bg-2.png" alt="BABT Background 1" />
       <BabtTabsWrapper>
         <BabtTabs>
-          <VerticalTabs value={activeTab} onChange={handleTabChange} />
+          <VerticalTabs
+            value={activeTab}
+            onChange={handleTabChange}
+            onClick={handleScrollTo}
+          />
         </BabtTabs>
       </BabtTabsWrapper>
       <Container>
@@ -101,7 +139,7 @@ const BabtComponent = () => {
           </FunSection>
         </FunBox>
         <StartFunContainer
-          id="start-fun"
+          id="start"
           ref={(el) => {
             sectionsRef.current[2] = el;
           }}
@@ -453,10 +491,10 @@ const StartFunTouchItem1 = styled.div`
 
 const StartFunTouchItem2 = styled.div`
   position: absolute;
-  top: 51%;
+  bottom: 21.5%;
   right: 10%;
   width: 26%;
-  height: 8%;
+  height: 6%;
   cursor: pointer;
   z-index: 2;
   @media screen and (max-width: 1024px) {

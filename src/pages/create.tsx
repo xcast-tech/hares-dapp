@@ -220,7 +220,7 @@ const Create = () => {
       <StyledCreateContainer>
         <StyledCreateTokenPreview>
           <StarsBG />
-          <ShinyCard radius={16} duration={5}>
+          <ShinyCard color="#fff" radius={16} duration={5}>
             <StyledTokenCard>
               <StyledTokenCardPic>
                 <StyledTokenCardPicContainer>

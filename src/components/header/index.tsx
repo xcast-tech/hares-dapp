@@ -71,11 +71,11 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
         active: pathname === "/create",
       },
       {
-        key: "babt",
-        text: "About BABT",
+        key: "about",
+        text: "About BAB",
         type: "path",
-        href: "/babt",
-        active: pathname === "/babt",
+        href: "/about",
+        active: pathname === "/about",
       },
     ];
   }, [pathname]);
