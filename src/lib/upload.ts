@@ -59,11 +59,33 @@ export const uploadImageByFile = async (
   buffer: Buffer,
   contentType: string
 ) => {
-  return fetch(`/api/upload/binary`, {
+  return fetch(`/api/ipfs`, {
     method: "POST",
     headers: {
       "Content-Type": contentType,
     },
     body: buffer, // 直接发送文件的二进制内容
+  }).then((response) => response.json());
+};
+
+export const uploadMetadata = async (payload: {
+  image: string;
+  desc: string;
+  website: string;
+  twitter: string;
+  telegram: string;
+}): Promise<{
+  code: number;
+  data: {
+    url: string;
+  };
+  error: string;
+} | null> => {
+  return fetch(`/api/ipfs-metadata`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
   }).then((response) => response.json());
 };

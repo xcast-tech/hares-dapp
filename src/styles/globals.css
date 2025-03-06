@@ -29,7 +29,7 @@
 body,
 html {
   color: var(--foreground);
-  background: var(--background);
+  background: var(--background) !important;
   font-family: "Inter", Arial, Helvetica, sans-serif;
 }
 

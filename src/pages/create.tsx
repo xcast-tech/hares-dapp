@@ -26,7 +26,7 @@ import { useRouter } from "next/router";
 import { decodeEventLog } from "viem";
 import { cn } from "@/lib/utils";
 import { Twitter } from "@/components/twitter";
-import { uploadImage } from "@/lib/upload";
+import { uploadImage, uploadMetadata } from "@/lib/upload";
 import styled from "@emotion/styled";
 import styles from "@/styles/create.module.scss";
 import AnchorIcon from "~@/icons/accordion.svg";
@@ -154,6 +154,19 @@ const Create = () => {
     }
   }
 
+  async function handleUploadMetadata() {
+    const res = await uploadMetadata({
+      image: picture,
+      desc,
+      website,
+      twitter,
+      telegram,
+    });
+    if (res?.code === 0) {
+      return res?.data.url;
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
@@ -173,6 +186,12 @@ const Create = () => {
 
     try {
       setLoading(true);
+      // const metadata = await handleUploadMetadata();
+      // console.log("---- metadata", metadata);
+      // if (!metadata) {
+      //   toast("Failed to upload metadata");
+      //   return;
+      // }
 
       const address = await handleCreateToken(name.trim(), ticker.trim());
 
@@ -312,7 +331,6 @@ const Create = () => {
                 errorMessage="This field is required"
                 onChange={async (e: any) => {
                   const file = e?.nativeEvent?.target?.files?.[0];
-                  console.log("---- upload image file", file);
                   if (file) {
                     setUploading(true);
                     fileBlobUrl && cleanBlobUrl(fileBlobUrl);
@@ -324,8 +342,6 @@ const Create = () => {
                     } else {
                       setPicture("");
                     }
-                  } else {
-                    setPicture("");
                   }
                   setUploading(false);
                 }}
