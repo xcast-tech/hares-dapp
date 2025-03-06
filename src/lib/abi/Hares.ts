@@ -12,6 +12,11 @@ export default [
         type: "string",
       },
       {
+        internalType: "string",
+        name: "_tokenURI",
+        type: "string",
+      },
+      {
         internalType: "address",
         name: "_factory",
         type: "address",
@@ -730,19 +735,6 @@ export default [
   },
   {
     inputs: [],
-    name: "graduateCreatorFee",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "lpCreatorFeeBps",
     outputs: [
       {
@@ -934,6 +926,19 @@ export default [
         internalType: "address",
         name: "",
         type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tokenURI",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
       },
     ],
     stateMutability: "view",

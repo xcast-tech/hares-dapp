@@ -40,11 +40,6 @@ export default [
           },
           {
             internalType: "uint256",
-            name: "graduateCreatorFee",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
             name: "createTokenFee",
             type: "uint256",
           },
@@ -113,6 +108,12 @@ export default [
       },
       {
         indexed: false,
+        internalType: "string",
+        name: "tokenURI",
+        type: "string",
+      },
+      {
+        indexed: false,
         internalType: "address",
         name: "validator",
         type: "address",
@@ -152,11 +153,6 @@ export default [
           {
             internalType: "uint256",
             name: "lpCreatorFeeBps",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "graduateCreatorFee",
             type: "uint256",
           },
           {
@@ -210,6 +206,16 @@ export default [
         name: "validator",
         type: "address",
       },
+      {
+        internalType: "string",
+        name: "tokenUri",
+        type: "string",
+      },
+      {
+        internalType: "bytes32",
+        name: "_salt",
+        type: "bytes32",
+      },
     ],
     name: "createToken",
     outputs: [
@@ -261,11 +267,6 @@ export default [
           {
             internalType: "uint256",
             name: "lpCreatorFeeBps",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "graduateCreatorFee",
             type: "uint256",
           },
           {
@@ -339,11 +340,6 @@ export default [
           {
             internalType: "uint256",
             name: "lpCreatorFeeBps",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "graduateCreatorFee",
             type: "uint256",
           },
           {

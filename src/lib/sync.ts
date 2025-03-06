@@ -4,21 +4,14 @@ import { Database } from "./supabase/supabase";
 import { getTokenCreateEvent, getTokenEvents } from "./third-party";
 
 export function debugLog(msg: any, level: "info" | "warn" | "error" = "info") {
-  const logLevel = process.env.LOG_LEVEL
-    ? JSON.parse(process.env.LOG_LEVEL!)
-    : ["info", "warn", "error"];
+  const logLevel = process.env.LOG_LEVEL ? JSON.parse(process.env.LOG_LEVEL!) : ["info", "warn", "error"];
   if (logLevel.includes(level)) {
     console.log(`[${new Date().toISOString()}][${level}] ${msg}`);
     const date = new Date();
-    const fileName = `${date.getFullYear()}-${
-      date.getMonth() + 1
-    }-${date.getDate()}.log`;
+    const fileName = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.log`;
     if (process.env.LOG_TO_FILE === "true") {
       const fs = require("fs/promises");
-      fs.appendFile(
-        `./log/${fileName}`,
-        `[${new Date().toISOString()}] ${msg}\n`
-      );
+      fs.appendFile(`./log/${fileName}`, `[${new Date().toISOString()}] ${msg}\n`);
     }
   }
 }
@@ -68,11 +61,7 @@ export async function syncEvents(from: number, to: number) {
 }
 
 export async function handleEvents() {
-  const { data: events, error } = await supabaseClient
-    .from("Event")
-    .select("*")
-    .eq("status", 0)
-    .order("id", { ascending: true });
+  const { data: events, error } = await supabaseClient.from("Event").select("*").eq("status", 0).order("id", { ascending: true });
   if (error) {
     throw error.message;
   }
@@ -93,17 +82,16 @@ export async function handleEvents() {
   return events.length;
 }
 
-async function handleTokenCreated(
-  row: Database["public"]["Tables"]["Event"]["Row"]
-) {
+async function handleTokenCreated(row: Database["public"]["Tables"]["Event"]["Row"]) {
   debugLog(`Handling TokenCreated event ${row.id}`);
   const args = JSON.parse(row.data ?? "") as {
     tokenAddress: string;
     creator: string;
     name: string;
     symbol: string;
+    tokenURI: string;
   };
-  const { tokenAddress, creator, name, symbol } = args;
+  const { tokenAddress, creator, name, symbol, tokenURI } = args;
   const { error } = await supabaseClient.from("Token").upsert(
     {
       address: tokenAddress.toLowerCase(),
@@ -111,6 +99,7 @@ async function handleTokenCreated(
       creatorAddress: creator.toLowerCase(),
       name,
       symbol,
+      tokenUri: tokenURI,
       created_timestamp: row.timestamp,
       updated_timestamp: row.timestamp,
     },
@@ -125,9 +114,7 @@ async function handleTokenCreated(
   await setEventHandled(row.id);
 }
 
-async function handleTokenTransfer(
-  row: Database["public"]["Tables"]["Event"]["Row"]
-) {
+async function handleTokenTransfer(row: Database["public"]["Tables"]["Event"]["Row"]) {
   debugLog(`Handling TokenTransfer event ${row.id}`);
 
   const args = JSON.parse(row.data ?? "") as {
@@ -161,9 +148,7 @@ async function handleTokenTransfer(
   await setEventHandled(row.id);
 }
 
-async function handleTokenBuy(
-  row: Database["public"]["Tables"]["Event"]["Row"]
-) {
+async function handleTokenBuy(row: Database["public"]["Tables"]["Event"]["Row"]) {
   debugLog(`Handling TokenBuy event ${row.id}`);
 
   const args = JSON.parse(row.data ?? "") as {
@@ -212,9 +197,7 @@ async function handleTokenBuy(
   await setEventHandled(row.id);
 }
 
-async function handleTokenSell(
-  row: Database["public"]["Tables"]["Event"]["Row"]
-) {
+async function handleTokenSell(row: Database["public"]["Tables"]["Event"]["Row"]) {
   debugLog(`Handling TokenSell event ${row.id}`);
 
   const args = JSON.parse(row.data ?? "") as {
@@ -262,9 +245,7 @@ async function handleTokenSell(
   await setEventHandled(row.id);
 }
 
-async function handleMarketGraduated(
-  row: Database["public"]["Tables"]["Event"]["Row"]
-) {
+async function handleMarketGraduated(row: Database["public"]["Tables"]["Event"]["Row"]) {
   debugLog(`Handling MarketGraduated event ${row.id}`);
 
   const args = JSON.parse(row.data ?? "") as {
