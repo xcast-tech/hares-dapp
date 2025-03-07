@@ -114,6 +114,7 @@ export function useHaresContract() {
       functionName: "buy",
       args: [address, address, minOrderSize, sqrtPriceLimitX96, zeroHash],
       value: parseEther(eth.toString()),
+      account: address,
     });
   }
 
@@ -242,6 +243,32 @@ export function useHaresContract() {
     return tx;
   }
 
+  async function validate(token: Address) {
+    if (!publicClient) {
+      return true;
+    }
+
+    const validator = await publicClient?.readContract({
+      address: token,
+      abi: ABIs.HaresAbi,
+      functionName: "validator",
+      args: [],
+    });
+    if (validator === zeroAddress) {
+      return true;
+    }
+    if (!address) {
+      return false;
+    }
+    const result = await publicClient.readContract({
+      address: validator,
+      abi: ABIs.HaresValidatorAbi,
+      functionName: "validate",
+      args: [address, BigInt(0), zeroHash],
+    });
+    return result;
+  }
+
   return {
     createToken,
     getCurrentSupply,
@@ -252,5 +279,6 @@ export function useHaresContract() {
     sell,
     simulateSell,
     getTokenBalance,
+    validate,
   };
 }
