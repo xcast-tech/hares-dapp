@@ -18,7 +18,7 @@ export function useHaresContract() {
     if (!address) {
       return;
     }
-    const salt = calcSalt(name, symbol, tokenUri, contractAddress.HaresFactory, contractAddress.BABTValidatorAddress, address);
+    const { predictedAddress, salt } = calcSalt(name, symbol, tokenUri, contractAddress.HaresFactory, contractAddress.BABTValidatorAddress, address);
     const tx = await writeContractAsync({
       address: contractAddress.HaresFactory,
       abi: ABIs.HaresFactoryAbi,
@@ -30,17 +30,7 @@ export function useHaresContract() {
     const res = await publicClient?.waitForTransactionReceipt({
       hash: tx,
     });
-    const tokenCreatedEvent = res?.logs?.find((log) => log.topics[0] === EventTopic.HaresTokenCreated);
-    if (tokenCreatedEvent) {
-      const event = decodeEventLog({
-        abi: ABIs.HaresFactoryAbi,
-        data: tokenCreatedEvent.data,
-        topics: tokenCreatedEvent.topics,
-      });
-      const tokenAddress = (event.args as any).tokenAddress;
-      console.log(tokenAddress);
-    }
-    return res;
+    return predictedAddress;
   }
 
   async function getCurrentSupply(token: Address) {
