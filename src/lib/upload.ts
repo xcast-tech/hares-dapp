@@ -69,6 +69,8 @@ export const uploadImageByFile = async (
 };
 
 export const uploadMetadata = async (payload: {
+  name: string;
+  ticker: string;
   image: string;
   desc: string;
   website: string;

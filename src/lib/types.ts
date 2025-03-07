@@ -28,7 +28,8 @@ export interface IToken {
   poolAddress: string;
   symbol: string;
   totalSupply: string;
-  picture: string;
+  tokenUri: string;
+  image: string;
   desc: string;
   twitter: string;
   telegram: string;
@@ -61,7 +62,7 @@ export type LatelyTrade = Trade & {
     name: string;
     symbol: string;
     address: Address;
-    picture: string;
+    image: string;
   };
 };
 

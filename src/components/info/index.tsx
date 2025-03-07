@@ -64,7 +64,7 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
     <StyledInfo className={twMerge(className)}>
       <StyledTokenInfo>
         <StyledTokenPicBox>
-          <StyledTokenPic src={detail?.picture} alt="" />
+          <StyledTokenPic src={detail?.image} alt="" />
         </StyledTokenPicBox>
         <StyledTokenText>
           <StyledTokenTit>{detail?.name}</StyledTokenTit>

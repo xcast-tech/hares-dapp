@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import {
   useAccount,
+  useBalance,
   useDisconnect,
   useSignMessage,
   useSwitchChain,
@@ -46,7 +47,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const { switchChainAsync } = useSwitchChain();
   const { signMessageAsync } = useSignMessage();
   const { disconnect } = useDisconnect();
-  const { address, chain, isConnected } = useAccount(); // 获取当前网络信息
+  const { address, chain, isConnected } = useAccount();
   const [profile, setProfile] = useState<ProfileType>();
   const [isLoading, setIsLoading] = useState(true);
   const [signLoading, setSignLoading] = useState(false);

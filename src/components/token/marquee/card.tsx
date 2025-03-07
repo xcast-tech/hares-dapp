@@ -26,7 +26,7 @@ export function MarqueeTokenCard({ trade }: TradeProps) {
           <StyledBNBReceived>
             {amount} {mainChain.nativeCurrency.symbol} of
           </StyledBNBReceived>
-          <StyledTokenPic src={trade.tokenAddress.picture} alt="" />
+          <StyledTokenPic src={trade.tokenAddress.image} alt="" />
           <StyledTokenName>
             {trade.tokenAddress.name}(${trade.tokenAddress.symbol})
           </StyledTokenName>

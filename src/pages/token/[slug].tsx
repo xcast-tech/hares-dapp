@@ -14,11 +14,11 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Info } from "@/components/info";
 import { getTokenTopHoldersApi } from "@/lib/apis";
-import { useFarcasterContext } from "@/hooks/farcaster";
 import { Address, IToken, TopHolder, Trade } from "@/lib/types";
 import {
   cn,
   formatBigintTokenBalance,
+  formatChillDecimalNumber,
   formatDecimalNumber,
   formatNumber,
   formatToFourDecimalPlaces,
@@ -78,10 +78,25 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
     const { slug } = params;
     const data = await getTokenDetail(slug.toLowerCase());
     if (data) {
-      return {
-        props: data,
-        revalidate: 10,
-      };
+      console.log("--- data", data);
+      const tokenUri = data.tokenUri;
+      try {
+        const metadata = tokenUri
+          ? await fetch(tokenUri).then((res) => res.json())
+          : {};
+        return {
+          props: {
+            ...metadata,
+            ...data,
+          },
+          revalidate: 10,
+        };
+      } catch (error) {
+        console.log("error", error);
+        return {
+          notFound: true,
+        };
+      }
     } else {
       return {
         notFound: true,
@@ -97,7 +112,6 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 export default function Token(props: IToken) {
   const detail = props;
   const { ethPrice } = useAppContext();
-  const { login, userInfo } = useFarcasterContext();
   const { buy, simulateBuy, sell, simulateSell, getTokenBalance } =
     useHaresContract();
   const {
@@ -438,7 +452,7 @@ export default function Token(props: IToken) {
                   <span>{detail?.symbol}</span>
                   <StyledTokenActionInputIcon
                     alt="token icon"
-                    src={detail?.picture}
+                    src={detail?.image}
                   />
                 </StyledTokenActionInputRight>
               </StyledTokenActionTradePlaceInputBox>
@@ -461,11 +475,17 @@ export default function Token(props: IToken) {
                         //   return;
                         // }
                         const balance = await fetchTokenBalance(ca, address!);
-                        const amount = Number(
-                          formatEther(
-                            (balance * BigInt(option.value * 100)) / BigInt(100)
-                          )
-                        ).toFixed(4);
+                        const amount =
+                          option.value === 1
+                            ? formatEther(balance)
+                            : formatChillDecimalNumber(
+                                formatEther(
+                                  (balance * BigInt(option.value * 100)) /
+                                    BigInt(100)
+                                ),
+                                0,
+                                4
+                              );
                         setSellInputValue(amount);
                         setSimulateSelling(true);
                         return handleSimulateSell(amount);
@@ -489,7 +509,7 @@ export default function Token(props: IToken) {
                   }
                   handleSell();
                 }}
-                isLoading={trading}
+                isLoading={trading || simulateSelling}
               >
                 {!address || shouldSign ? (
                   <span>Sign In First</span>

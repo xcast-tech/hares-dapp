@@ -59,7 +59,7 @@ function Token({ detail }: TokenProps) {
       <StyledTokenCard>
         <StyledTokenCardPic>
           <StyledTokenCardPicContainer>
-            {detail?.picture && <img src={detail?.picture} alt="" />}
+            {detail?.image && <img src={detail?.image} alt="" />}
           </StyledTokenCardPicContainer>
         </StyledTokenCardPic>
         <StyledTokenContent>

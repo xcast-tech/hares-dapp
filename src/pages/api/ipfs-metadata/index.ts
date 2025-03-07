@@ -68,7 +68,7 @@ export default async function handler(
   }
 
   try {
-    const { image, desc, website, twitter, telegram } = req.body;
+    const { name, ticker, image, desc, website, twitter, telegram } = req.body;
 
     // buffer to blob
     // const bolb = new Blob([buffer], { type: "image/jpeg" });
@@ -77,7 +77,15 @@ export default async function handler(
     let transaction = await arweave.createTransaction(
       {
         data: await new Blob([
-          JSON.stringify({ image, desc, website, twitter, telegram }),
+          JSON.stringify({
+            name,
+            ticker,
+            image,
+            desc,
+            website,
+            twitter,
+            telegram,
+          }),
         ]).arrayBuffer(),
       },
       key
