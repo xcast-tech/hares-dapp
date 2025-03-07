@@ -80,6 +80,7 @@ export type Database = {
           isGraduate: number | null
           lpPositionId: string | null
           marketCap: string | null
+          metadata: string | null
           name: string | null
           poolAddress: string | null
           symbol: string | null
@@ -97,6 +98,7 @@ export type Database = {
           isGraduate?: number | null
           lpPositionId?: string | null
           marketCap?: string | null
+          metadata?: string | null
           name?: string | null
           poolAddress?: string | null
           symbol?: string | null
@@ -114,6 +116,7 @@ export type Database = {
           isGraduate?: number | null
           lpPositionId?: string | null
           marketCap?: string | null
+          metadata?: string | null
           name?: string | null
           poolAddress?: string | null
           symbol?: string | null

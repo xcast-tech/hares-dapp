@@ -1,7 +1,8 @@
+import { Address } from "viem";
 import { setEventHandled } from "./model";
 import { supabaseClient } from "./supabase";
 import { Database } from "./supabase/supabase";
-import { getTokenCreateEvent, getTokenEvents } from "./third-party";
+import { extractMetadata, getTokenCreateEvent, getTokenEvents, getTokenTotalSupply } from "./third-party";
 
 export function debugLog(msg: any, level: "info" | "warn" | "error" = "info") {
   const logLevel = process.env.LOG_LEVEL ? JSON.parse(process.env.LOG_LEVEL!) : ["info", "warn", "error"];
@@ -92,6 +93,8 @@ async function handleTokenCreated(row: Database["public"]["Tables"]["Event"]["Ro
     tokenURI: string;
   };
   const { tokenAddress, creator, name, symbol, tokenURI } = args;
+  const totalSupply = await getTokenTotalSupply(tokenAddress as Address);
+  const metadata = await extractMetadata(tokenURI);
   const { error } = await supabaseClient.from("Token").upsert(
     {
       address: tokenAddress.toLowerCase(),
@@ -100,6 +103,8 @@ async function handleTokenCreated(row: Database["public"]["Tables"]["Event"]["Ro
       name,
       symbol,
       tokenUri: tokenURI,
+      totalSupply,
+      metadata,
       created_timestamp: row.timestamp,
       updated_timestamp: row.timestamp,
     },

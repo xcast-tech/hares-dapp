@@ -1,4 +1,4 @@
-import { decodeEventLog } from "viem";
+import { Address, decodeEventLog } from "viem";
 import { ABIs, contractAddress, EventTopic, mainChain, SCAN_API_KEY } from "./constant";
 import { ContractEvent } from "./types";
 
@@ -37,4 +37,26 @@ export async function getTokenEvents(from: number, to: number, topic: string) {
     }),
   }));
   return parsed as ContractEvent<any>[];
+}
+
+export async function getTokenTotalSupply(token: Address) {
+  try {
+    const url = `${mainChain.blockExplorers.default.apiUrl}?module=stats&action=tokensupply&contractaddress=${token}&apikey=${SCAN_API_KEY}`;
+    const res = await fetch(url).then((res) => res.json());
+    if (res.message === "OK") {
+      return res.result;
+    }
+    return "0";
+  } catch (e) {
+    return "0";
+  }
+}
+
+export async function extractMetadata(tokenUri: string) {
+  try {
+    const res = await fetch(tokenUri).then((res) => res.json());
+    return JSON.stringify(res);
+  } catch (e) {
+    return "";
+  }
 }
