@@ -3,7 +3,15 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { BondingCurveConfig } from "./constant";
 import { Trade } from "./types";
-import { Address, encodeAbiParameters, encodePacked, formatEther, getAddress, keccak256, toHex } from "viem";
+import {
+  Address,
+  encodeAbiParameters,
+  encodePacked,
+  formatEther,
+  getAddress,
+  keccak256,
+  toHex,
+} from "viem";
 import { bytecode } from "./abi/bytecode";
 
 export function cn(...inputs: ClassValue[]) {
@@ -19,7 +27,23 @@ export function getDomain() {
   return "www.hares.ai";
 }
 
-export const formatDecimalNumber = (num: number | string, minimumFractionDigits = 0, maximumFractionDigits = 2) => {
+export const formatChillDecimalNumber = (
+  num: number | string,
+  minimumFractionDigits = 0,
+  maximumFractionDigits = 2
+) => {
+  return formatDecimalNumber(
+    num,
+    minimumFractionDigits,
+    maximumFractionDigits
+  ).replaceAll(",", "");
+};
+
+export const formatDecimalNumber = (
+  num: number | string,
+  minimumFractionDigits = 0,
+  maximumFractionDigits = 2
+) => {
   return new Intl.NumberFormat("en-US", {
     style: "decimal",
     minimumFractionDigits: minimumFractionDigits,
@@ -54,7 +78,9 @@ export function formatNumber(value: string | number): string {
   for (const [divisor, suffix] of units) {
     if (num >= divisor) {
       const formatted = (num / divisor).toFixed(1);
-      return formatted.endsWith(".0") ? formatted.slice(0, -2) + suffix : formatted + suffix;
+      return formatted.endsWith(".0")
+        ? formatted.slice(0, -2) + suffix
+        : formatted + suffix;
     }
   }
 
@@ -98,15 +124,23 @@ export function isValidSignatureForStringBody(
 }
 
 export function isAndroid(): boolean {
-  return typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+  return (
+    typeof navigator !== "undefined" && /android/i.test(navigator.userAgent)
+  );
 }
 
 export function isSmallIOS(): boolean {
-  return typeof navigator !== "undefined" && /iPhone|iPod/.test(navigator.userAgent);
+  return (
+    typeof navigator !== "undefined" && /iPhone|iPod/.test(navigator.userAgent)
+  );
 }
 
 export function isLargeIOS(): boolean {
-  return typeof navigator !== "undefined" && (/iPad/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+  return (
+    typeof navigator !== "undefined" &&
+    (/iPad/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))
+  );
 }
 
 export function isIOS(): boolean {
@@ -146,7 +180,12 @@ export function getTokenSellQuote(currentSupply = 0, tokenToSell = 0) {
 //   return BigInt(Math.floor(delta));
 // }
 
-export function getSqrtPriceLimitX96(sqrtPriceLimitX96: number | bigint, slippage: number, isWETHToken0: boolean, isBuy: boolean) {
+export function getSqrtPriceLimitX96(
+  sqrtPriceLimitX96: number | bigint,
+  slippage: number,
+  isWETHToken0: boolean,
+  isBuy: boolean
+) {
   if ((isWETHToken0 && isBuy) || (!isWETHToken0 && !isBuy)) {
     return Number(sqrtPriceLimitX96) * (1 - slippage);
   }
@@ -154,14 +193,25 @@ export function getSqrtPriceLimitX96(sqrtPriceLimitX96: number | bigint, slippag
   return Number(sqrtPriceLimitX96) * (1 + slippage);
 }
 
-export function getKChartData(history: Trade[], ethPrice: number, prev: number = 1) {
+export function getKChartData(
+  history: Trade[],
+  ethPrice: number,
+  prev: number = 1
+) {
   const kChartData = [];
   let currentPrice = 0;
   for (let i = 0; i < history.length; i++) {
     const item = history[i];
-    const open = i === 0 ? (Number(getTokenSellQuote(prev, 1)) / 1e18) * ethPrice : (Number(getTokenSellQuote(+history[i - 1].totalSupply / 1e18, 1)) / 1e18) * ethPrice;
+    const open =
+      i === 0
+        ? (Number(getTokenSellQuote(prev, 1)) / 1e18) * ethPrice
+        : (Number(getTokenSellQuote(+history[i - 1].totalSupply / 1e18, 1)) /
+            1e18) *
+          ethPrice;
 
-    const close = (Number(getTokenSellQuote(+item.totalSupply / 1e18, 1)) / 1e18) * ethPrice;
+    const close =
+      (Number(getTokenSellQuote(+item.totalSupply / 1e18, 1)) / 1e18) *
+      ethPrice;
 
     kChartData.push({
       time: item.timestamp * 1000,
@@ -178,18 +228,28 @@ export function getKChartData(history: Trade[], ethPrice: number, prev: number =
 export function getTokenMarketCap(totalSupply: bigint, ethPrice: number) {
   console.log("totalSupply", totalSupply);
   console.log("ethPrice", ethPrice);
-  const price = (Number(getTokenSellQuote(Math.min(Number(totalSupply), 8e26) / 1e18, 1)) / 1e18) * ethPrice;
+  const price =
+    (Number(getTokenSellQuote(Math.min(Number(totalSupply), 8e26) / 1e18, 1)) /
+      1e18) *
+    ethPrice;
 
   return Number(formatEther(totalSupply)) * price;
 }
 
-export function convertTradeToBars(trades: Trade[], from: number, to: number, resolution: number, ethPrice: number) {
+export function convertTradeToBars(
+  trades: Trade[],
+  from: number,
+  to: number,
+  resolution: number,
+  ethPrice: number
+) {
   if (trades.length === 0 || to < trades[0].timestamp) return null;
   const interval = resolution * 60;
   const bars = [];
   const groups: Record<number, Trade[]> = {};
   for (let i = 0; i < trades.length; i++) {
-    const key = from + Math.floor((trades[i].timestamp - from) / interval) * interval;
+    const key =
+      from + Math.floor((trades[i].timestamp - from) / interval) * interval;
     if (!groups[key]) {
       groups[key] = [trades[i]];
     } else {
@@ -200,18 +260,52 @@ export function convertTradeToBars(trades: Trade[], from: number, to: number, re
     const timestamp = +Object.keys(groups)[i];
     if (timestamp >= from && timestamp < to) {
       const group = groups[timestamp];
-      const initialSupply = Math.min(Number(group[0].totalSupply), 8e26) + (group[0].type === 0 ? -1 : 1) * Number(group[0].trueOrderSize);
-      const open = (Number(getTokenSellQuote(initialSupply / 1e18, 1)) / 1e18) * ethPrice;
-      const close = (Number(getTokenSellQuote(Math.min(+group[group.length - 1].totalSupply, 8e26) / 1e18, 1)) / 1e18) * ethPrice;
-      const low = Math.min(...group.map((t) => (Number(getTokenSellQuote(Math.min(+t.totalSupply, 8e26) / 1e18, 1)) / 1e18) * ethPrice));
-      const high = Math.max(...group.map((t) => (Number(getTokenSellQuote(Math.min(+t.totalSupply, 8e26) / 1e18, 1)) / 1e18) * ethPrice));
+      const initialSupply =
+        Math.min(Number(group[0].totalSupply), 8e26) +
+        (group[0].type === 0 ? -1 : 1) * Number(group[0].trueOrderSize);
+      const open =
+        (Number(getTokenSellQuote(initialSupply / 1e18, 1)) / 1e18) * ethPrice;
+      const close =
+        (Number(
+          getTokenSellQuote(
+            Math.min(+group[group.length - 1].totalSupply, 8e26) / 1e18,
+            1
+          )
+        ) /
+          1e18) *
+        ethPrice;
+      const low = Math.min(
+        ...group.map(
+          (t) =>
+            (Number(
+              getTokenSellQuote(Math.min(+t.totalSupply, 8e26) / 1e18, 1)
+            ) /
+              1e18) *
+            ethPrice
+        )
+      );
+      const high = Math.max(
+        ...group.map(
+          (t) =>
+            (Number(
+              getTokenSellQuote(Math.min(+t.totalSupply, 8e26) / 1e18, 1)
+            ) /
+              1e18) *
+            ethPrice
+        )
+      );
       bars.push({
         time: timestamp * 1000,
         open,
         close,
         low,
         high,
-        volume: Math.abs(group.reduce((acc, t) => acc + (t.type === 0 ? 1 : -1) * Number(t.trueOrderSize), 0) / 1e18),
+        volume: Math.abs(
+          group.reduce(
+            (acc, t) => acc + (t.type === 0 ? 1 : -1) * Number(t.trueOrderSize),
+            0
+          ) / 1e18
+        ),
       });
     }
   }
@@ -219,35 +313,87 @@ export function convertTradeToBars(trades: Trade[], from: number, to: number, re
 }
 
 export function convertTradesToBar(trades: Trade[], ethPrice: number) {
-  const initialSupply = Number(trades[0].totalSupply) + (trades[0].type === 0 ? -1 : 1) * Number(trades[0].trueOrderSize);
-  const open = (Number(getTokenSellQuote(initialSupply / 1e18, 1)) / 1e18) * ethPrice;
-  const close = (Number(getTokenSellQuote(+trades[trades.length - 1].totalSupply / 1e18, 1)) / 1e18) * ethPrice;
-  const low = Math.min(...trades.map((t) => (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) * ethPrice));
-  const high = Math.max(...trades.map((t) => (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) * ethPrice));
+  const initialSupply =
+    Number(trades[0].totalSupply) +
+    (trades[0].type === 0 ? -1 : 1) * Number(trades[0].trueOrderSize);
+  const open =
+    (Number(getTokenSellQuote(initialSupply / 1e18, 1)) / 1e18) * ethPrice;
+  const close =
+    (Number(
+      getTokenSellQuote(+trades[trades.length - 1].totalSupply / 1e18, 1)
+    ) /
+      1e18) *
+    ethPrice;
+  const low = Math.min(
+    ...trades.map(
+      (t) =>
+        (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) * ethPrice
+    )
+  );
+  const high = Math.max(
+    ...trades.map(
+      (t) =>
+        (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) * ethPrice
+    )
+  );
   return {
     time: trades[trades.length - 1].timestamp * 1000,
     open,
     close,
     low,
     high,
-    volume: Math.abs(trades.reduce((acc, t) => acc + (t.type === 0 ? 1 : -1) * Number(t.trueOrderSize), 0) / 1e18),
+    volume: Math.abs(
+      trades.reduce(
+        (acc, t) => acc + (t.type === 0 ? 1 : -1) * Number(t.trueOrderSize),
+        0
+      ) / 1e18
+    ),
   };
 }
 
-export function convertTradesToBarData(trades: Trade[], nativeTokenPrice: number) {
+export function convertTradesToBarData(
+  trades: Trade[],
+  nativeTokenPrice: number
+) {
   // initialSupply: the total supply of the token before the first trade
-  const initialSupply = Number(trades[0].totalSupply) + (trades[0].type === 0 ? -1 : 1) * Number(trades[0].trueOrderSize);
-  const open = (Number(getTokenSellQuote(initialSupply / 1e18, 1)) / 1e18) * nativeTokenPrice;
-  const close = (Number(getTokenSellQuote(+trades[trades.length - 1].totalSupply / 1e18, 1)) / 1e18) * nativeTokenPrice;
-  const low = Math.min(...trades.map((t) => (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) * nativeTokenPrice));
-  const high = Math.max(...trades.map((t) => (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) * nativeTokenPrice));
+  const initialSupply =
+    Number(trades[0].totalSupply) +
+    (trades[0].type === 0 ? -1 : 1) * Number(trades[0].trueOrderSize);
+  const open =
+    (Number(getTokenSellQuote(initialSupply / 1e18, 1)) / 1e18) *
+    nativeTokenPrice;
+  const close =
+    (Number(
+      getTokenSellQuote(+trades[trades.length - 1].totalSupply / 1e18, 1)
+    ) /
+      1e18) *
+    nativeTokenPrice;
+  const low = Math.min(
+    ...trades.map(
+      (t) =>
+        (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) *
+        nativeTokenPrice
+    )
+  );
+  const high = Math.max(
+    ...trades.map(
+      (t) =>
+        (Number(getTokenSellQuote(+t.totalSupply / 1e18, 1)) / 1e18) *
+        nativeTokenPrice
+    )
+  );
   return {
     time: trades[trades.length - 1].timestamp,
     open,
     close,
     low,
     high,
-    volume: Math.abs(trades.reduce((acc, t) => acc + (t.type === 0 ? 1 : -1) * Number(t.trueOrderSize), 0) / 1e18),
+    volume: Math.abs(
+      trades.reduce(
+        (acc, t) => acc + (t.type === 0 ? 1 : -1) * Number(t.trueOrderSize),
+        0
+      ) / 1e18
+    ),
   };
 }
 
@@ -271,7 +417,12 @@ export const formatTimestampInSecond = (timestamp: number) => {
   return Math.floor(timestamp / 1000);
 };
 
-export const groupDatasInRanges = (trades: Trade[], range: number, from: number, to: number) => {
+export const groupDatasInRanges = (
+  trades: Trade[],
+  range: number,
+  from: number,
+  to: number
+) => {
   const result: Trade[][] = [];
   const rangeCount = Math.ceil((to - from) / range);
   const rangeGroup = Array.from({ length: rangeCount })
@@ -283,7 +434,9 @@ export const groupDatasInRanges = (trades: Trade[], range: number, from: number,
       };
     });
   rangeGroup.forEach((range) => {
-    const rangeDatas = trades.filter((trade) => trade.timestamp >= range.from && trade.timestamp < range.to);
+    const rangeDatas = trades.filter(
+      (trade) => trade.timestamp >= range.from && trade.timestamp < range.to
+    );
     result.push(rangeDatas);
   });
   return result;
@@ -298,15 +451,29 @@ export function removeDuplicateTrades(trades: Trade[]) {
   });
 }
 
-function predictAddress(factory: Address, bytecodeHash: `0x${string}`, salt: `0x${string}`): string {
-  const hashInput = encodePacked(["bytes1", "address", "bytes32", "bytes32"], ["0xff", factory, salt, bytecodeHash]);
+function predictAddress(
+  factory: Address,
+  bytecodeHash: `0x${string}`,
+  salt: `0x${string}`
+): string {
+  const hashInput = encodePacked(
+    ["bytes1", "address", "bytes32", "bytes32"],
+    ["0xff", factory, salt, bytecodeHash]
+  );
 
   const hash = keccak256(hashInput);
   const addressBytes = hash.slice(0, 2) + hash.slice(26);
   return getAddress(addressBytes);
 }
 
-export function calcSalt(name: string, symbol: string, tokenUri: string, factory: Address, validator: Address, sender: Address) {
+export function calcSalt(
+  name: string,
+  symbol: string,
+  tokenUri: string,
+  factory: Address,
+  validator: Address,
+  sender: Address
+) {
   const encodedConstructorArgs = encodeAbiParameters(
     [
       { name: "name", type: "string" },
@@ -319,7 +486,10 @@ export function calcSalt(name: string, symbol: string, tokenUri: string, factory
     [name, symbol, tokenUri, factory, sender, validator]
   );
 
-  const baseBytecode = encodePacked(["bytes", "bytes"], [bytecode, encodedConstructorArgs]);
+  const baseBytecode = encodePacked(
+    ["bytes", "bytes"],
+    [bytecode, encodedConstructorArgs]
+  );
 
   const bytecodeHash = keccak256(baseBytecode);
 

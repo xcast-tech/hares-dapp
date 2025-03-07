@@ -3,9 +3,12 @@ import { supabaseClient } from "@/lib/supabase";
 import { pick } from "lodash-es";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { address } = req.query;
-  const finalAddress = (address as string).toLowerCase()
+  const finalAddress = (address as string).toLowerCase();
 
   if (!address) {
     res.json({
@@ -14,18 +17,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  const [{ data: token, error: tokenError }, { data: tokenInfo, error: tokenInfoError }] = await Promise.all([
-    supabaseClient
-      .from("Token")
-      .select("*")
-      .eq("address", finalAddress)
-      .maybeSingle(),
-    supabaseClient
-      .from("TokenInfo")
-      .select("*")
-      .eq("address", finalAddress)
-      .maybeSingle(),
-  ]);
+  const { data: token, error: tokenError } = await supabaseClient
+    .from("Token")
+    .select("*")
+    .eq("address", finalAddress)
+    .maybeSingle();
 
   if (tokenError) {
     res.json({
@@ -33,18 +29,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: tokenError.message,
     });
   }
-  if (tokenInfoError) {
-    res.json({
-      code: 501,
-      data: tokenInfoError.message,
-    });
-  }
+  // if (tokenInfoError) {
+  //   res.json({
+  //     code: 501,
+  //     data: tokenInfoError.message,
+  //   });
+  // }
 
   res.json({
     code: 0,
     data: {
       ...token,
-      ...pick(tokenInfo, ["picture", "desc", "twitter", "telegram", "website"]),
+      // ...pick(tokenInfo, ["picture", "desc", "twitter", "telegram", "website"]),
     },
   });
 }

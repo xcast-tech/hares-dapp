@@ -11,7 +11,7 @@ export default async function handler(
   const { data, error: error1 } = await supabaseClient
     .from("Trade")
     .select(
-      "id,from,type,tokenAddress(name,symbol,address,picture),recipient,trueOrderSize,totalSupply,trueEth,timestamp"
+      "id,from,type,tokenAddress(name,symbol,address,tokenUri),recipient,trueOrderSize,totalSupply,trueEth,timestamp"
     )
     .eq("isGraduate", 0)
     .gt("id", lastId as string)

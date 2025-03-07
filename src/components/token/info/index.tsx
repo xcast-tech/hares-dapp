@@ -80,7 +80,7 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
     <StyledTokenInfo>
       <StyledTokenMetaBox>
         <StyledTokenPicBox>
-          <StyledTokenPic src={detail?.picture} alt="" />
+          <StyledTokenPic src={detail?.image} alt="" />
         </StyledTokenPicBox>
         <StyledTokenMeta>
           <StyledTokenMetaHead>

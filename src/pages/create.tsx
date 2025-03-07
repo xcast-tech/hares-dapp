@@ -117,7 +117,17 @@ const Create = () => {
     }
 
     try {
-      const res = await createBondingCurveToken(name, symbol, devBuyAmount);
+      const tokenUri = await handleUploadMetadata();
+      if (!tokenUri) {
+        toast("Failed to upload metadata");
+        return "";
+      }
+      const res = await createBondingCurveToken(
+        name,
+        symbol,
+        tokenUri,
+        devBuyAmount
+      );
       const tokenCreatedEvent = res?.logs?.find?.(
         (item) => item?.topics?.[0] === EventTopic.HaresTokenCreated
       );
@@ -143,7 +153,7 @@ const Create = () => {
 
   async function loopToken({ address }: { address: string }) {
     const res = await tokenApi({ address });
-    if (res?.data?.picture) {
+    if (res?.data?.tokenUri) {
       router.push(`/token/${address}`);
     } else {
       return new Promise((resolve) => {
@@ -156,6 +166,8 @@ const Create = () => {
 
   async function handleUploadMetadata() {
     const res = await uploadMetadata({
+      name,
+      ticker,
       image: picture,
       desc,
       website,
@@ -195,20 +207,21 @@ const Create = () => {
 
       const address = await handleCreateToken(name.trim(), ticker.trim());
 
-      if (address) {
-        await setUpApi({
-          address,
-          name: name.trim(),
-          ticker: ticker.trim(),
-          picture: picture,
-          website: website.trim(),
-          twitter: twitter.trim(),
-          telegram: telegram.trim(),
-          desc: desc.trim(),
-        });
+      // if (address) {
+      //   await setUpApi({
+      //     address,
+      //     name: name.trim(),
+      //     ticker: ticker.trim(),
+      //     picture: picture,
+      //     website: website.trim(),
+      //     twitter: twitter.trim(),
+      //     telegram: telegram.trim(),
+      //     desc: desc.trim(),
+      //   });
 
-        await loopToken({ address });
-      }
+      //   await loopToken({ address });
+      // }
+      await loopToken({ address });
     } catch (error) {
     } finally {
       setLoading(false);
