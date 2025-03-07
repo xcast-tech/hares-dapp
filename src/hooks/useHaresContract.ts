@@ -18,7 +18,7 @@ export function useHaresContract() {
     if (!address) {
       return;
     }
-    const salt = calcSalt(name, symbol, tokenUri, contractAddress.HaresFactory, contractAddress.BABTValidatorAddress, address);
+    const { predictedAddress, salt } = calcSalt(name, symbol, tokenUri, contractAddress.HaresFactory, contractAddress.BABTValidatorAddress, address);
     const tx = await writeContractAsync({
       address: contractAddress.HaresFactory,
       abi: ABIs.HaresFactoryAbi,
@@ -30,17 +30,7 @@ export function useHaresContract() {
     const res = await publicClient?.waitForTransactionReceipt({
       hash: tx,
     });
-    const tokenCreatedEvent = res?.logs?.find((log) => log.topics[0] === EventTopic.HaresTokenCreated);
-    if (tokenCreatedEvent) {
-      const event = decodeEventLog({
-        abi: ABIs.HaresFactoryAbi,
-        data: tokenCreatedEvent.data,
-        topics: tokenCreatedEvent.topics,
-      });
-      const tokenAddress = (event.args as any).tokenAddress;
-      console.log(tokenAddress);
-    }
-    return res;
+    return predictedAddress.toLowerCase();
   }
 
   async function getCurrentSupply(token: Address) {
@@ -124,6 +114,7 @@ export function useHaresContract() {
       functionName: "buy",
       args: [address, address, minOrderSize, sqrtPriceLimitX96, zeroHash],
       value: parseEther(eth.toString()),
+      account: address,
     });
   }
 
@@ -252,6 +243,32 @@ export function useHaresContract() {
     return tx;
   }
 
+  async function validate(token: Address) {
+    if (!publicClient) {
+      return true;
+    }
+
+    const validator = await publicClient?.readContract({
+      address: token,
+      abi: ABIs.HaresAbi,
+      functionName: "validator",
+      args: [],
+    });
+    if (validator === zeroAddress) {
+      return true;
+    }
+    if (!address) {
+      return false;
+    }
+    const result = await publicClient.readContract({
+      address: validator,
+      abi: ABIs.HaresValidatorAbi,
+      functionName: "validate",
+      args: [address, BigInt(0), zeroHash],
+    });
+    return result;
+  }
+
   return {
     createToken,
     getCurrentSupply,
@@ -262,5 +279,6 @@ export function useHaresContract() {
     sell,
     simulateSell,
     getTokenBalance,
+    validate,
   };
 }

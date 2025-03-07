@@ -122,26 +122,13 @@ const Create = () => {
         toast("Failed to upload metadata");
         return "";
       }
-      const res = await createBondingCurveToken(
+      const tokenAddress = await createBondingCurveToken(
         name,
         symbol,
         tokenUri,
         devBuyAmount
       );
-      const tokenCreatedEvent = res?.logs?.find?.(
-        (item) => item?.topics?.[0] === EventTopic.HaresTokenCreated
-      );
-      if (tokenCreatedEvent) {
-        const event: any = decodeEventLog({
-          abi: ABIs.HaresFactoryAbi,
-          data: tokenCreatedEvent.data,
-          topics: tokenCreatedEvent.topics,
-        });
-        const tokenAddress = (
-          (event.args as any).tokenAddress || ""
-        ).toLowerCase();
-        return tokenAddress;
-      }
+      return tokenAddress;
     } catch (error: any) {
       if (error.message.includes("User rejected the request")) {
         return;
@@ -151,7 +138,10 @@ const Create = () => {
     return "";
   }
 
-  async function loopToken({ address }: { address: string }) {
+  async function loopToken({ address }: { address?: string }) {
+    if (!address) {
+      return
+    }
     const res = await tokenApi({ address });
     if (res?.data?.tokenUri) {
       router.push(`/token/${address}`);
@@ -207,20 +197,10 @@ const Create = () => {
 
       const address = await handleCreateToken(name.trim(), ticker.trim());
 
-      // if (address) {
-      //   await setUpApi({
-      //     address,
-      //     name: name.trim(),
-      //     ticker: ticker.trim(),
-      //     picture: picture,
-      //     website: website.trim(),
-      //     twitter: twitter.trim(),
-      //     telegram: telegram.trim(),
-      //     desc: desc.trim(),
-      //   });
-
-      //   await loopToken({ address });
-      // }
+      if (!address) {
+        toast("Failed to get token address");
+        return
+      }
       await loopToken({ address });
     } catch (error) {
     } finally {

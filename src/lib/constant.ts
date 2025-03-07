@@ -14,7 +14,7 @@ export const SCAN_API_KEY = process.env[`SCAN_API_KEY_${mainChain.id}`];
 export const tokenSymbol = mainChain.nativeCurrency.symbol;
 export const contractAddress = {
   BondingCurve: "0xfF795E4B82c97e41e1eFA40239fE1A13763542CD" as Address,
-  BABTValidatorAddress: zeroAddress,
+  BABTValidatorAddress: "0xb4C4f1E74bdA0Cc587EC7E314eA34cE07Dbe0015" as Address,
   HaresFactory: "0x1684E74EDA3e23e1D450B25BE82A49BD8B3401a1" as Address,
   WETH: "0x7b79995e5f793a07bc00c21412e50ecae098e7f9" as Address,
 };
