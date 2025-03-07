@@ -160,15 +160,7 @@ export type Database = {
           twitter?: string | null
           website?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "TokenInfo_address_fkey"
-            columns: ["address"]
-            isOneToOne: true
-            referencedRelation: "Token"
-            referencedColumns: ["address"]
-          },
-        ]
+        Relationships: []
       }
       Trade: {
         Row: {
@@ -186,6 +178,7 @@ export type Database = {
           totalSupply: string
           trueEth: string
           trueOrderSize: string
+          txIndex: number | null
           type: number
         }
         Insert: {
@@ -203,6 +196,7 @@ export type Database = {
           totalSupply: string
           trueEth: string
           trueOrderSize: string
+          txIndex?: number | null
           type: number
         }
         Update: {
@@ -220,17 +214,10 @@ export type Database = {
           totalSupply?: string
           trueEth?: string
           trueOrderSize?: string
+          txIndex?: number | null
           type?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "Trade_tokenAddress_fkey"
-            columns: ["tokenAddress"]
-            isOneToOne: false
-            referencedRelation: "TokenInfo"
-            referencedColumns: ["address"]
-          },
-        ]
+        Relationships: []
       }
       Transfer: {
         Row: {
@@ -245,6 +232,7 @@ export type Database = {
           tokenAddress: string
           totalSupply: string
           toTokenBalance: string
+          txIndex: number | null
         }
         Insert: {
           amount: string
@@ -258,6 +246,7 @@ export type Database = {
           tokenAddress: string
           totalSupply: string
           toTokenBalance: string
+          txIndex?: number | null
         }
         Update: {
           amount?: string
@@ -271,6 +260,7 @@ export type Database = {
           tokenAddress?: string
           totalSupply?: string
           toTokenBalance?: string
+          txIndex?: number | null
         }
         Relationships: []
       }

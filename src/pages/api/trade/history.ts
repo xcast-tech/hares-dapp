@@ -17,7 +17,8 @@ export default async function handler(
     .eq("tokenAddress", address as string)
     .eq("isGraduate", 0)
     .gt("timestamp", from ? Math.floor(numberFrom / 1000) : 0)
-    .order("timestamp", { ascending: true });
+    .order("timestamp", { ascending: true })
+    .order("txIndex", { ascending: true })
 
   const { data: graduateTrade, error: error2 } = await supabaseClient
     .from("Trade")
@@ -27,6 +28,7 @@ export default async function handler(
     .eq("tokenAddress", address as string)
     .eq("isGraduate", 1)
     .order("timestamp", { ascending: true })
+    .order("txIndex", { ascending: true })
     .maybeSingle();
 
   if (error1 || error2) {

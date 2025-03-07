@@ -136,6 +136,7 @@ async function handleTokenTransfer(row: Database["public"]["Tables"]["Event"]["R
       totalSupply: args.totalSupply,
       toTokenBalance: args.toTokenBalance,
       timestamp: row.timestamp,
+      txIndex: row.txIndex,
     },
     {
       onConflict: "event",
@@ -178,6 +179,7 @@ async function handleTokenBuy(row: Database["public"]["Tables"]["Event"]["Row"])
       trueOrderSize: args.tokensBought,
       type: 0,
       timestamp: row.timestamp,
+      txIndex: row.txIndex,
     },
     {
       onConflict: "event",
@@ -226,6 +228,7 @@ async function handleTokenSell(row: Database["public"]["Tables"]["Event"]["Row"]
       trueOrderSize: args.tokensSold,
       type: 1,
       timestamp: row.timestamp,
+      txIndex: row.txIndex,
     },
     {
       onConflict: "event",
