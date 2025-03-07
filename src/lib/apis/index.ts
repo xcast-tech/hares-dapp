@@ -1,4 +1,4 @@
-import { Address, Commitment } from "../types";
+import { Address, Commitment, LatelyTrade, Trade } from "../types";
 import { request } from "./request";
 
 export const uploadFile = async (file: File) => {
@@ -106,7 +106,20 @@ export const getTokenTopHoldersApi = async (data: HistoryListApiData) => {
   return res?.data;
 };
 
-export const getLatelyTradesApi = async (lastId: number | string) => {
+export const getLatelyTradesApi = async (
+  lastId: number | string
+): Promise<{
+  code: number;
+  data: {
+    list: LatelyTrade[];
+    tokenList: {
+      name: string;
+      symbol: string;
+      address: string;
+      metadata: string;
+    }[];
+  };
+}> => {
   const res = await request("/api/trade/lately", {
     method: "get",
     params: { lastId },

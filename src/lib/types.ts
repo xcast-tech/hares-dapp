@@ -55,14 +55,21 @@ export type Trade = {
   trueEth: string;
   isGraduate: boolean;
   timestamp: number;
+  tokenAddress: Address;
 };
 
 export type LatelyTrade = Trade & {
-  tokenAddress: {
+  token: {
     name: string;
-    symbol: string;
+    ticker: string;
     address: Address;
-    image: string;
+    metadata: {
+      image?: string;
+      desc?: string;
+      twitter?: string;
+      telegram?: string;
+      website?: string;
+    };
   };
 };
 

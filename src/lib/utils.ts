@@ -504,3 +504,24 @@ export function calcSalt(
     }
   }
 }
+
+export const parseMetadata = (metadata: string) => {
+  try {
+    const {
+      image = "",
+      desc = "",
+      twitter = "",
+      telegram = "",
+      website = "",
+    } = JSON.parse(metadata);
+    return {
+      image,
+      desc,
+      twitter,
+      telegram,
+      website,
+    };
+  } catch {
+    return {};
+  }
+};

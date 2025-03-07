@@ -1,9 +1,17 @@
-import React, { FC, useEffect, useRef, useState, useCallback } from "react";
-import { LatelyTrade } from "@/lib/types";
+import React, {
+  FC,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
+import { LatelyTrade, Trade } from "@/lib/types";
 import { MarqueeTokenCard } from "./card";
 import SeamlessMarquee from "@/components/common/marquee";
 import { getLatelyTradesApi } from "@/lib/apis";
 import styled from "@emotion/styled";
+import { parseMetadata } from "@/lib/utils";
 
 export function removeDuplicateTrades(trades: LatelyTrade[]) {
   const seen = new Set();
@@ -14,21 +22,59 @@ export function removeDuplicateTrades(trades: LatelyTrade[]) {
   });
 }
 
+type Token = {
+  name: string;
+  symbol: string;
+  address: string;
+  metadata: string;
+};
+
+export function removeDuplicateTokens(tokens: Token[]) {
+  const seen = new Set();
+  return tokens.filter((token) => {
+    const duplicate = seen.has(token.address);
+    seen.add(token.address);
+    return !duplicate;
+  });
+}
+
 interface TradesMarqueeProps {
   speed?: number;
 }
 
 export const TradesMarquee: FC<TradesMarqueeProps> = ({ speed = 3 }) => {
   const [trades, setTrades] = useState<LatelyTrade[]>([]);
+  const [tokens, setTokens] = useState<Token[]>([]);
   const lastIdRef = useRef(0);
 
   const fetchLatelyTrades = async () => {
     const res = await getLatelyTradesApi(lastIdRef.current);
     if (res.code === 0) {
       if (res.data.list.length > 0) {
+        const _tokens = removeDuplicateTokens([
+          ...res.data.tokenList,
+          ...tokens,
+        ]);
         setTrades((prev) =>
-          removeDuplicateTrades([...res.data.list, ...prev]).slice(0, 10)
+          removeDuplicateTrades([...res.data.list, ...prev])
+            .slice(0, 10)
+            .map((trade) => {
+              const token = _tokens.find(
+                (t) => t.address === trade.tokenAddress
+              );
+              const tokenMetadata = parseMetadata(token?.metadata || "");
+              return {
+                ...trade,
+                token: {
+                  name: token?.name || "",
+                  ticker: token?.symbol || "",
+                  address: token?.address as `0x${string}`,
+                  metadata: tokenMetadata,
+                },
+              };
+            })
         );
+        setTokens(_tokens);
         lastIdRef.current = res.data.list[0].id;
       }
     }

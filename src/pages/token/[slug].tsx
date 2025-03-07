@@ -12,7 +12,6 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Info } from "@/components/info";
 import { getTokenTopHoldersApi } from "@/lib/apis";
 import { Address, IToken, TopHolder, Trade } from "@/lib/types";
 import {
@@ -26,6 +25,7 @@ import {
   getEthBuyQuote,
   getTokenMarketCap,
   getTokenSellQuote,
+  parseMetadata,
   removeDuplicateTrades,
 } from "@/lib/utils";
 import { useHaresContract } from "@/hooks/useHaresContract";
@@ -78,12 +78,8 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
     const { slug } = params;
     const data = await getTokenDetail(slug.toLowerCase());
     if (data) {
-      console.log("--- data", data);
-      const tokenUri = data.tokenUri;
+      const metadata = parseMetadata(data?.metadata ?? "");
       try {
-        const metadata = tokenUri
-          ? await fetch(tokenUri).then((res) => res.json())
-          : {};
         return {
           props: {
             ...metadata,

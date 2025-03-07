@@ -1,7 +1,7 @@
-import { formatDecimalNumber, maskAddress } from "@/lib/utils";
+import { formatDecimalNumber, maskAddress, parseMetadata } from "@/lib/utils";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { LatelyTrade } from "@/lib/types";
+import { LatelyTrade, Trade } from "@/lib/types";
 import styled from "@emotion/styled";
 import Avatar from "boring-avatars";
 import { formatEther } from "viem";
@@ -14,9 +14,10 @@ interface TradeProps {
 export function MarqueeTokenCard({ trade }: TradeProps) {
   const isSell = trade.type === 1;
   const amount = formatDecimalNumber(formatEther(BigInt(trade.trueEth)));
+
   return (
     <>
-      <StyledLink href={`/token/${trade.tokenAddress.address}`}>
+      <StyledLink href={`/token/${trade.token.address}`}>
         <StyledMarqueeTokenCard>
           <Avatar className="wallet-avatar" name={trade.from} variant="beam" />
           <StyledTokenAddress>{maskAddress(trade.from)}</StyledTokenAddress>
@@ -26,9 +27,9 @@ export function MarqueeTokenCard({ trade }: TradeProps) {
           <StyledBNBReceived>
             {amount} {mainChain.nativeCurrency.symbol} of
           </StyledBNBReceived>
-          <StyledTokenPic src={trade.tokenAddress.image} alt="" />
+          <StyledTokenPic src={trade.token.metadata.image} alt="" />
           <StyledTokenName>
-            {trade.tokenAddress.name}(${trade.tokenAddress.symbol})
+            {trade.token.name}(${trade.token.ticker})
           </StyledTokenName>
         </StyledMarqueeTokenCard>
       </StyledLink>

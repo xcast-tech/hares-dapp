@@ -11,7 +11,7 @@ export default async function handler(
   const { data, error: error1 } = await supabaseClient
     .from("Trade")
     .select(
-      "id,from,type,tokenAddress(name,symbol,address,tokenUri),recipient,trueOrderSize,totalSupply,trueEth,timestamp"
+      "id,from,type,tokenAddress,recipient,trueOrderSize,totalSupply,trueEth,timestamp"
     )
     .eq("isGraduate", 0)
     .gt("id", lastId as string)
@@ -25,12 +25,35 @@ export default async function handler(
     });
   }
 
-  const list = data;
+  const list = data || [];
+  const tokenAddressList = Array.from(
+    new Set(list.map((item) => item.tokenAddress))
+  ) as string[];
+
+  const tokenList = (
+    await Promise.all(
+      tokenAddressList.map(async (address) => {
+        if (!address) return null;
+        const { data: token, error: error2 } = await supabaseClient
+          .from("Token")
+          .select("name,symbol,address,metadata")
+          .eq("address", address)
+          .single();
+
+        if (error2) {
+          return null;
+        }
+
+        return token;
+      })
+    )
+  ).filter((i) => !!i);
 
   res.json({
     code: 0,
     data: {
       list,
+      tokenList,
     },
   });
 }
