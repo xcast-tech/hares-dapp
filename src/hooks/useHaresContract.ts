@@ -30,7 +30,7 @@ export function useHaresContract() {
     const res = await publicClient?.waitForTransactionReceipt({
       hash: tx,
     });
-    return predictedAddress;
+    return predictedAddress.toLowerCase();
   }
 
   async function getCurrentSupply(token: Address) {
