@@ -107,6 +107,7 @@ export async function getStaticProps({ params }: { params: { slug: string } }) {
 
 export default function Token(props: IToken) {
   const detail = props;
+  const router = useRouter();
   const { ethPrice } = useAppContext();
   const { buy, simulateBuy, sell, simulateSell, getTokenBalance } =
     useHaresContract();
@@ -117,6 +118,7 @@ export default function Token(props: IToken) {
     handleSign,
     isCorrectChain,
     handleSwitchNetwork,
+    isBABValidated,
   } = useGlobalCtx();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const publicClient = usePublicClient();
@@ -418,12 +420,18 @@ export default function Token(props: IToken) {
                   if (!isCorrectChain) {
                     await handleSwitchNetwork();
                   }
+                  if (!isBABValidated) {
+                    router.push("/about");
+                    return;
+                  }
                   handleBuy();
                 }}
                 isLoading={trading}
               >
                 {!address || shouldSign ? (
                   <span>Sign In First</span>
+                ) : !isBABValidated ? (
+                  "Mint BABT first"
                 ) : (
                   <span>{trading ? "Trading..." : "Place trade"}</span>
                 )}

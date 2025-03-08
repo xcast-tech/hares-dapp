@@ -91,7 +91,6 @@ export const TVChartContainer = ({
       });
 
       return () => {
-        console.log("---remove chart---");
         if (tvWidgetRef.current) {
           tvWidgetRef.current.remove();
         }

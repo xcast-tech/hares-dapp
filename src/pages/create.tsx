@@ -72,6 +72,7 @@ const Create = () => {
     isActionReady,
     isCorrectChain,
     handleSwitchNetwork,
+    isBABValidated,
   } = useGlobalCtx();
 
   const [name, setName] = useState("");
@@ -140,7 +141,7 @@ const Create = () => {
 
   async function loopToken({ address }: { address?: string }) {
     if (!address) {
-      return
+      return;
     }
     const res = await tokenApi({ address });
     if (res?.data?.tokenUri) {
@@ -186,6 +187,11 @@ const Create = () => {
       await handleSwitchNetwork();
     }
 
+    if (!isBABValidated) {
+      router.push("/about");
+      return;
+    }
+
     try {
       setLoading(true);
       // const metadata = await handleUploadMetadata();
@@ -199,7 +205,7 @@ const Create = () => {
 
       if (!address) {
         toast("Failed to get token address");
-        return
+        return;
       }
       await loopToken({ address });
     } catch (error) {
@@ -453,6 +459,8 @@ const Create = () => {
               >
                 {!isActionReady ? (
                   <span>Sign In First</span>
+                ) : !isBABValidated ? (
+                  "Mint BABT first"
                 ) : (
                   <span>create coin</span>
                 )}

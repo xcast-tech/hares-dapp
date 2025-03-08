@@ -82,7 +82,7 @@ export const TradesMarquee: FC<TradesMarqueeProps> = ({ speed = 3 }) => {
 
   useEffect(() => {
     fetchLatelyTrades();
-    const intervalId = setInterval(fetchLatelyTrades, 5000);
+    const intervalId = setInterval(fetchLatelyTrades, 10000);
 
     return () => clearInterval(intervalId);
   }, []);

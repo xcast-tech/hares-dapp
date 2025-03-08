@@ -21,6 +21,7 @@ import {
 } from "@rainbow-me/rainbowkit";
 import { loginSignText, mainChain } from "@/lib/constant";
 import { isMobile as checkIsMobile } from "@/lib/utils";
+import { useHaresContract } from "@/hooks/useHaresContract";
 
 type ProfileType = {
   address: string;
@@ -38,11 +39,13 @@ interface GlobalContextType {
   isCorrectChain: boolean;
   isMobile: boolean;
   handleSwitchNetwork: () => Promise<void>;
+  isBABValidated: boolean;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
 
 export const GlobalProvider = ({ children }: { children: ReactNode }) => {
+  const { validate } = useHaresContract();
   const { openConnectModal } = useConnectModal();
   const { switchChainAsync } = useSwitchChain();
   const { signMessageAsync } = useSignMessage();
@@ -54,6 +57,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [shouldSign, setShouldSign] = useState(false);
   const [tradingLoading, setTradingLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isBABValidated, setIsBABValidated] = useState(false);
 
   const isCorrectChain = useMemo(() => {
     return chain?.id === mainChain.id;
@@ -158,6 +162,11 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       handleSign();
       return;
     }
+    if (address && isConnected) {
+      validate?.(address).then((res) => {
+        setIsBABValidated(res);
+      });
+    }
   }, [isConnected, address, profile]);
 
   useEffect(() => {
@@ -184,6 +193,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         setTradingLoading,
         handleSwitchNetwork,
         isMobile,
+        isBABValidated,
       }}
     >
       {children}
