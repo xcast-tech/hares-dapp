@@ -187,11 +187,6 @@ const Create = () => {
       await handleSwitchNetwork();
     }
 
-    if (!isBABValidated) {
-      router.push("/about");
-      return;
-    }
-
     try {
       setLoading(true);
       // const metadata = await handleUploadMetadata();
@@ -443,8 +438,14 @@ const Create = () => {
                         <span>{tokenSymbol}</span>
                       </StyledDevBuyEndContent>
                     }
-                    placeholder={`Amount in ${tokenSymbol}`}
+                    placeholder={
+                      !isBABValidated
+                        ? "Get BAB token to use Dev Buy"
+                        : `Amount in ${tokenSymbol}`
+                    }
                     value={devBuyAmount}
+                    disabled={!isBABValidated}
+                    disabledLink="/about"
                     onChange={(e) => setDevBuyAmount(e.target.value)}
                   />
                 </StyledAccordionItemSection>
@@ -459,8 +460,6 @@ const Create = () => {
               >
                 {!isActionReady ? (
                   <span>Sign In First</span>
-                ) : !isBABValidated ? (
-                  "Mint BABT first"
                 ) : (
                   <span>create coin</span>
                 )}
