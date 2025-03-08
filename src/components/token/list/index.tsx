@@ -4,6 +4,7 @@ import {
   formatThousandNumber,
   getTokenMarketCap,
   maskAddress,
+  parseMetadata,
 } from "@/lib/utils";
 import Image from "next/image";
 import dayjs from "dayjs";
@@ -27,6 +28,12 @@ interface TokenProps {
 function Token({ detail }: TokenProps) {
   const { isMobile } = useGlobalCtx();
   const { ethPrice } = useAppContext();
+
+  const metadata = useMemo(() => {
+    if (!detail?.metadata) return {};
+    return parseMetadata(detail.metadata);
+  }, [detail.metadata]);
+
   const marketCap = useMemo(() => {
     if (!ethPrice || !detail) return "-";
     return formatNumber(
@@ -38,28 +45,28 @@ function Token({ detail }: TokenProps) {
     return [
       {
         name: "twitter",
-        url: detail?.twitter || "",
+        url: metadata?.twitter || "",
         icon: <XIcon />,
       },
       {
         name: "telegram",
-        url: detail?.telegram || "",
+        url: metadata?.telegram || "",
         icon: <TGIcon />,
       },
       {
         name: "website",
-        url: detail?.website || "",
+        url: metadata?.website || "",
         icon: <WebsiteIcon />,
       },
     ].filter((item) => !!item.url);
-  }, [detail]);
+  }, [metadata]);
 
   return (
     <Link href={`/token/${detail?.address}`}>
       <StyledTokenCard>
         <StyledTokenCardPic>
           <StyledTokenCardPicContainer>
-            {detail?.image && <img src={detail?.image} alt="" />}
+            {metadata?.image && <img src={metadata?.image} alt="" />}
           </StyledTokenCardPicContainer>
         </StyledTokenCardPic>
         <StyledTokenContent>
@@ -68,7 +75,7 @@ function Token({ detail }: TokenProps) {
               {detail?.name}(${detail?.symbol})
             </StyledTokenName>
             <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
-            <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
+            <StyledTokenDesc>{metadata?.desc || "-"}</StyledTokenDesc>
           </StyledTokenInfo>
           <StyledTokenPublic>
             <StyledTokenMCA>MC: ${marketCap}</StyledTokenMCA>

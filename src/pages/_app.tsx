@@ -32,7 +32,7 @@ type AppPropsWithLayout = AppProps & {
 
 const inter = Inter({
   subsets: ["latin"], // 字体子集
-  weight: ["400", "500", "600", "700"], // 字体粗细
+  weight: ["400", "500", "600", "700", "900"], // 字体粗细
 });
 
 const climateCrisis = Climate_Crisis({

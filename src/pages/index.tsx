@@ -136,7 +136,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>hares.ai</title>
+        <title>BAB.Fun</title>
       </Head>
       <StyledHome>
         <StyledHomeBanner>

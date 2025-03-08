@@ -128,7 +128,9 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
         <StyledHeaderLeft>
           <Link href="/">
             <StyledHeaderLogo>
-              <LogoIcon />
+              {/* <LogoIcon /> */}
+              {/* LOGO */}
+              BAB.Fun
             </StyledHeaderLogo>
           </Link>
           <StyledHeaderNavs>
@@ -407,10 +409,15 @@ const StyledHeaderLeft = styled.div`
 `;
 
 const StyledHeaderLogo = styled.div`
-  width: 80px;
+  // width: 80px;
   color: #fcd535;
+  font-size: 28px;
+  font-style: italic;
+  font-weight: 900;
+  line-height: 150%; /* 42px */
+  letter-spacing: -0.56px;
   @media screen and (max-width: 1024px) {
-    width: 70px;
+    // width: 70px;
   }
 `;
 

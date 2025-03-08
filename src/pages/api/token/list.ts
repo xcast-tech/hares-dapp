@@ -22,16 +22,27 @@ export default async function handler(
   const pageSize = +(req.query.pageSize || 10);
   const from = (page - 1) * pageSize;
 
-  const { data: list, error: error1 } = await supabaseClient.rpc(
-    "get_token_list",
-    {
-      p_search: search,
-      p_offset: from,
-      p_limit: pageSize,
-      p_sort: sort,
-      p_direction: direction,
-    }
-  );
+  const { data: list, error: error1 } = await supabaseClient
+    .from("Token")
+    .select(
+      "id,name,symbol,address,totalSupply,creatorAddress,isGraduate,tokenUri,metadata"
+    )
+    .or(
+      `name.ilike.%${search}%,symbol.ilike.%${search}%,address.ilike.%${search}%`
+    )
+    .order(sort, { ascending: direction === "asc" })
+    .range(from, from + pageSize - 1)
+    .limit(pageSize);
+  // const { data: list, error: error1 } = await supabaseClient.rpc(
+  //   "get_token_list",
+  //   {
+  //     p_search: search,
+  //     p_offset: from,
+  //     p_limit: pageSize,
+  //     p_sort: sort,
+  //     p_direction: direction,
+  //   }
+  // );
 
   const { error: error2, count } = await supabaseClient
     .from("Token")

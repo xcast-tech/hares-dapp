@@ -729,7 +729,7 @@ export default function Token(props: IToken) {
   return (
     <>
       <Head>
-        <title>{`${detail?.symbol} | hares.ai`}</title>
+        <title>{`${detail?.symbol} | BAB.Fun`}</title>
       </Head>
       <StyledHomeTool>
         <TradesMarquee />

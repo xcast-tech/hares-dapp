@@ -29,6 +29,7 @@ export interface IToken {
   symbol: string;
   totalSupply: string;
   tokenUri: string;
+  metadata: string;
   image: string;
   desc: string;
   twitter: string;
