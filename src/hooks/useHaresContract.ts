@@ -158,7 +158,7 @@ export function useHaresContract() {
     token: Address,
     eth: number,
     slipage: number,
-    onTxSend: (tx: string) => void = () => {}
+    onTxSend: (tx: string) => void = () => { }
   ) {
     if (!address) {
       return;
@@ -244,7 +244,7 @@ export function useHaresContract() {
     token: Address,
     tokenToSell: number,
     slipage: number,
-    onTxSend: (tx: string) => void = () => {}
+    onTxSend: (tx: string) => void = () => { }
   ) {
     if (!address) {
       return;
@@ -332,7 +332,7 @@ export function useHaresContract() {
       return false;
     }
     const result = await publicClient.readContract({
-      address: "0xb4C4f1E74bdA0Cc587EC7E314eA34cE07Dbe0015",
+      address: contractAddress.BABTValidatorAddress,
       abi: ABIs.HaresValidatorAbi,
       functionName: "validate",
       args: [address, BigInt(0), zeroHash],
