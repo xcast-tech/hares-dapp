@@ -13,7 +13,7 @@ import {
 import { debounce } from "lodash-es";
 import Head from "next/head";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IToken } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import styled from "@emotion/styled";
@@ -31,8 +31,8 @@ export default function Home() {
   const [list, setList] = useState<IToken[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const paginationDomRef = useRef<HTMLDivElement>(null);
-  const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
+  // const paginationDomRef = useRef<HTMLDivElement>(null);
+  // const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
   const [end, setEnd] = useState(false);
   const [sort, setSort] = useState("created_timestamp");
 
@@ -53,6 +53,16 @@ export default function Home() {
     },
   ];
 
+  const handleFetchMore = useCallback(async () => {
+    if (loading || end) return;
+    return fetchList({
+      sort,
+      search,
+      page: page + 1,
+      pageSize,
+    });
+  }, [loading, end, page, pageSize, sort, search]);
+
   async function fetchList(data: TokenListApiData) {
     setLoading(true);
 
@@ -61,8 +71,11 @@ export default function Home() {
 
       const currentPageList = res?.data?.list ?? [];
 
-      const newList = [...list, ...currentPageList];
-      setList(newList);
+      if (data.page === 1) {
+        setList(currentPageList);
+      } else {
+        setList((prev) => [...prev, ...currentPageList]);
+      }
       setPage(res?.data?.page);
 
       const end = currentPageList.length < pageSize;
@@ -128,12 +141,18 @@ export default function Home() {
 
   useEffect(() => {
     setEnd(false);
+    setPage(1);
     fetchList({
       sort,
       search,
       page: 1,
       pageSize,
     });
+    return () => {
+      setList([]);
+      setEnd(false);
+      setPage(1);
+    };
   }, [sort, search]);
 
   return (
@@ -214,18 +233,7 @@ export default function Home() {
         </StyledHomeTool>
 
         <StyledHomeContent>
-          <InfiniteScroll
-            fetchMoreData={async () => {
-              if (loading || end) return;
-              return fetchList({
-                sort,
-                search,
-                page: page + 1,
-                pageSize,
-              });
-            }}
-            hasMore={!end}
-          >
+          <InfiniteScroll fetchMoreData={handleFetchMore} hasMore={!end}>
             <>
               {list?.length ? (
                 <TokenList list={list} />

@@ -226,8 +226,6 @@ export function getKChartData(
 }
 
 export function getTokenMarketCap(totalSupply: bigint, ethPrice: number) {
-  console.log("totalSupply", totalSupply);
-  console.log("ethPrice", ethPrice);
   const price =
     (Number(getTokenSellQuote(Math.min(Number(totalSupply), 8e26) / 1e18, 1)) /
       1e18) *
