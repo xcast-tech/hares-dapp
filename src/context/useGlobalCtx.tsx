@@ -161,7 +161,10 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     if (!isConnected || !address || !profile) return;
     if (profile.address?.toLowerCase() !== address.toLowerCase()) {
       setShouldSign(true);
-      handleSign();
+      // auto sign on web; manual sign on mobile
+      if (!isMobile) {
+        handleSign();
+      }
       return;
     }
     if (address && isConnected) {
@@ -169,7 +172,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         setIsBABValidated(res);
       });
     }
-  }, [isConnected, address, profile]);
+  }, [isConnected, address, profile, isMobile]);
 
   useEffect(() => {
     fetchProfile();
