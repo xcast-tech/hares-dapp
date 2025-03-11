@@ -3,6 +3,8 @@ import { setEventHandled } from "./model";
 import { supabaseClient } from "./supabase";
 import { Database } from "./supabase/supabase";
 import { extractMetadata, getTokenCreateEvent, getTokenEvents, getTokenTotalSupply } from "./third-party";
+import { chain } from "lodash-es";
+import { mainChain } from "./constant";
 
 export function debugLog(msg: any, level: "info" | "warn" | "error" = "info") {
   const logLevel = process.env.LOG_LEVEL ? JSON.parse(process.env.LOG_LEVEL!) : ["info", "warn", "error"];
@@ -48,9 +50,10 @@ export async function syncEvents(from: number, to: number) {
       timestamp: e.timeStamp,
       topic: e.eventName,
       txIndex: e.txIndex,
+      chain: mainChain.id
     })),
     {
-      onConflict: "topic,hash,data",
+      onConflict: "topic,hash,data,chain",
     }
   );
 
@@ -107,6 +110,7 @@ async function handleTokenCreated(row: Database["public"]["Tables"]["Event"]["Ro
       metadata,
       created_timestamp: row.timestamp,
       updated_timestamp: row.timestamp,
+      chain: row.chain
     },
     {
       onConflict: "createEvent",
@@ -142,6 +146,7 @@ async function handleTokenTransfer(row: Database["public"]["Tables"]["Event"]["R
       toTokenBalance: args.toTokenBalance,
       timestamp: row.timestamp,
       txIndex: row.txIndex,
+      chain: row.chain
     },
     {
       onConflict: "event",
@@ -185,6 +190,7 @@ async function handleTokenBuy(row: Database["public"]["Tables"]["Event"]["Row"])
       type: 0,
       timestamp: row.timestamp,
       txIndex: row.txIndex,
+      chain: row.chain
     },
     {
       onConflict: "event",
@@ -234,6 +240,7 @@ async function handleTokenSell(row: Database["public"]["Tables"]["Event"]["Row"]
       type: 1,
       timestamp: row.timestamp,
       txIndex: row.txIndex,
+      chain: row.chain
     },
     {
       onConflict: "event",

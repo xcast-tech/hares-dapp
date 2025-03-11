@@ -1,3 +1,4 @@
+import { mainChain } from "@/lib/constant";
 import { supabaseClient } from "@/lib/supabase";
 import { formatTimestampInSecond } from "@/lib/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -19,6 +20,7 @@ export default async function handler(
       "id,from,type,recipient,trueOrderSize,totalSupply,trueEth,timestamp"
     )
     .eq("tokenAddress", address as string)
+    .eq('chain', mainChain.id)
     // .eq("isGraduate", primary)
     .gt("timestamp", numberFrom)
     .lte("timestamp", numberTo)
@@ -28,6 +30,7 @@ export default async function handler(
   const { count } = await supabaseClient
     .from("Trade")
     .select("id", { count: "exact", head: true })
+    .eq('chain', mainChain.id)
     .eq("tokenAddress", address as string);
   // .eq("isGraduate", primary);
 

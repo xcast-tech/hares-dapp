@@ -5,7 +5,7 @@ import { decodeEventLog } from "viem";
   return this.toString();
 };
 import { isValidSignatureForStringBody } from "@/lib/utils";
-import { ABIs, EventTopic } from "@/lib/constant";
+import { ABIs, EventTopic, mainChain } from "@/lib/constant";
 import { Address } from "@/lib/types";
 import { supabaseClient } from "@/lib/supabase";
 import { handleEvents } from "@/lib/sync";
@@ -137,6 +137,7 @@ export default async function handler(
       timestamp: e.timeStamp,
       topic: e.eventName,
       txIndex: e.txIndex,
+      chain: mainChain.id
     })),
     {
       onConflict: "topic,hash,data",

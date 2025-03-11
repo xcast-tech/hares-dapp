@@ -26,15 +26,15 @@ async function syncDataWithRange(from: number, to: number) {
 
 async function main() {
   const config = await getConfig();
-  start = parseInt(config.indexer_progress);
-  step = parseInt(config.indexer_step);
+  start = parseInt(config[`indexer_progress_${mainChain.id}`]);
+  step = parseInt(config[`indexer_step_${mainChain.id}`]);
   while (true) {
     totalBlock = Number(await publicClient.getBlockNumber()) - 20;
     const endBlock = Math.min(start + step, totalBlock);
     try {
       await syncDataWithRange(start, endBlock);
       start = endBlock;
-      await updateConfig("indexer_progress", start.toString());
+      await updateConfig(`indexer_progress_${mainChain.id}`, start.toString());
     } catch (e: any) {
       console.log(e);
       debugLog(e.toString(), "error");
