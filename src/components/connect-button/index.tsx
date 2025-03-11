@@ -3,11 +3,11 @@ import styled from "@emotion/styled";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import DisconnectIcon from "~@/icons/disconnect.svg";
 import Avatar from "boring-avatars";
-import { useConnect, useConnectors } from "wagmi";
+import { useAccount, useConnect, useConnectors } from "wagmi";
 
 const WalletConnectButton = () => {
-  const { shouldSign, handleSign, isMobile } = useGlobalCtx();
-  const { connect, connectors } = useConnect();
+  const { signLoading, shouldSign, handleSign, isMobile } = useGlobalCtx();
+  const { isConnecting } = useAccount();
   return (
     <>
       {/* <ConnectButton /> */}
@@ -18,6 +18,7 @@ const WalletConnectButton = () => {
           openAccountModal,
           openChainModal,
           openConnectModal,
+          connectModalOpen,
           authenticationStatus,
           mounted,
         }) => {
@@ -47,34 +48,11 @@ const WalletConnectButton = () => {
                 <ConnectBtn
                   disabled={!ready}
                   onClick={() => {
-                    // const walletConnectConnector = connectors.find(
-                    //   (c) => c?.id === "walletConnect"
-                    // );
-                    // if (!walletConnectConnector) return;
-                    // console.log(
-                    //   "walletConnectConnector",
-                    //   walletConnectConnector,
-                    //   "connectors",
-                    //   connectors
-                    // );
-                    // connect(
-                    //   {
-                    //     connector: walletConnectConnector,
-                    //   },
-                    //   {
-                    //     onSuccess: () => {
-                    //       console.log("walletConnectConnector connected");
-                    //     },
-                    //     onError: (err) => {
-                    //       console.log("walletConnectConnector error", err);
-                    //       walletConnectConnector.disconnect();
-                    //     },
-                    //   }
-                    // );
+                    if (connectModalOpen) return;
                     openConnectModal();
                   }}
                 >
-                  Connect Wallet
+                  {isConnecting ? "Waiting for Connect..." : "Connect Wallet"}
                 </ConnectBtn>
               </ConnectBtnBoxInner>
             </ConnectBtnBox>
@@ -102,6 +80,7 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
 }) => {
   const {
     shouldSign,
+    signLoading,
     handleSign,
     isMobile,
     isActionReady,
@@ -118,6 +97,7 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
         <ConnectBtnBoxInner>
           <ProfileBtn
             onClick={async () => {
+              if (signLoading) return;
               if (!isActionReady) {
                 handleSign();
                 return;
@@ -132,7 +112,9 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
             {!isCorrectChain ? (
               <SignMessage>Wrong Network</SignMessage>
             ) : shouldSign ? (
-              <SignMessage>Sign Message</SignMessage>
+              <SignMessage>
+                {signLoading ? "Waiting for Sign..." : "Sign Message"}{" "}
+              </SignMessage>
             ) : (
               <>
                 {/* <BalanceText>{balance}</BalanceText> */}

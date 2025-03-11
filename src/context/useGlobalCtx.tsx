@@ -33,6 +33,7 @@ interface GlobalContextType {
   isLoading: boolean;
   shouldSign: boolean;
   tradingLoading: boolean;
+  signLoading: boolean;
   setTradingLoading: (loading: boolean) => void;
   handleSign: () => void;
   isActionReady: boolean;
@@ -90,6 +91,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       console.log("--- isCorrectChain", isCorrectChain);
       // switchNetwork;
       if (!isCorrectChain) {
+        setSignLoading(true);
         await switchChainAsync({
           chainId: mainChain.id,
         });
@@ -185,6 +187,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         address,
         profile,
         isLoading,
+        signLoading,
         isActionReady,
         isCorrectChain,
         shouldSign,
