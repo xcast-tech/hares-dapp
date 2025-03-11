@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { mainChain } from "@/lib/constant";
 import { supabaseClient } from "@/lib/supabase";
-import { pick } from "lodash-es";
+import { chain, pick } from "lodash-es";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,6 +22,7 @@ export default async function handler(
     .from("Token")
     .select("*")
     .eq("address", finalAddress)
+    .eq('chain', mainChain.id)
     .maybeSingle();
 
   if (tokenError) {

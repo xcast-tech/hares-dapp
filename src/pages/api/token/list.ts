@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { mainChain } from "@/lib/constant";
 import { supabaseClient } from "@/lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -28,6 +29,7 @@ export default async function handler(
     .select(
       "id,name,symbol,address,totalSupply,creatorAddress,isGraduate,tokenUri,metadata"
     )
+    .eq('chain', mainChain.id)
     .or(
       `name.ilike.%${search}%,symbol.ilike.%${search}%,address.ilike.%${search}%`
     )
@@ -48,6 +50,7 @@ export default async function handler(
   const { error: error2, count } = await supabaseClient
     .from("Token")
     .select("*", { count: "exact", head: true })
+    .eq('chain', mainChain.id)
     .or(
       `name.ilike.%${search}%,symbol.ilike.%${search}%,address.ilike.%${search}%`
     );

@@ -1,3 +1,4 @@
+import { mainChain } from "./constant";
 import { supabaseClient } from "./supabase";
 
 export async function getConfig() {
@@ -51,6 +52,7 @@ export async function getTokenDetail(address: string) {
     .from("Token")
     .select("*")
     .eq("address", address)
+    .eq('chain', mainChain.id)
     .maybeSingle();
 
   if (tokenError) {

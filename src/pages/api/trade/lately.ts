@@ -1,3 +1,4 @@
+import { mainChain } from "@/lib/constant";
 import { supabaseClient } from "@/lib/supabase";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -13,6 +14,7 @@ export default async function handler(
     .select(
       "id,from,type,tokenAddress,recipient,trueOrderSize,totalSupply,trueEth,timestamp"
     )
+    .eq('chain', mainChain.id)
     .eq("isGraduate", 0)
     .gt("id", lastId as string)
     .limit(10)
@@ -30,24 +32,18 @@ export default async function handler(
     new Set(list.map((item) => item.tokenAddress))
   ) as string[];
 
-  const tokenList = (
-    await Promise.all(
-      tokenAddressList.map(async (address) => {
-        if (!address) return null;
-        const { data: token, error: error2 } = await supabaseClient
-          .from("Token")
-          .select("name,symbol,address,metadata")
-          .eq("address", address)
-          .single();
+  const { data: tokenList, error: error2 } = await supabaseClient
+    .from("Token")
+    .select("name,symbol,address,metadata")
+    .eq('chain', mainChain.id)
+    .in("address", tokenAddressList.map(v => v.toLowerCase()))
 
-        if (error2) {
-          return null;
-        }
-
-        return token;
-      })
-    )
-  ).filter((i) => !!i);
+  if (error2) {
+    res.json({
+      code: 501,
+      data: [error2 && error2.message],
+    });
+  }
 
   res.json({
     code: 0,
