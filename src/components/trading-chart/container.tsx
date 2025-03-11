@@ -21,6 +21,7 @@ export type TVChartContainerProps = {
   name: string;
   pairIndex: number;
   token: `0x${string}`;
+  defaultTrades: Trade[];
   classNames?: {
     container: string;
   };
@@ -31,6 +32,7 @@ export const TVChartContainer = ({
   name,
   pairIndex,
   token,
+  defaultTrades,
   tradesCallBack,
 }: TVChartContainerProps) => {
   const chartContainerRef = useRef<HTMLDivElement>(
@@ -59,6 +61,7 @@ export const TVChartContainer = ({
           name,
           token,
           nativeTokenPrice: ethPrice,
+          defaultTrades,
           tradesCallBack,
         }),
         theme: "dark",

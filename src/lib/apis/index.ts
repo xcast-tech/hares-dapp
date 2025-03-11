@@ -126,3 +126,29 @@ export const getLatelyTradesApi = async (
   });
   return res?.data;
 };
+
+export async function fetchTradeDatas(
+  token: string,
+  from = 0,
+  to = 0,
+  limit = 20
+  // isGraduate = 0
+) {
+  const tradesRes = await fetch(
+    `/api/trade/history-data?address=${token}&from=${from}&to=${to}&limit=${limit}`
+  ).then((res) => res.json());
+
+  if (tradesRes.code !== 0) {
+    return {
+      list: [],
+      count: 0,
+      noData: true,
+    };
+  }
+
+  return tradesRes.data as {
+    list: Trade[];
+    noData: boolean;
+    count: number;
+  };
+}

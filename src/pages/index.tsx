@@ -24,6 +24,7 @@ import { TradesMarquee } from "@/components/token/marquee";
 import ReactiveCard from "@/components/common/reactive-card";
 import ShinyCard from "@/components/common/shiny";
 import DotsLoadingIcon from "~@/icons/dots-loading.svg";
+import InfiniteScroll from "@/components/common/infiniteScroll";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -88,40 +89,42 @@ export default function Home() {
       return;
     }
 
+    window.scrollTo({ top: 0 });
+
     setSort(newSort);
 
     setList([]);
   };
 
-  useEffect(() => {
-    if (!paginationDomRef.current) return;
-    const callback = (entries: IntersectionObserverEntry[]) => {
-      if (!end && !loading && entries[0].isIntersecting) {
-        fetchList({
-          sort,
-          search,
-          page: page + 1,
-          pageSize,
-        });
-      }
-    };
+  // useEffect(() => {
+  //   if (!paginationDomRef.current) return;
+  //   const callback = (entries: IntersectionObserverEntry[]) => {
+  //     if (!end && !loading && entries[0].isIntersecting) {
+  //       fetchList({
+  //         sort,
+  //         search,
+  //         page: page + 1,
+  //         pageSize,
+  //       });
+  //     }
+  //   };
 
-    intersectionObserverRef.current = new IntersectionObserver(callback);
-    intersectionObserverRef.current.observe(paginationDomRef.current!);
+  //   intersectionObserverRef.current = new IntersectionObserver(callback);
+  //   intersectionObserverRef.current.observe(paginationDomRef.current!);
 
-    return () => {
-      intersectionObserverRef.current?.disconnect();
-    };
-  }, [
-    loading,
-    end,
-    list,
-    page,
-    pageSize,
-    sort,
-    search,
-    paginationDomRef.current,
-  ]);
+  //   return () => {
+  //     intersectionObserverRef.current?.disconnect();
+  //   };
+  // }, [
+  //   loading,
+  //   end,
+  //   list,
+  //   page,
+  //   pageSize,
+  //   sort,
+  //   search,
+  //   paginationDomRef.current,
+  // ]);
 
   useEffect(() => {
     setEnd(false);
@@ -211,23 +214,40 @@ export default function Home() {
         </StyledHomeTool>
 
         <StyledHomeContent>
-          {list?.length ? (
-            <TokenList list={list} />
-          ) : (
-            end && (
-              <div className="pt-[160px] flex justify-center">
-                <Image width={120} height={120} src="search.svg" alt="" />
-              </div>
-            )
-          )}
+          <InfiniteScroll
+            fetchMoreData={async () => {
+              if (loading || end) return;
+              return fetchList({
+                sort,
+                search,
+                page: page + 1,
+                pageSize,
+              });
+            }}
+            hasMore={!end}
+          >
+            <>
+              {list?.length ? (
+                <TokenList list={list} />
+              ) : (
+                end &&
+                !list?.length && (
+                  <StyledNoData>
+                    <Image width={120} height={120} src="search.svg" alt="" />
+                  </StyledNoData>
+                )
+              )}
+              {loading && !list.length && (
+                <SkeletonTokenList list={Array(pageSize).fill({})} />
+              )}
+            </>
+          </InfiniteScroll>
 
-          {loading && <SkeletonTokenList list={Array(pageSize).fill({})} />}
-
-          {!end && !loading && (
+          {/* {!end && !loading && (
             <StyledPaginationBox ref={paginationDomRef}>
               <DotsLoadingIcon />
             </StyledPaginationBox>
-          )}
+          )} */}
         </StyledHomeContent>
       </StyledHome>
       {/* <div
@@ -452,6 +472,13 @@ const StyledHomeContent = styled.div`
     padding: 10px;
     min-height: calc(100vh - var(--header-h) - 100px);
   }
+`;
+
+const StyledNoData = styled.div`
+  padding: 100px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const StyledPaginationBox = styled.div`

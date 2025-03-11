@@ -15,6 +15,7 @@ import styled from "@emotion/styled";
 import TopHoldersIcon from "~@/icons/top-holders.svg";
 import DevTextIcon from "~@/icons/dev-text.svg";
 import styles from "./index.module.scss";
+// import InfiniteScroll from "../common/infiniteScroll";
 
 interface TopHoldersProps {
   list: TopHolder[];
@@ -63,44 +64,47 @@ export const TopHolders = ({
         <TopHoldersIcon />
         <span>Top Holders</span>
       </StyledTopHoldersHeader>
-      <Table
-        classNames={{
-          base: styles["table-base"],
-          table: styles["table"],
-          thead: styles["table-header"],
-          tbody: styles["table-body"],
-          th: styles["table-column"],
-          tr: styles["table-row"],
-          td: styles["table-cell"],
-        }}
-        removeWrapper
-        disableAnimation
-        isHeaderSticky
-        aria-label="Trade history"
-      >
-        <TableHeader>
-          <TableColumn key="address">Account</TableColumn>
-          <TableColumn key="balance">Balance</TableColumn>
-        </TableHeader>
-        <TableBody emptyContent="No transaction data.">
-          {list.map((item) => {
-            return (
-              <TableRow className={styles["table-row"]} key={item.address}>
-                {(columnKey) => (
-                  <TableCell className={styles["table-cell"]}>
-                    {renderCell(item, columnKey as keyof TopHolder)}
-                  </TableCell>
-                )}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+      <StyledHoldersContainer>
+        <Table
+          classNames={{
+            base: styles["table-base"],
+            table: styles["table"],
+            thead: styles["table-header"],
+            tbody: styles["table-body"],
+            th: styles["table-column"],
+            tr: styles["table-row"],
+            td: styles["table-cell"],
+          }}
+          removeWrapper
+          disableAnimation
+          isHeaderSticky
+          aria-label="Trade history"
+        >
+          <TableHeader>
+            <TableColumn key="address">Account</TableColumn>
+            <TableColumn key="balance">Balance</TableColumn>
+          </TableHeader>
+          <TableBody emptyContent="No transaction data.">
+            {list.map((item) => {
+              return (
+                <TableRow className={styles["table-row"]} key={item.address}>
+                  {(columnKey) => (
+                    <TableCell className={styles["table-cell"]}>
+                      {renderCell(item, columnKey as keyof TopHolder)}
+                    </TableCell>
+                  )}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </StyledHoldersContainer>
     </StyledTopHolders>
   );
 };
 
 const StyledTopHolders = styled.div`
+  flex: 1;
   width: 100%;
   padding: 16px 0;
   border-radius: 16px;
@@ -109,6 +113,7 @@ const StyledTopHolders = styled.div`
   flex-direction: column;
   gap: 16px;
   background: transparent;
+  overflow: hidden;
   @media screen and (max-width: 1024px) {
     border: none;
     border-radius: 0;
@@ -166,6 +171,14 @@ const StyledAccountChip = styled.div`
   height: 14px;
   > svg {
     width: 22px;
+  }
+`;
+
+const StyledHoldersContainer = styled.div`
+  width: 100%;
+  @media screen and (min-width: 1024px) {
+    flex: 1;
+    overflow-y: scroll;
   }
 `;
 

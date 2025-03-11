@@ -15,12 +15,14 @@ import styled from "@emotion/styled";
 interface TradingChartProps {
   isGraduated: boolean;
   param: coinInfo;
+  defaultTrades: Trade[];
   tradesCallBack: (trades: Trade[]) => void;
 }
 
 export const TradingChart: React.FC<TradingChartProps> = ({
   isGraduated,
   param,
+  defaultTrades,
   tradesCallBack,
 }) => {
   const [isScriptReady, setIsScriptReady] = useState(false);
@@ -49,6 +51,7 @@ export const TradingChart: React.FC<TradingChartProps> = ({
           name={param.name}
           pairIndex={10}
           token={param.token}
+          defaultTrades={defaultTrades}
           tradesCallBack={tradesCallBack}
         />
       )}

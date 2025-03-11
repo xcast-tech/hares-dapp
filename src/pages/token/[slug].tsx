@@ -10,9 +10,11 @@ import {
   ModalFooter,
   ModalHeader,
   useDisclosure,
+  Pagination,
+  PaginationItem,
 } from "@heroui/react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { getTokenTopHoldersApi } from "@/lib/apis";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { fetchTradeDatas, getTokenTopHoldersApi } from "@/lib/apis";
 import { Address, IToken, TopHolder, Trade } from "@/lib/types";
 import {
   cn,
@@ -57,9 +59,8 @@ import { isMobile } from "@/lib/utils";
 import DrawerBottom from "@/components/common/drawer/bottom";
 import { useRouter } from "next/router";
 import { usePathname, useSearchParams } from "next/navigation";
-import { debounce } from "lodash-es";
-
-console.log("- styles:", styles);
+import { debounce, set } from "lodash-es";
+import InfiniteScroll from "@/components/common/infiniteScroll";
 
 const TabKeys = {
   buy: "buy",
@@ -135,7 +136,15 @@ export default function Token(props: IToken) {
   const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt(0));
   const [slippage, setSlippage] = useState("20");
   const [editSlippage, setEditSlippage] = useState("");
+  const [noMoreHistory, setNoMoreHistory] = useState(false);
   const [historyList, setHistoryList] = useState<Trade[]>([]);
+  const [historyParams, setHistoryParams] = useState({
+    from: 0,
+    limit: 20,
+    total: 0,
+  });
+  const [historyDataMounted, setHistoryDataMounted] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const [simulateBuying, setSimulateBuying] = useState(false);
   const [simulateBuyTokens, setSimulateBuyTokens] = useState<bigint>(BigInt(0));
@@ -195,30 +204,42 @@ export default function Token(props: IToken) {
     },
   ];
 
-  function handleNewTrade(trades: Trade[]) {
+  const handleNewTrade = useCallback(_handleNewTrade, [historyList]);
+
+  function _handleNewTrade(trades: Trade[]) {
     console.log("--- new handleNewTrade", trades);
     if (trades?.length > 0) {
-      const newTrade = trades[trades.length - 1];
-      if (trades.length === 1) {
-        if (Number(trades[0].totalSupply) > primaryMarketSupply) {
-          setIsGraduate(1);
-        }
-        setHistoryList((v) => removeDuplicateTrades([...trades, ...v]));
-      } else {
-        setHistoryList((v) =>
-          removeDuplicateTrades([...v, ...trades].sort((a, b) => b.id - a.id))
-        );
+      const _trades = removeDuplicateTrades(
+        [...trades, ...historyList].sort((a, b) => b.id - a.id)
+      );
+      const latelyTrade = _trades[0];
+      const lastTrade = _trades[_trades.length - 1];
+
+      // check isGraduate
+      if (Number(latelyTrade.totalSupply) > primaryMarketSupply) {
+        setIsGraduate(1);
       }
-      setTotalSupply(newTrade.totalSupply);
+      setHistoryList(_trades);
+      setTotalSupply(latelyTrade.totalSupply);
+      setHistoryParams((v) => ({
+        ...v,
+        from: lastTrade.timestamp,
+      }));
 
       fetchTopHolders(ca);
     }
   }
 
   async function handleSimulateBuy(value: string) {
-    if (!address) return 0;
+    if (!address) {
+      setSimulateBuying(false);
+      return 0;
+    }
     const amount = +(value || "");
-    if (amount <= 0) return 0;
+    if (amount <= 0) {
+      setSimulateBuying(false);
+      return 0;
+    }
     const res = await simulateBuy(ca, amount, +slippage / 100);
     setSimulateBuying(false);
     setSimulateBuyTokens(res?.result || BigInt(0));
@@ -227,9 +248,15 @@ export default function Token(props: IToken) {
   const handleSimulateBuyDebounce = debounce(handleSimulateBuy, 1000);
 
   async function handleSimulateSell(value: string) {
-    if (!address) return 0;
+    if (!address) {
+      setSimulateSelling(false);
+      return 0;
+    }
     const amount = +(value || "");
-    if (amount <= 0) return 0;
+    if (amount <= 0) {
+      setSimulateSelling(false);
+      return 0;
+    }
     try {
       const res = await simulateSell(ca, amount, +slippage / 100);
       console.log("handleSimulateSell res", res);
@@ -314,6 +341,41 @@ export default function Token(props: IToken) {
     const res = await getTokenTopHoldersApi({ address });
     setTopHolders(res?.data?.list ?? []);
   }
+
+  async function fetchHistoryData(address = ca, from = 0, to = 0, limit = 20) {
+    if (historyLoading || noMoreHistory) return;
+    setHistoryLoading(true);
+    const res = await fetchTradeDatas(address, from, to, limit);
+    const _from =
+      res.list.length > 0 ? res.list[res.list.length - 1].timestamp : 0;
+
+    setHistoryParams((v) => ({
+      ...v,
+      from: _from,
+      limit: 20,
+      total: res.count || v.total,
+    }));
+    setNoMoreHistory(res.noData);
+    setHistoryLoading(false);
+    return res;
+  }
+
+  useEffect(() => {
+    // initial history data
+    if (ca) {
+      setHistoryDataMounted(false);
+      // get the lately 1000 trade records
+      const limit = 1000;
+      fetchHistoryData(ca, 0, 0, limit)
+        .then((res) => {
+          if (!res) return;
+          setHistoryList(res.list);
+        })
+        .finally(() => {
+          setHistoryDataMounted(true);
+        });
+    }
+  }, [ca]);
 
   const tradeComponent = (
     <StyledActionContainer>
@@ -479,17 +541,13 @@ export default function Token(props: IToken) {
                         //   return;
                         // }
                         const balance = await fetchTokenBalance(ca, address!);
-                        const amount =
-                          option.value === 1
-                            ? formatEther(balance)
-                            : formatChillDecimalNumber(
-                                formatEther(
-                                  (balance * BigInt(option.value * 100)) /
-                                    BigInt(100)
-                                ),
-                                0,
-                                4
-                              );
+                        const amount = formatChillDecimalNumber(
+                          formatEther(
+                            (balance * BigInt(option.value * 100)) / BigInt(100)
+                          ),
+                          0,
+                          4
+                        );
                         setSellInputValue(amount);
                         setSimulateSelling(true);
                         return handleSimulateSell(amount);
@@ -769,19 +827,24 @@ export default function Token(props: IToken) {
                 ethPrice={ethPrice}
                 onNewTrade={handleNewTrade}
               /> */}
-                <TradingChart
-                  isGraduated={isGraduate === 1}
-                  param={{
-                    name: detail.name,
-                    ticker: detail.symbol,
-                    creator: detail.creatorAddress,
-                    url: detail.website,
-                    reserveOne: 1,
-                    reserveTwo: 1,
-                    token: detail.address as `0x${string}`,
-                  }}
-                  tradesCallBack={handleNewTrade}
-                />
+                {!historyDataMounted ? (
+                  <div>loading...</div>
+                ) : (
+                  <TradingChart
+                    isGraduated={isGraduate === 1}
+                    param={{
+                      name: detail.name,
+                      ticker: detail.symbol,
+                      creator: detail.creatorAddress,
+                      url: detail.website,
+                      reserveOne: 1,
+                      reserveTwo: 1,
+                      token: detail.address as `0x${string}`,
+                    }}
+                    defaultTrades={historyList}
+                    tradesCallBack={handleNewTrade}
+                  />
+                )}
               </StyledTradingChartContainer>
             </StyledTradingChartBox>
           </StyledTradingInfo>
@@ -791,14 +854,46 @@ export default function Token(props: IToken) {
             symbol={detail.symbol}
             className="hidden xl:block"
           /> */}
-          <StyledTradeListContainer
-            id="history"
-            ref={(el) => {
-              sectionsRef.current[2] = el;
+          <InfiniteScroll
+            hasMore={!noMoreHistory}
+            fetchMoreData={async () => {
+              const limit = 20;
+              const res = await fetchHistoryData(
+                ca,
+                historyParams.from,
+                0,
+                limit
+              );
+
+              if (res) {
+                const list = removeDuplicateTrades([
+                  ...historyList,
+                  ...res.list,
+                ]);
+                const from = Math.max(
+                  res.list[res.list.length - 1].timestamp,
+                  historyParams.from
+                );
+                setHistoryList(list);
+                setHistoryParams((v) => ({
+                  ...v,
+                  from,
+                  limit,
+                  total: res.count || v.total,
+                }));
+              }
             }}
           >
-            <TradeList list={historyList} symbol={detail.symbol} />
-          </StyledTradeListContainer>
+            <StyledTradeListContainer
+              id="history"
+              ref={(el) => {
+                sectionsRef.current[2] = el;
+              }}
+            >
+              <TradeList list={historyList} symbol={detail.symbol} />
+            </StyledTradeListContainer>
+          </InfiniteScroll>
+
           {/* <MobileStyledTradeListContainer>
             <MobileTradeList list={historyList} symbol={detail.symbol} />
           </MobileStyledTradeListContainer> */}
@@ -1262,7 +1357,12 @@ const StyledTokenActionTradePlaceSubmit = styled(Button)`
 `;
 
 const StyledTradeTopHolders = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 24px;
   width: 100%;
+  overflow: hidden;
   @media screen and (max-width: 1024px) {
     min-height: 300px;
   }

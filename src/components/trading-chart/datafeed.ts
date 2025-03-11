@@ -14,6 +14,7 @@ import {
   unsubscribeFromStream,
 } from "./streaming";
 import { removeDuplicateTrades } from "@/lib/utils";
+import { fetchTradeDatas } from "@/lib/apis";
 
 let subsriberCache: Function[] = [];
 
@@ -44,24 +45,6 @@ const updateCache = (
   return _trades;
 };
 
-async function fetchTradeDatas(token: string, from = 0, to = 0) {
-  const tradesRes = await fetch(
-    `/api/trade/history-data?address=${token}&to=${to}`
-  ).then((res) => res.json());
-
-  if (tradesRes.code !== 0) {
-    return {
-      list: [],
-      noData: true,
-    };
-  }
-
-  return tradesRes.data as {
-    list: Trade[];
-    noData: boolean;
-  };
-}
-
 // 主逻辑：根据 currentFrom 和 currentTo 来判断是否需要请求新的数据
 const loadTrades = async (
   pairIndex: number,
@@ -71,9 +54,17 @@ const loadTrades = async (
 ) => {
   const key = `${token}-${pairIndex}`;
   const _lastTradesCache = lastTradesCache.get(key);
+  console.log(
+    "--- _lastTradesCache",
+    _lastTradesCache,
+    "currentFrom",
+    currentFrom,
+    "currentTo",
+    currentTo
+  );
   // 1. 没有缓存数据时，请求当前 to 之前的所有数据
   if (!_lastTradesCache) {
-    const { list, noData } = await fetchTradeDatas(token, 0, currentTo);
+    const { list, noData } = await fetchTradeDatas(token, 0, currentTo, 1000);
     return {
       list: updateCache(key, {
         from: noData ? 0 : Math.min(list[0].timestamp, currentFrom),
@@ -89,7 +80,8 @@ const loadTrades = async (
     const { list, noData } = await fetchTradeDatas(
       token,
       _lastTradesCache.to,
-      currentTo
+      currentTo,
+      1000
     );
     return {
       list: updateCache(key, {
@@ -108,7 +100,8 @@ const loadTrades = async (
     const { list, noData } = await fetchTradeDatas(
       token,
       0,
-      _lastTradesCache.from
+      _lastTradesCache.from,
+      1000
     );
 
     return {
@@ -149,17 +142,28 @@ export function getDataFeed({
   name,
   token,
   nativeTokenPrice,
+  defaultTrades,
   tradesCallBack,
 }: {
   name: string;
   pairIndex: number;
   token: `0x${string}`;
   nativeTokenPrice: number;
+  defaultTrades: Trade[];
   tradesCallBack: (trades: Trade[]) => void;
 }): IBasicDataFeed {
   return {
     onReady: (callback) => {
       console.log("[onReady]: Method call");
+      const key = `${token}-${pairIndex}`;
+      const to = defaultTrades[defaultTrades.length - 1]?.timestamp || 0;
+      const from = defaultTrades[0]?.timestamp || 0;
+      updateCache(key, {
+        from,
+        to,
+        trades: [...defaultTrades],
+      });
+
       setTimeout(() => {
         callback(configurationData);
         initialWatchEvents(token, nativeTokenPrice);

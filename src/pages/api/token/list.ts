@@ -18,11 +18,12 @@ export default async function handler(
     direction: string;
   };
 
+  // const page = 1;
   const page = +(req.query.page || 1);
   const pageSize = +(req.query.pageSize || 10);
   const from = (page - 1) * pageSize;
 
-  const { data: list, error: error1 } = await supabaseClient
+  const { data: list = [], error: error1 } = await supabaseClient
     .from("Token")
     .select(
       "id,name,symbol,address,totalSupply,creatorAddress,isGraduate,tokenUri,metadata"
@@ -58,10 +59,12 @@ export default async function handler(
     });
   }
 
+  const _list = list || [];
+
   res.json({
     code: 0,
     data: {
-      list,
+      list: _list,
       page,
       total: count,
     },

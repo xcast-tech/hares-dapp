@@ -51,6 +51,12 @@ const StyledSkeleton = styled.div`
   @media screen and (max-width: 1200px) {
     grid-template-columns: repeat(5, 1fr);
   }
+  @media screen and (max-width: 1024px) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 
 const StyledTokenCard = styled.div`
@@ -61,6 +67,17 @@ const StyledTokenCard = styled.div`
   background: #020202;
   padding: 12px;
   border: 1px solid rgba(234, 236, 239, 0.2);
+
+  @media screen and (max-width: 1024px) {
+    padding: 0;
+    height: 92px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 10px;
+    border: 0.5px solid rgba(234, 236, 239, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+  }
   &::before {
     content: "";
     position: absolute;
@@ -74,6 +91,18 @@ const StyledTokenCard = styled.div`
       rgba(255, 255, 255, 0.4) 80%,
       rgba(234, 236, 239, 0.12)
     );
+
+    @media screen and (max-width: 1024px) {
+      width: 0.5px;
+      top: 8px;
+      height: calc(100% - 16px);
+      background-image: linear-gradient(
+        to bottom,
+        rgba(234, 236, 239, 0.12) 30%,
+        rgba(255, 255, 255, 0.4) 80%,
+        rgba(234, 236, 239, 0.12)
+      );
+    }
   }
   &::after {
     content: "";
@@ -88,12 +117,29 @@ const StyledTokenCard = styled.div`
       rgba(255, 255, 255, 0.8) 40%,
       rgba(234, 236, 239, 0.12)
     );
+
+    @media screen and (max-width: 1024px) {
+      width: 0.5px;
+      top: 8px;
+      height: calc(100% - 16px);
+      background-image: linear-gradient(
+        to bottom,
+        rgba(234, 236, 239, 0.12) 0%,
+        rgba(255, 255, 255, 0.8) 30%,
+        rgba(234, 236, 239, 0.12)
+      );
+    }
   }
 `;
 
 const StyledTokenCardPic = styled.div`
   position: relative;
   padding-top: 100%;
+  @media screen and (max-width: 1024px) {
+    padding: 6px;
+    width: 92px;
+    height: 92px;
+  }
 `;
 
 const StyledTokenCardPicInner = styled.div`
@@ -118,6 +164,19 @@ const StyledTokenCardPicInner = styled.div`
     bottom: 0;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.04);
+    @media screen and (max-width: 1024px) {
+      display: none;
+    }
+  }
+  @media screen and (max-width: 1024px) {
+    position: static;
+    background: rgba(255, 255, 255, 0.04);
+    width: 100%;
+    height: 100%;
+    > img {
+      position: relative;
+      border-radius: 4px;
+    }
   }
 `;
 
