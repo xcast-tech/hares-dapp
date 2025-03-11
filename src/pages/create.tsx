@@ -286,16 +286,21 @@ const Create = () => {
                 label="Ticker"
                 name="ticker"
                 type="text"
-                placeholder="-"
+                placeholder="Only alphabet & numbers allowed. Max. 6 chars."
                 value={ticker}
                 errorMessage="This field is required"
+                pattern="[A-Za-z0-9]{1,6}"
                 startContent={
                   <StyledTickerInputStartContent>
                     <span>$</span>
                     <StyledTickerInputDivider />
                   </StyledTickerInputStartContent>
                 }
-                onChange={(e) => setTicker(e.target.value)}
+                onChange={(e) => {
+                  const text = e.target.value;
+                  if (!text.match(/^[A-Za-z0-9]{0,6}$/)) return;
+                  setTicker(e.target.value);
+                }}
               />
             </div>
 

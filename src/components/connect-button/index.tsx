@@ -3,9 +3,11 @@ import styled from "@emotion/styled";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import DisconnectIcon from "~@/icons/disconnect.svg";
 import Avatar from "boring-avatars";
+import { useConnect, useConnectors } from "wagmi";
 
 const WalletConnectButton = () => {
   const { shouldSign, handleSign, isMobile } = useGlobalCtx();
+  const { connect, connectors } = useConnect();
   return (
     <>
       {/* <ConnectButton /> */}
@@ -42,7 +44,36 @@ const WalletConnectButton = () => {
           return (
             <ConnectBtnBox>
               <ConnectBtnBoxInner>
-                <ConnectBtn disabled={!ready} onClick={openConnectModal}>
+                <ConnectBtn
+                  disabled={!ready}
+                  onClick={() => {
+                    // const walletConnectConnector = connectors.find(
+                    //   (c) => c?.id === "walletConnect"
+                    // );
+                    // if (!walletConnectConnector) return;
+                    // console.log(
+                    //   "walletConnectConnector",
+                    //   walletConnectConnector,
+                    //   "connectors",
+                    //   connectors
+                    // );
+                    // connect(
+                    //   {
+                    //     connector: walletConnectConnector,
+                    //   },
+                    //   {
+                    //     onSuccess: () => {
+                    //       console.log("walletConnectConnector connected");
+                    //     },
+                    //     onError: (err) => {
+                    //       console.log("walletConnectConnector error", err);
+                    //       walletConnectConnector.disconnect();
+                    //     },
+                    //   }
+                    // );
+                    openConnectModal();
+                  }}
+                >
                   Connect Wallet
                 </ConnectBtn>
               </ConnectBtnBoxInner>

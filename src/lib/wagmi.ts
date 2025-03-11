@@ -1,5 +1,13 @@
 import { connectorsForWallets } from "@rainbow-me/rainbowkit";
-import { metaMaskWallet, okxWallet, trustWallet, coinbaseWallet, rainbowWallet, walletConnectWallet, binanceWallet } from "@rainbow-me/rainbowkit/wallets";
+import {
+  metaMaskWallet,
+  okxWallet,
+  trustWallet,
+  coinbaseWallet,
+  rainbowWallet,
+  walletConnectWallet,
+  binanceWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import { createClient, createPublicClient, http, webSocket } from "viem";
 import { createConfig } from "wagmi";
 import { mainChain } from "@/lib/constant";
@@ -16,8 +24,8 @@ const connectors = connectorsForWallets(
     },
   ],
   {
-    appName: "Hares",
-    projectId: "c995ef9d5ebc2b418a9aad43a22a27dc",
+    appName: "BAB.fun",
+    projectId: "fa14a7c6aac63f27e22d18d4927498c7",
   }
 );
 

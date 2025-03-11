@@ -71,7 +71,7 @@ function Token({ detail }: TokenProps) {
         </StyledTokenCardPic>
         <StyledTokenContent>
           <StyledTokenInfo>
-            <StyledTokenName>
+            <StyledTokenName title={`${detail?.name}($${detail?.symbol})`}>
               {detail?.name}(${detail?.symbol})
             </StyledTokenName>
             <StyledTokenCA>CA: {maskAddress(detail?.address)}</StyledTokenCA>
@@ -119,10 +119,10 @@ export const TokenList: FC<TokenListProps> = ({ list }) => {
 
 const StyledTokenList = styled.div`
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 16px;
   @media screen and (max-width: 1200px) {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
   @media screen and (max-width: 1024px) {
     display: flex;
@@ -257,6 +257,7 @@ const StyledTokenContent = styled.div`
   @media screen and (max-width: 1024px) {
     flex: 1;
     flex-shrink: 0;
+    min-width: 0;
     height: 100%;
     padding: 12px 0;
     padding-left: 6px;
