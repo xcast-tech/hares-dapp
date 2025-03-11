@@ -14,6 +14,7 @@ import { AppProvider } from "@/context/useAppContext";
 import { ReactElement, ReactNode, use, useEffect } from "react";
 import { cn, getDomain } from "@/lib/utils";
 import { Inter, Climate_Crisis } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 
 import styled from "@emotion/styled";
 import { usePathname } from "next/navigation";
@@ -72,6 +73,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
                 pauseOnFocusLoss={false}
                 pauseOnHover={false}
               />
+              <Analytics />
             </>
           )}
         </Providers>
