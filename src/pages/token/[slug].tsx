@@ -21,6 +21,7 @@ import {
   formatBigintTokenBalance,
   formatChillDecimalNumber,
   formatDecimalNumber,
+  formatDisplayDecimalNumber,
   formatNumber,
   formatToFourDecimalPlaces,
   formatTokenBalance,
@@ -148,10 +149,12 @@ export default function Token(props: IToken) {
 
   const [simulateBuying, setSimulateBuying] = useState(false);
   const [simulateBuyTokens, setSimulateBuyTokens] = useState<bigint>(BigInt(0));
+  const [isBuyInsufficientToken, setIsBuyInsufficientToken] = useState(false);
   const [simulateSelling, setSimulateSelling] = useState(false);
   const [simulateSellTokens, setSimulateSellTokens] = useState<bigint>(
     BigInt(0)
   );
+  const [isSellInsufficientToken, setIsSellInsufficientToken] = useState(false);
   const [buyInputValue, setBuyInputValue] = useState<string>();
   const [sellInputValue, setSellInputValue] = useState<string>();
   const [tabKey, setTabKey] = useState<string | number>(TabKeys.buy);
@@ -240,9 +243,19 @@ export default function Token(props: IToken) {
       setSimulateBuying(false);
       return 0;
     }
-    const res = await simulateBuy(ca, amount, +slippage / 100);
-    setSimulateBuying(false);
-    setSimulateBuyTokens(res?.result || BigInt(0));
+    try {
+      const res = await simulateBuy(ca, amount, +slippage / 100);
+      setSimulateBuying(false);
+      setSimulateBuyTokens(res?.result || BigInt(0));
+      setIsBuyInsufficientToken(false);
+    } catch (error: any) {
+      if (error.message.includes("InsufficientToken")) {
+        setIsBuyInsufficientToken(true);
+      }
+      console.log("handleSimulateSell error", error);
+      setSimulateBuying(false);
+      setSimulateBuyTokens(BigInt(0));
+    }
   }
 
   const handleSimulateBuyDebounce = debounce(handleSimulateBuy, 1000);
@@ -262,7 +275,11 @@ export default function Token(props: IToken) {
       console.log("handleSimulateSell res", res);
       setSimulateSelling(false);
       setSimulateSellTokens(res?.result || BigInt(0));
+      setIsSellInsufficientToken(false);
     } catch (error: any) {
+      if (error.message.includes("InsufficientToken")) {
+        setIsSellInsufficientToken(true);
+      }
       console.log("handleSimulateSell error", error);
       setSimulateSelling(false);
       setSimulateSellTokens(BigInt(0));
@@ -445,9 +462,11 @@ export default function Token(props: IToken) {
               {buyInputValue && !isGraduate && (
                 <StyledTokenReceived>
                   {detail?.symbol} received:{" "}
-                  {simulateBuying
+                  {simulateBuying || isBuyInsufficientToken
                     ? "-"
-                    : formatDecimalNumber(formatEther(simulateBuyTokens))}
+                    : formatDisplayDecimalNumber(
+                        formatEther(simulateBuyTokens)
+                      )}
                 </StyledTokenReceived>
               )}
               <StyledTokenActionTradePlaceOptions>
@@ -486,11 +505,17 @@ export default function Token(props: IToken) {
                     router.push("/about");
                     return;
                   }
+                  if (isBuyInsufficientToken) {
+                    return;
+                  }
                   handleBuy();
                 }}
                 isLoading={trading}
+                isDisabled={isBuyInsufficientToken}
               >
-                {!address || shouldSign ? (
+                {isBuyInsufficientToken ? (
+                  "Insufficient Token"
+                ) : !address || shouldSign ? (
                   <span>Sign In First</span>
                 ) : !isBABValidated ? (
                   "Mint BABT first"
@@ -525,9 +550,11 @@ export default function Token(props: IToken) {
               {sellInputValue && !isGraduate && (
                 <StyledTokenReceived>
                   {tokenSymbol} received:{" "}
-                  {simulateSelling
+                  {simulateSelling || isSellInsufficientToken
                     ? "-"
-                    : formatDecimalNumber(formatEther(simulateSellTokens))}
+                    : formatDisplayDecimalNumber(
+                        formatEther(simulateSellTokens)
+                      )}
                 </StyledTokenReceived>
               )}
               <StyledTokenActionTradePlaceOptions>
@@ -545,7 +572,6 @@ export default function Token(props: IToken) {
                           formatEther(
                             (balance * BigInt(option.value * 100)) / BigInt(100)
                           ),
-                          0,
                           4
                         );
                         setSellInputValue(amount);
@@ -569,11 +595,17 @@ export default function Token(props: IToken) {
                   if (!isCorrectChain) {
                     await handleSwitchNetwork();
                   }
+                  if (isSellInsufficientToken) {
+                    return;
+                  }
                   handleSell();
                 }}
                 isLoading={trading || simulateSelling}
+                isDisabled={isSellInsufficientToken}
               >
-                {!address || shouldSign ? (
+                {isSellInsufficientToken ? (
+                  "Insufficient Token"
+                ) : !address || shouldSign ? (
                   <span>Sign In First</span>
                 ) : (
                   <span>{trading ? "Trading..." : "Place trade"}</span>

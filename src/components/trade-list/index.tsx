@@ -3,6 +3,7 @@ import { Trade } from "@/lib/types";
 import {
   cn,
   formatDecimalNumber,
+  formatDisplayDecimalNumber,
   formatTokenBalance,
   maskAddress,
 } from "@/lib/utils";
@@ -80,7 +81,7 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
       case "trueEth":
         return (
           <StyledTextPanel>
-            {formatDecimalNumber(formatEther(BigInt(cellValue)))}
+            {formatDisplayDecimalNumber(formatEther(BigInt(cellValue)))}
           </StyledTextPanel>
         );
 
