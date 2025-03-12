@@ -20,7 +20,7 @@ import {
   useChainModal,
 } from "@rainbow-me/rainbowkit";
 import { loginSignText, mainChain } from "@/lib/constant";
-import { isMobile as checkIsMobile } from "@/lib/utils";
+import { isInBinance, getIsMobile } from "@binance/w3w-utils";
 import { useHaresContract } from "@/hooks/useHaresContract";
 
 type ProfileType = {
@@ -82,13 +82,11 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
 
   const handleSign = async () => {
     try {
-      console.log("- handleSign");
       if (!address) {
         openConnectModal?.();
         return;
       }
 
-      console.log("--- isCorrectChain", isCorrectChain);
       // switchNetwork;
       if (!isCorrectChain) {
         setSignLoading(true);
@@ -118,7 +116,6 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         fetchProfile();
         setShouldSign(false);
       }
-      console.log("- handleSignres", res);
       // location.reload();
     } catch (err: any) {
       console.log("error", err);
@@ -162,7 +159,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     if (profile.address?.toLowerCase() !== address.toLowerCase()) {
       setShouldSign(true);
       // auto sign on web; manual sign on mobile
-      if (!isMobile) {
+      if (!isMobile && !isInBinance()) {
         handleSign();
       }
       return;
@@ -180,7 +177,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    setIsMobile(checkIsMobile());
+    setIsMobile(getIsMobile());
   }, []);
 
   return (

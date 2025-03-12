@@ -52,7 +52,7 @@ const WalletConnectButton = () => {
                     openConnectModal();
                   }}
                 >
-                  {mounted && isConnecting
+                  {connectModalOpen && isConnecting
                     ? "Waiting for Connect..."
                     : "Connect Wallet"}
                 </ConnectBtn>
