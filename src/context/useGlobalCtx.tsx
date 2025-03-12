@@ -159,7 +159,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
     if (profile.address?.toLowerCase() !== address.toLowerCase()) {
       setShouldSign(true);
       // auto sign on web; manual sign on mobile
-      if (!isMobile && !isInBinance()) {
+      if (!isMobile || isInBinance()) {
         handleSign();
       }
       return;
