@@ -249,7 +249,7 @@ export default function Token(props: IToken) {
       setSimulateBuyTokens(res?.result || BigInt(0));
       setIsBuyInsufficientToken(false);
     } catch (error: any) {
-      if (error.message.includes("InsufficientToken")) {
+      if (error.message.includes("insufficient funds")) {
         setIsBuyInsufficientToken(true);
       }
       console.log("handleSimulateSell error", error);
