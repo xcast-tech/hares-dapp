@@ -7,7 +7,7 @@ type CommonInputProps = InputProps & {
   disabledLink?: string;
 };
 const CommonInput: FC<CommonInputProps> = (props) => {
-  return props.disabledLink ? (
+  return props.disabled && props.disabledLink ? (
     <Link href={props.disabledLink} target="_blank">
       <Input
         classNames={{
