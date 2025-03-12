@@ -364,6 +364,12 @@ export default function Token(props: IToken) {
     setTopHolders(res?.data?.list ?? []);
   }
 
+  const fetchHistoryDataCallback = useCallback(fetchHistoryData, [
+    ca,
+    historyLoading,
+    noMoreHistory,
+  ]);
+
   async function fetchHistoryData(address = ca, from = 0, to = 0, limit = 20) {
     if (historyLoading || noMoreHistory) return;
     setHistoryLoading(true);
@@ -387,7 +393,7 @@ export default function Token(props: IToken) {
     if (ca) {
       setHistoryDataMounted(false);
       // get the lately 1000 trade records
-      const limit = 1000;
+      const limit = 20;
       fetchHistoryData(ca, 0, 0, limit)
         .then((res) => {
           if (!res) return;
@@ -521,11 +527,13 @@ export default function Token(props: IToken) {
                 {isBuyInsufficientToken ? (
                   "Insufficient Token"
                 ) : !address || shouldSign ? (
-                  <span>Sign In First</span>
+                  <span>Connect Wallet & Sign</span>
                 ) : !isBABValidated ? (
                   "Mint BABT first"
                 ) : (
-                  <span>{trading ? "Trading..." : "Place trade"}</span>
+                  <span>
+                    {trading ? "Sign Tx in wallet..." : "Place trade"}
+                  </span>
                 )}
               </StyledTokenActionTradePlaceSubmit>
             </StyledTokenActionTradePlaceInner>
@@ -613,9 +621,9 @@ export default function Token(props: IToken) {
                 {isSellInsufficientToken ? (
                   "Insufficient Token"
                 ) : !address || shouldSign ? (
-                  <span>Sign In First</span>
+                  <span>Connect Wallet & Sign</span>
                 ) : (
-                  <span>{trading ? "Trading..." : "Place trade"}</span>
+                  <span>{trading ? "Sign in wallet..." : "Place trade"}</span>
                 )}
               </StyledTokenActionTradePlaceSubmit>
             </StyledTokenActionTradePlaceInner>
@@ -871,7 +879,7 @@ export default function Token(props: IToken) {
                 onNewTrade={handleNewTrade}
               /> */}
                 {!historyDataMounted ? (
-                  <div>loading...</div>
+                  <div></div>
                 ) : (
                   <TradingChart
                     isGraduated={isGraduate === 1}
@@ -901,7 +909,7 @@ export default function Token(props: IToken) {
             hasMore={!noMoreHistory}
             fetchMoreData={async () => {
               const limit = 20;
-              const res = await fetchHistoryData(
+              const res = await fetchHistoryDataCallback(
                 ca,
                 historyParams.from,
                 0,

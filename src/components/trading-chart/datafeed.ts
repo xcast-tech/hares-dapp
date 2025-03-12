@@ -222,17 +222,17 @@ export function getDataFeed({
         const { list, noData } = await loadTrades(pairIndex, token, from, to);
         tradesCallBack(list);
 
-        console.log(
-          "----- get bars trades",
-          list,
-          "format list",
-          list.map((item) => {
-            return {
-              ...item,
-              timestamp: new Date(item.timestamp * 1000).toISOString(),
-            };
-          })
-        );
+        // console.log(
+        //   "----- get bars trades",
+        //   list,
+        //   "format list",
+        //   list.map((item) => {
+        //     return {
+        //       ...item,
+        //       timestamp: new Date(item.timestamp * 1000).toISOString(),
+        //     };
+        //   })
+        // );
         const chartTable = await getChartTable({
           token,
           pairIndex: pairIndex,
