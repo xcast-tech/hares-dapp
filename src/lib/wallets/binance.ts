@@ -1,181 +1,85 @@
-// import type BinanceProvider from '@binance/w3w-ethereum-provider'
-// import {
-//   ProviderRpcError,
-//   isInBinance,
-//   normalizeChainId,
-// } from '@binance/w3w-utils'
-// import {
-//   SwitchChainError,
-//   UserRejectedRequestError,
-//   getAddress,
-//   numberToHex,
-// } from 'viem'
-// import { ChainNotConfiguredError, createConnector } from 'wagmi'
-// import { injected } from 'wagmi/connectors'
+import { isInBinance } from "@binance/w3w-utils";
+// import { getWagmiConnectorV2 } from "@binance/w3w-wagmi-connector-v2";
+import { getWagmiConnectorV2 } from "@/lib/wallets/binance-wagmi-connector";
+import {
+  Wallet,
+  RainbowKitWalletConnectParameters,
+  WalletDetailsParams,
+  getWalletConnectConnector,
+} from "@rainbow-me/rainbowkit";
+import { createConnector } from "wagmi";
 
-// type BinanceOptions = ConstructorParameters<typeof BinanceProvider>[0]
-// export type BinanceW3WParameters = BinanceOptions
+const instructions = {
+  learnMoreUrl:
+    "https://www.binance.com/en/blog/markets/introducing-binance-web3-wallet-5931309459106555347",
+  steps: [
+    {
+      description:
+        "Log in to your Binance app and tap [Wallets]. Go to [Web3].",
+      step: "install" as any,
+      title: "Open Binance app",
+    },
+    {
+      description: "Tap [Create Wallet] to start using your Web3 Wallet.",
+      step: "create" as any,
+      title: "Create or Import a Wallet",
+    },
+    {
+      description:
+        "After you scan, a connection prompt will appear for you to connect your wallet.",
+      step: "scan" as any,
+      title: "Tap the scan button",
+    },
+  ],
+};
 
-// binanceWallet.type = 'binanceWallet' as const
+export interface BinanceW3WOptions {
+  projectId: string;
+  options?: RainbowKitWalletConnectParameters;
+}
 
-// function binanceWallet(parameters: BinanceW3WParameters = {}) {
-//   type Provider = BinanceProvider
-//   type Properties = Record<string, unknown>
+export default function rainbowConnector(): Wallet {
+  const shouldUseWalletConnect = !isInBinance();
 
-//   let walletProvider: Provider | undefined
-
-//   return createConnector<Provider, Properties>((config) => ({
-//     id: 'wallet.binance.com',
-//     name: 'Binance Wallet',
-//     type: binanceWallet.type,
-//     async setup() {
-//       const provider = await this.getProvider()
-//       if (!provider) return
-//       provider.on('connect', this.onConnect.bind(this))
-//     },
-//     async connect({ chainId } = {}) {
-//       chainId = chainId ?? 56
-//       const provider = await this.getProvider({ chainId })
-
-//       provider.on('accountsChanged', this.onAccountsChanged.bind(this))
-//       provider.on('chainChanged', this.onChainChanged.bind(this))
-//       provider.on('disconnect', this.onDisconnect.bind(this))
-//       setTimeout(
-//         () => config.emitter.emit('message', { type: 'connecting' }),
-//         0
-//       )
-
-//       provider.setLng(parameters.lng || 'en')
-
-//       const accounts = (await provider.enable()).map((x) => getAddress(x))
-//       const id = await this.getChainId()
-//       return { accounts, chainId: id }
-//     },
-//     async disconnect() {
-//       const provider = await this.getProvider()
-//       provider.disconnect()
-
-//       provider.removeListener('accountsChanged', this.onAccountsChanged)
-//       provider.removeListener('chainChanged', this.onChainChanged)
-//       provider.removeListener('disconnect', this.onDisconnect)
-//     },
-//     async getAccounts() {
-//       const provider = await this.getProvider()
-//       const accounts = (await provider.request({
-//         method: 'eth_accounts',
-//       })) as string[]
-//       return accounts.map((x) => getAddress(x))
-//     },
-//     async getChainId() {
-//       const provider = await this.getProvider()
-//       const chainId =
-//         provider.chainId ?? (await provider?.request({ method: 'eth_chainId' }))
-//       return normalizeChainId(chainId)
-//     },
-//     async getProvider({ chainId }: { chainId?: number } = {}) {
-//       if (typeof window === 'undefined') return undefined
-//       const BinanceProvider = (await import('@binance/w3w-ethereum-provider'))
-//         .default
-
-//       const targetChainId = chainId || config.chains[0]?.id
-//       const rpc = !parameters.infuraId
-//         ? config.chains.reduce(
-//             (rpcProps, chain) => ({
-//               ...rpcProps,
-//               [chain.id]: chain.rpcUrls.default.http[0],
-//             }),
-//             {}
-//           )
-//         : {}
-
-//       walletProvider = new BinanceProvider({
-//         ...parameters,
-//         chainId: targetChainId,
-//         rpc: { ...rpc, ...this.options?.rpc },
-//       })
-//       return walletProvider
-//     },
-//     async isAuthorized() {
-//       try {
-//         const account = await this.getAccounts()
-//         return account.length > 0
-//       } catch {
-//         return false
-//       }
-//     },
-//     async switchChain({ chainId }) {
-//       const chain = config.chains.find((chain) => chain.id === chainId)
-//       if (!chain) throw new SwitchChainError(new ChainNotConfiguredError())
-
-//       const provider = await this.getProvider()
-//       const id = numberToHex(chain.id)
-
-//       try {
-//         await Promise.race([
-//           provider.request({
-//             method: 'wallet_switchEthereumChain',
-//             params: [{ chainId: id }],
-//           }),
-//           new Promise((res) =>
-//             config.emitter.once('change', ({ chainId: currentChainId }) => {
-//               if (currentChainId === chainId) res(chainId)
-//             })
-//           ),
-//         ])
-//         return chain
-//       } catch (error) {
-//         const message =
-//           typeof error === 'string'
-//             ? error
-//             : (error as ProviderRpcError)?.message
-//         if (/user rejected request/i.test(message))
-//           throw new UserRejectedRequestError(error)
-//         throw new SwitchChainError(error)
-//       }
-//     },
-//     onAccountsChanged(accounts: string[]) {
-//       if (accounts.length === 0) config.emitter.emit('disconnect')
-//       else
-//         config.emitter.emit('change', {
-//           accounts: accounts.map((x) => getAddress(x)),
-//         })
-//     },
-//     onChainChanged(chain) {
-//       const chainId = normalizeChainId(chain)
-//       config.emitter.emit('change', { chainId })
-//     },
-//     async onConnect(connectInfo) {
-//       const accounts = await this.getAccounts()
-//       if (accounts.length === 0) return
-
-//       const chainId = normalizeChainId(connectInfo.chainId)
-//       config.emitter.emit('connect', { accounts, chainId })
-
-//       const provider = await this.getProvider()
-//       if (provider) {
-//         provider.removeListener('connect', this.onConnect.bind(this))
-//         provider.on('accountsChanged', this.onAccountsChanged.bind(this))
-//         provider.on('chainChanged', this.onChainChanged)
-//         provider.on('disconnect', this.onDisconnect.bind(this))
-//       }
-//     },
-//     async onDisconnect(error) {
-//       config.emitter.emit('disconnect')
-//       const provider = await this.getProvider()
-//       provider.removeListener(
-//         'accountsChanged',
-//         this.onAccountsChanged.bind(this)
-//       )
-//       provider.removeListener('chainChanged', this.onChainChanged)
-//       provider.removeListener('disconnect', this.onDisconnect.bind(this))
-//       provider.on('connect', this.onConnect.bind(this))
-//     },
-//   }))
-// }
-
-// export const getWagmiConnectorV2 = () => {
-//   if (isInBinance()) {
-//     return injected
-//   }
-//   return binanceWallet
-// }
+  return {
+    id: "wallet.binance.com",
+    name: "Binance Wallet",
+    iconUrl: "/binanceWallet.svg",
+    iconAccent: "#1E1E1E",
+    iconBackground: "#1E1E1E",
+    installed: isInBinance() || undefined,
+    downloadUrls: {
+      android: "https://play.google.com/store/apps/details?id=com.binance.dev",
+      ios: "https://apps.apple.com/us/app/binance-buy-bitcoin-crypto/id1436799971",
+      mobile: "https://www.binance.com/en/download",
+      qrCode: "https://www.binance.com/en/download",
+    },
+    mobile: {
+      getUri: (uri) => {
+        console.log("---- mobile getUrl", uri);
+        return uri;
+      },
+    },
+    qrCode: shouldUseWalletConnect
+      ? {
+          getUri: (uri) => {
+            console.log("----- binance qrcode uri", uri);
+            return uri;
+          },
+          instructions,
+        }
+      : undefined,
+    extension: {
+      instructions,
+    },
+    createConnector: (walletDetails: WalletDetailsParams) =>
+      createConnector((config) => {
+        const wagmiConnectorV2 = getWagmiConnectorV2()();
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        return {
+          ...wagmiConnectorV2(config as any),
+          ...walletDetails,
+        } as any;
+      }),
+  };
+}

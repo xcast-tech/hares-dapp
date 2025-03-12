@@ -11,8 +11,9 @@ import {
 import { createClient, createPublicClient, http, webSocket } from "viem";
 import { createConfig } from "wagmi";
 import { mainChain } from "@/lib/constant";
-import binanceWallet from "@binance/w3w-rainbow-connector-v2";
+// import binanceWallet2 from "@binance/w3w-rainbow-connector-v2";
 import { walletConnectWallet } from "@/lib/wallets/walletConnect";
+import binanceWallet from "@/lib/wallets/binance";
 
 const connectors = connectorsForWallets(
   [
