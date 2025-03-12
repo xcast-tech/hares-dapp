@@ -53,13 +53,7 @@ export default async function handler(
   const { body, headers } = req;
   console.log(JSON.stringify(body));
   const alchemySignature = headers["x-alchemy-signature"] as string;
-  if (
-    !isValidSignatureForStringBody(
-      JSON.stringify(body),
-      alchemySignature,
-      signingKey
-    )
-  ) {
+  if (process.env.BETA !== 'true' && !isValidSignatureForStringBody(JSON.stringify(body), alchemySignature, signingKey)) {
     res.status(401).json({
       code: 401,
     });
