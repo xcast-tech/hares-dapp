@@ -48,12 +48,13 @@ const WalletConnectButton = () => {
                 <ConnectBtn
                   disabled={isConnecting || signLoading}
                   onClick={() => {
+                    console.log("--- connectBtn onClick", connectModalOpen);
                     if (connectModalOpen) return;
                     openConnectModal();
                   }}
                 >
                   {String(connectModalOpen)}-{String(isConnecting)}-
-                  {String(authenticationStatus)}
+                  {String(authenticationStatus)}-{String(signLoading)}
                   {connectModalOpen && isConnecting
                     ? "Waiting for Connect..."
                     : "Connect Wallet"}
