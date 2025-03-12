@@ -5,13 +5,14 @@ import {
   trustWallet,
   coinbaseWallet,
   rainbowWallet,
-  walletConnectWallet,
+  // walletConnectWallet,
   // binanceWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { createClient, createPublicClient, http, webSocket } from "viem";
 import { createConfig } from "wagmi";
 import { mainChain } from "@/lib/constant";
 import binanceWallet from "@binance/w3w-rainbow-connector-v2";
+import { walletConnectWallet } from "@/lib/wallets/walletConnect";
 
 const connectors = connectorsForWallets(
   [

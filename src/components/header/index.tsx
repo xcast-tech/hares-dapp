@@ -33,7 +33,6 @@ import { HaresAiTwitterLink, HaresAiWarpcastLink } from "@/lib/constant";
 import { useConnect, useDisconnect, useAccountEffect } from "wagmi";
 import ConnectButton from "@/components/connect-button";
 import styled from "@emotion/styled";
-import LogoIcon from "~@/icons/logo.svg";
 import XIcon from "~@/icons/x.svg";
 import MenuIcon from "~@/icons/menu.svg";
 import { usePathname } from "next/navigation";
