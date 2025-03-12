@@ -1,4 +1,9 @@
-import { formatDecimalNumber, maskAddress, parseMetadata } from "@/lib/utils";
+import {
+  formatDecimalNumber,
+  formatDisplayDecimalNumber,
+  maskAddress,
+  parseMetadata,
+} from "@/lib/utils";
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { LatelyTrade, Trade } from "@/lib/types";
@@ -13,7 +18,7 @@ interface TradeProps {
 
 export function MarqueeTokenCard({ trade }: TradeProps) {
   const isSell = trade.type === 1;
-  const amount = formatDecimalNumber(formatEther(BigInt(trade.trueEth)));
+  const amount = formatDisplayDecimalNumber(formatEther(BigInt(trade.trueEth)));
 
   return (
     <>

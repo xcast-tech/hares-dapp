@@ -29,26 +29,33 @@ export function getDomain() {
 
 export const formatChillDecimalNumber = (
   num: number | string,
-  minimumFractionDigits = 0,
-  maximumFractionDigits = 2
+  maximumFractionDigits = 2,
+  minimumFractionDigits = 0
 ) => {
   return formatDecimalNumber(
     num,
-    minimumFractionDigits,
-    maximumFractionDigits
+    maximumFractionDigits,
+    minimumFractionDigits
   ).replaceAll(",", "");
 };
 
 export const formatDecimalNumber = (
   num: number | string,
-  minimumFractionDigits = 0,
-  maximumFractionDigits = 2
+  maximumFractionDigits = 4,
+  minimumFractionDigits = 0
 ) => {
   return new Intl.NumberFormat("en-US", {
     style: "decimal",
     minimumFractionDigits: minimumFractionDigits,
     maximumFractionDigits: maximumFractionDigits,
   }).format(Number(num));
+};
+
+export const formatDisplayDecimalNumber = (num: number | string) => {
+  if (Number(num) < 1e-4) {
+    return "<0.0001";
+  }
+  return formatDecimalNumber(num, 4, 0);
 };
 
 export function formatToFourDecimalPlaces(value: string | number) {

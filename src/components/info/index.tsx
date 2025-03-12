@@ -104,7 +104,8 @@ export const Info: FC<InfoProps> = ({ detail, className }) => {
               {currentEth === graduatedPool
                 ? graduatedPoolConstant
                 : formatDecimalNumber(
-                    formatEther((currentEth * BigInt(100)) / BigInt(99))
+                    formatEther((currentEth * BigInt(100)) / BigInt(99)),
+                    2
                   )}
               /&nbsp;
               {graduatedPoolConstant} {tokenSymbol}
