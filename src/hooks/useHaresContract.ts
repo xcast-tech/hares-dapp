@@ -158,7 +158,7 @@ export function useHaresContract() {
     token: Address,
     eth: number,
     slipage: number,
-    onTxSend: (tx: string) => void = () => { }
+    onTxSend: (tx: string) => void = () => {}
   ) {
     if (!address) {
       return;
@@ -244,7 +244,7 @@ export function useHaresContract() {
     token: Address,
     tokenToSell: number,
     slipage: number,
-    onTxSend: (tx: string) => void = () => { }
+    onTxSend: (tx: string) => void = () => {}
   ) {
     if (!address) {
       return;
@@ -331,13 +331,19 @@ export function useHaresContract() {
     if (!address) {
       return false;
     }
-    const result = await publicClient.readContract({
-      address: contractAddress.BABTValidatorAddress,
-      abi: ABIs.HaresValidatorAbi,
-      functionName: "validate",
-      args: [address, BigInt(0), zeroHash],
-    });
-    return result;
+    try {
+      const result = await publicClient.readContract({
+        address: contractAddress.BABTValidatorAddress,
+        abi: ABIs.HaresValidatorAbi,
+        functionName: "validate",
+        args: [address, BigInt(0), zeroHash],
+      });
+      return result;
+    } catch (err) {
+      // The wallet has not attested any SBT
+      console.error(err);
+      return false;
+    }
   }
 
   return {
