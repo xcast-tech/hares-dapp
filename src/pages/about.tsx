@@ -99,6 +99,9 @@ const BabtComponent = () => {
             wallet is controlled by a real user, preventing bots or malicious
             activity.
           </AboutDesc>
+          <Link href="https://www.binance.com/en/BABT" target="_blank">
+            <AboutBtn>Mint BAB Token</AboutBtn>
+          </Link>
         </AboutContainer>
         <FunBox
           id="fun"
@@ -300,6 +303,37 @@ const AboutDesc = styled.p`
     font-weight: 500;
     line-height: 150%; /* 22.5px */
     text-align: left;
+  }
+`;
+
+const AboutBtn = styled.button`
+  margin-top: 48px;
+  display: flex;
+  width: 320px;
+  height: 48px;
+  padding: 0px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  border-radius: 24px;
+  background: linear-gradient(274deg, #ffc720 0%, #fcd535 49.5%);
+
+  color: #1b1f29;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%; /* 21px */
+
+  @media screen and (max-width: 1024px) {
+    margin-top: 20px;
+    display: flex;
+    width: 100%;
+    max-width: 335px;
+    height: 48px;
+    padding: 0px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
   }
 `;
 
