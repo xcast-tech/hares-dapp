@@ -60,7 +60,7 @@ import { isMobile } from "@/lib/utils";
 import DrawerBottom from "@/components/common/drawer/bottom";
 import { useRouter } from "next/router";
 import { usePathname, useSearchParams } from "next/navigation";
-import { debounce, set } from "lodash-es";
+import { debounce } from "lodash-es";
 import InfiniteScroll from "@/components/common/infiniteScroll";
 
 const TabKeys = {
@@ -121,6 +121,7 @@ export default function Token(props: IToken) {
     isCorrectChain,
     handleSwitchNetwork,
     isBABValidated,
+    isMobile,
   } = useGlobalCtx();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const publicClient = usePublicClient();
@@ -165,28 +166,32 @@ export default function Token(props: IToken) {
 
   const tabColor = tabKey === "buy" ? "success" : "danger";
 
-  const buyOptions = [
-    {
-      label: "Reset",
-      value: 0,
-    },
-    {
-      label: `0.02 ${tokenSymbol}`,
-      value: 0.02,
-    },
-    {
-      label: `0.1 ${tokenSymbol}`,
-      value: 0.1,
-    },
-    {
-      label: `0.2 ${tokenSymbol}`,
-      value: 0.2,
-    },
-    {
-      label: `1 ${tokenSymbol}`,
-      value: 1,
-    },
-  ];
+  const buyOptions = useMemo(() => {
+    return [
+      {
+        label: "Reset",
+        value: 0,
+      },
+      isMobile
+        ? null
+        : {
+            label: `0.02 ${tokenSymbol}`,
+            value: 0.02,
+          },
+      {
+        label: `0.1 ${tokenSymbol}`,
+        value: 0.1,
+      },
+      {
+        label: `0.2 ${tokenSymbol}`,
+        value: 0.2,
+      },
+      {
+        label: `1 ${tokenSymbol}`,
+        value: 1,
+      },
+    ].filter((i) => !!i);
+  }, [isMobile]);
 
   const sellOptions = [
     {
@@ -473,7 +478,7 @@ export default function Token(props: IToken) {
                 {buyOptions.map((option, i) => {
                   return (
                     <StyledChip
-                      className={`${i === 0 ? "reset-btn" : ""}`}
+                      // className={`${i === 0 ? "reset-btn" : ""}`}
                       key={i}
                       onClick={() => {
                         // if (!isActionReady) {
@@ -570,7 +575,9 @@ export default function Token(props: IToken) {
                         const balance = await fetchTokenBalance(ca, address!);
                         const amount = formatChillDecimalNumber(
                           formatEther(
-                            (balance * BigInt(option.value * 100)) / BigInt(100)
+                            ((balance - BigInt(1)) *
+                              BigInt(option.value * 100)) /
+                              BigInt(100)
                           ),
                           4
                         );

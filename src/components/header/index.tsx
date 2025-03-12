@@ -33,7 +33,6 @@ import { HaresAiTwitterLink, HaresAiWarpcastLink } from "@/lib/constant";
 import { useConnect, useDisconnect, useAccountEffect } from "wagmi";
 import ConnectButton from "@/components/connect-button";
 import styled from "@emotion/styled";
-import LogoIcon from "~@/icons/logo.svg";
 import XIcon from "~@/icons/x.svg";
 import MenuIcon from "~@/icons/menu.svg";
 import { usePathname } from "next/navigation";
@@ -128,9 +127,7 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
         <StyledHeaderLeft>
           <Link href="/">
             <StyledHeaderLogo>
-              {/* <LogoIcon /> */}
-              {/* LOGO */}
-              BAB.Fun
+              <img src="/logo.png" alt="BAB.fun logo" />
             </StyledHeaderLogo>
           </Link>
           <StyledHeaderNavs>
@@ -416,6 +413,9 @@ const StyledHeaderLogo = styled.div`
   font-weight: 900;
   line-height: 150%; /* 42px */
   letter-spacing: -0.56px;
+  > img {
+    height: 40px;
+  }
   @media screen and (max-width: 1024px) {
     // width: 70px;
   }

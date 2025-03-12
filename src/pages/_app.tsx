@@ -72,6 +72,12 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
                 position="bottom-right"
                 pauseOnFocusLoss={false}
                 pauseOnHover={false}
+                toastStyle={
+                  {
+                    "--toastify-color-progress-dark": "#FCD535",
+                    "--toastify-color-progress-light": "#FCD535",
+                  } as React.CSSProperties
+                }
               />
               <Analytics />
             </>

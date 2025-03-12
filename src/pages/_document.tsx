@@ -12,8 +12,11 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
           rel="stylesheet"
         />
-        <link rel="icon" href="/babfun-logo.png" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/logo.png" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+        />
       </Head>
       <body className={`antialiased`}>
         <Main />
