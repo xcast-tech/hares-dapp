@@ -23,29 +23,36 @@ import {
   graduatedPoolConstant,
   tokenSymbol,
 } from "@/lib/constant";
-import { useAccount } from "wagmi";
 
 import styled from "@emotion/styled";
 import XIcon from "~@/icons/x.svg";
 import TGIcon from "~@/icons/tg.svg";
 import WebsiteIcon from "~@/icons/website.svg";
 import { useAppContext } from "@/context/useAppContext";
+import ProgressBar from "@/components/common/progressBar";
 
 interface InfoProps {
-  className?: string;
   detail?: IToken;
+  isGraduate?: boolean;
+  totalSupply?: string;
 }
 
-export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
+export const TokenInfo: FC<InfoProps> = ({
+  detail,
+  isGraduate,
+  totalSupply,
+}) => {
   const { ethPrice } = useAppContext();
-  const currentEth = detail
-    ? detail?.isGraduate
+
+  const currentEth = useMemo(() => {
+    if (!totalSupply) return BigInt(0);
+    return isGraduate
       ? graduatedPool
       : getTokenSellQuote(
-          Number(detail?.totalSupply) / 1e18,
-          Number(detail?.totalSupply) / 1e18
-        )
-    : BigInt(0);
+          Number(totalSupply) / 1e18,
+          Number(totalSupply) / 1e18
+        );
+  }, [isGraduate, totalSupply]);
 
   const marketCap = useMemo(() => {
     if (!ethPrice || !detail) return "-";
@@ -120,7 +127,10 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
           <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
           {detail && (
             <StyledPoolProgress>
-              <StyledPoolProgressBar>
+              <ProgressBar
+                progress={(Number(currentEth) / Number(graduatedPool)) * 100}
+              />
+              {/* <StyledPoolProgressBar>
                 <StyledPoolProgressBarInner
                   style={{
                     width: `${
@@ -128,7 +138,7 @@ export const TokenInfo: FC<InfoProps> = ({ detail, className }) => {
                     }%`,
                   }}
                 ></StyledPoolProgressBarInner>
-              </StyledPoolProgressBar>
+              </StyledPoolProgressBar> */}
               <StyledPoolProgressText>
                 <span>Bonding curve progress:&nbsp;</span>
                 <b>

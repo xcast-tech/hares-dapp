@@ -801,7 +801,11 @@ export default function Token(props: IToken) {
                 sectionsRef.current[0] = el;
               }}
             >
-              <TokenInfo detail={detail} />
+              <TokenInfo
+                isGraduate={isGraduate === 1}
+                totalSupply={totalSupply}
+                detail={detail}
+              />
             </StyledTokenInfo>
             <StyledTokenRBHInfo
               id="chart"
