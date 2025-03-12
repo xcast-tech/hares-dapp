@@ -6,11 +6,12 @@ import {
   coinbaseWallet,
   rainbowWallet,
   walletConnectWallet,
-  binanceWallet,
+  // binanceWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { createClient, createPublicClient, http, webSocket } from "viem";
 import { createConfig } from "wagmi";
 import { mainChain } from "@/lib/constant";
+import binanceWallet from "@binance/w3w-rainbow-connector-v2";
 
 const connectors = connectorsForWallets(
   [
