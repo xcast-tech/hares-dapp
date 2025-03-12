@@ -46,7 +46,7 @@ const WalletConnectButton = () => {
             <ConnectBtnBox>
               <ConnectBtnBoxInner>
                 <ConnectBtn
-                  disabled={!ready}
+                  disabled={isConnecting || signLoading}
                   onClick={() => {
                     if (connectModalOpen) return;
                     openConnectModal();
