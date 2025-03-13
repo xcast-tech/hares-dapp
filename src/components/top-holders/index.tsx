@@ -117,6 +117,8 @@ const StyledTopHolders = styled.div`
   @media screen and (max-width: 1024px) {
     border: none;
     border-radius: 0;
+    padding-top: 0;
+    padding-bottom: 24px;
   }
 `;
 

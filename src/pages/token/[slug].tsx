@@ -633,43 +633,25 @@ export default function Token(props: IToken) {
     </StyledActionContainer>
   );
 
-  const sectionsRef = useRef<(HTMLDivElement | null)[]>([]);
-
-  const [scrollDirection, setScrollDirection] = useState("down");
-  const lastScrollY = useRef(0);
   const [activeTab, setActiveTab] = useState("info");
 
   const mobileTabs = useMemo(() => {
     return [
       {
+        key: "info",
         icon: <InfoIcon />,
         label: "Info",
         active: activeTab === "info",
         hash: "info",
         idx: 0,
-        // onClick: () => {
-        //   if (sectionsRef.current[0]) {
-        //     window.scrollTo({
-        //       top: sectionsRef.current[0].offsetTop - 82,
-        //       behavior: "smooth",
-        //     });
-        //   }
-        // },
       },
       {
+        key: "chart",
         icon: <ChartIcon />,
         label: "Chart",
         active: activeTab === "chart",
         hash: "chart",
         idx: 1,
-        // onClick: () => {
-        //   if (sectionsRef.current[1]) {
-        //     window.scrollTo({
-        //       top: sectionsRef.current[1].offsetTop - 82,
-        //       behavior: "smooth",
-        //     });
-        //   }
-        // },
       },
       {
         icon: <TradeIcon />,
@@ -678,132 +660,30 @@ export default function Token(props: IToken) {
         primary: true,
       },
       {
+        key: "history",
         icon: <TXsIcon />,
         label: "TXs",
         active: activeTab === "history",
         hash: "history",
         idx: 2,
-        // onClick: () => {
-        //   if (sectionsRef.current[2]) {
-        //     window.scrollTo({
-        //       top: sectionsRef.current[2].offsetTop - 82,
-        //       behavior: "smooth",
-        //     });
-        //   }
-        // },
       },
       {
+        key: "holders",
         icon: <ShareIcon />,
         label: "Share",
         active: activeTab === "holders",
         hash: "holders",
         idx: 3,
-        // onClick: () => {
-        //   if (sectionsRef.current[3]) {
-        //     window.scrollTo({
-        //       top: sectionsRef.current[3].offsetTop - 82,
-        //       behavior: "smooth",
-        //     });
-        //   }
-        // },
       },
     ];
   }, [activeTab]);
 
-  // Track scroll direction
-  // useEffect(() => {
-  //   if (!isMobile) return;
-  //   const handleScroll = () => {
-  //     const currentScrollY = window.scrollY;
-  //     if (currentScrollY > lastScrollY.current) {
-  //       setScrollDirection("down");
-  //     } else if (currentScrollY < lastScrollY.current) {
-  //       setScrollDirection("up");
-  //     }
-  //     lastScrollY.current = currentScrollY;
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll, { passive: true });
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, [isMobile]);
-
-  // useEffect(() => {
-  //   if (!isMobile) return;
-  //   // Handle intersection based on scroll direction
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       entries.forEach((entry) => {
-  //         if (entry.isIntersecting) {
-  //           const id = entry.target.id;
-  //           if (window.location.hash !== `#${id}`) {
-  //             setActiveTab(id);
-  //             console.log(" observer id:", id);
-  //             window.history.replaceState(null, "", `#${id}`);
-  //           }
-  //         }
-  //       });
-  //     },
-  //     {
-  //       root: null,
-  //       rootMargin: "-100px 0px 0px 0px",
-  //       threshold: 0,
-  //     }
-  //   );
-
-  //   sectionsRef.current.forEach((section) => {
-  //     if (section) {
-  //       observer.observe(section);
-  //     }
-  //   });
-
-  //   return () => {
-  //     if (sectionsRef.current) {
-  //       sectionsRef.current.forEach((section) => {
-  //         if (section) {
-  //           observer.unobserve(section);
-  //         }
-  //       });
-  //     }
-  //   };
-  // }, [isMobile]);
-
-  // useEffect(() => {
-  //   if (!isMobile) return;
-
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       entries.forEach((entry) => {
-  //         if (entry.isIntersecting) {
-  //           const id = entry.target.id;
-  //           if (window.location.hash !== `#${id}`) {
-  //             window.history.replaceState(null, "", `#${id}`);
-  //           }
-  //         }
-  //       });
-  //     },
-  //     {
-  //       root: null,
-  //       rootMargin: "-100px 0px 0px 0px",
-  //       threshold: 0,
-  //     }
-  //   );
-
-  //   sectionsRef.current.forEach((section) => {
-  //     if (section) {
-  //       observer.observe(section);
-  //     }
-  //   });
-
-  //   return () => {
-  //     if (sectionsRef.current) {
-  //       sectionsRef.current.forEach((section) => {
-  //         if (section) {
-  //           observer.unobserve(section);
-  //         }
-  //       });
-  //     }
-  //   };
-  // }, [isMobile]);
+  useEffect(() => {
+    if (!isMobile) return;
+    if (typeof window !== "undefined") {
+      setActiveTab(window.location.hash.replace("#", "") || "info");
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     if (ca && address) {
@@ -843,10 +723,8 @@ export default function Token(props: IToken) {
         <StyledTokenLeft>
           <StyledTradingInfo>
             <StyledTokenInfo
-              id="info"
-              ref={(el) => {
-                sectionsRef.current[0] = el;
-              }}
+              active={mobileTabs[0].active}
+              id={mobileTabs[0].key}
             >
               <TokenInfo
                 isGraduate={isGraduate === 1}
@@ -855,15 +733,13 @@ export default function Token(props: IToken) {
               />
             </StyledTokenInfo>
             <StyledTokenRBHInfo
-              id="chart"
-              ref={(el) => {
-                sectionsRef.current[1] = el;
-              }}
+              active={mobileTabs[1].active}
+              id={mobileTabs[1].key}
             >
               <b>{detail?.symbol}:&nbsp;</b>
               <span>{ca}</span>
             </StyledTokenRBHInfo>
-            <StyledTradingChartBox>
+            <StyledTradingChartBox active={mobileTabs[1].active}>
               {isGraduate ? (
                 <StyledTokenGraduate>
                   The token has already graduated and been migrated to the
@@ -905,45 +781,50 @@ export default function Token(props: IToken) {
             symbol={detail.symbol}
             className="hidden xl:block"
           /> */}
-          <InfiniteScroll
-            hasMore={!noMoreHistory}
-            fetchMoreData={async () => {
-              const limit = 20;
-              const res = await fetchHistoryDataCallback(
-                ca,
-                historyParams.from,
-                0,
-                limit
-              );
-
-              if (res) {
-                const list = removeDuplicateTrades([
-                  ...historyList,
-                  ...res.list,
-                ]);
-                const from = Math.max(
-                  res.list[res.list.length - 1].timestamp,
-                  historyParams.from
-                );
-                setHistoryList(list);
-                setHistoryParams((v) => ({
-                  ...v,
-                  from,
-                  limit,
-                  total: res.count || v.total,
-                }));
-              }
-            }}
+          <StyledTradesContainer
+            active={mobileTabs[3].active}
+            id={mobileTabs[3].key}
           >
-            <StyledTradeListContainer
-              id="history"
-              ref={(el) => {
-                sectionsRef.current[2] = el;
+            <InfiniteScroll
+              mobileEnable
+              hasMore={!noMoreHistory}
+              fetchMoreData={async () => {
+                const limit = 20;
+                const res = await fetchHistoryDataCallback(
+                  ca,
+                  historyParams.from,
+                  0,
+                  limit
+                );
+
+                if (res) {
+                  const list = removeDuplicateTrades([
+                    ...historyList,
+                    ...res.list,
+                  ]);
+                  const from = Math.max(
+                    res.list?.[res.list?.length - 1]?.timestamp || 0,
+                    historyParams.from
+                  );
+                  setHistoryList(list);
+                  setHistoryParams((v) => ({
+                    ...v,
+                    from,
+                    limit,
+                    total: res.count || v.total,
+                  }));
+                }
               }}
             >
-              <TradeList list={historyList} symbol={detail.symbol} />
-            </StyledTradeListContainer>
-          </InfiniteScroll>
+              <StyledTradeListContainer>
+                <TradeList
+                  loading={historyLoading}
+                  list={historyList}
+                  symbol={detail.symbol}
+                />
+              </StyledTradeListContainer>
+            </InfiniteScroll>
+          </StyledTradesContainer>
 
           {/* <MobileStyledTradeListContainer>
             <MobileTradeList list={historyList} symbol={detail.symbol} />
@@ -952,10 +833,8 @@ export default function Token(props: IToken) {
         <StyledTradeContainer>
           <StyledTradeAction>{tradeComponent}</StyledTradeAction>
           <StyledTradeTopHolders
-            id="holders"
-            ref={(el) => {
-              sectionsRef.current[3] = el;
-            }}
+            active={mobileTabs[4].active}
+            id={mobileTabs[4].key}
           >
             <TopHolders list={topHolders} devAddress={detail.creatorAddress} />
           </StyledTradeTopHolders>
@@ -975,14 +854,8 @@ export default function Token(props: IToken) {
                 active={tab.active}
                 key={index}
                 onClick={() => {
-                  const _idx = tab.idx || 0;
-                  if (sectionsRef.current[_idx]) {
-                    window.scrollTo({
-                      top: sectionsRef.current[_idx].offsetTop - 82,
-                      behavior: "smooth",
-                    });
-                    setActiveTab(tab.hash!);
-                  }
+                  setActiveTab(tab.key!);
+                  window.history.replaceState(null, "", `#${tab.key}`);
                 }}
               >
                 {tab.icon}
@@ -1076,10 +949,11 @@ const StyledTokenContainer = styled.div`
   gap: 24px;
 
   @media screen and (max-width: 1024px) {
+    display: block;
+    min-height: 100vh;
     padding: 18px 20px;
     padding-top: calc(var(--header-h) + 18px);
     padding-bottom: 72px;
-    flex-direction: column;
     gap: 0;
     background-image: url(/mobile-bg.png);
     background-size: 100% auto;
@@ -1105,7 +979,7 @@ const StyledTradingInfo = styled.div`
   width: 100%;
 `;
 
-const StyledTradingChartBox = styled.div`
+const StyledTradingChartBox = styled.div<{ active?: boolean }>`
   // padding: 16px;
   display: flex;
   flex-direction: column;
@@ -1115,6 +989,7 @@ const StyledTradingChartBox = styled.div`
   @media screen and (max-width: 1024px) {
     padding: 0;
     background: transparent;
+    display: ${(props) => (props.active ? "flex" : "none")};
   }
 `;
 
@@ -1133,12 +1008,15 @@ const StyledTokenGraduate = styled.div`
   line-height: 140%; /* 19.6px */
 `;
 
-const StyledTokenInfo = styled.div`
+const StyledTokenInfo = styled.div<{ active?: boolean }>`
   display: flex;
   flex-direction: column;
+  @media screen and (max-width: 1024px) {
+    display: ${(props) => (props.active ? "flex" : "none")};
+  }
 `;
 
-const StyledTokenRBHInfo = styled.div`
+const StyledTokenRBHInfo = styled.div<{ active?: boolean }>`
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -1154,18 +1032,31 @@ const StyledTokenRBHInfo = styled.div`
   > b {
     color: #eaecef;
     font-weight: 700;
+    flex-shrink: 0;
   }
 
   @media screen and (max-width: 1024px) {
-    display: block;
+    display: ${(props) => (props.active ? "block" : "none")};
     padding: 12px 0;
+    padding-top: 0;
     white-space: wrap;
     word-break: break-all;
+    border: none;
+  }
+`;
+
+const StyledTradesContainer = styled.div<{ active?: boolean }>`
+  width: 100%;
+  @media screen and (max-width: 1024px) {
+    display: ${(props) => (props.active ? "block" : "none")};
   }
 `;
 
 const StyledTradeListContainer = styled.div`
   border-top: 1px solid rgba(255, 255, 255, 0.12);
+  @media screen and (max-width: 1024px) {
+    border: none;
+  }
 `;
 
 // const MobileStyledTradeListContainer = styled.div`
@@ -1407,7 +1298,7 @@ const StyledTokenActionTradePlaceSubmit = styled(Button)`
   }
 `;
 
-const StyledTradeTopHolders = styled.div`
+const StyledTradeTopHolders = styled.div<{ active?: boolean }>`
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1415,7 +1306,9 @@ const StyledTradeTopHolders = styled.div`
   width: 100%;
   overflow: hidden;
   @media screen and (max-width: 1024px) {
-    min-height: 300px;
+    // min-height: 300px;
+    height: 100%;
+    display: ${(props) => (props.active ? "block" : "none")};
   }
 `;
 

@@ -23,12 +23,18 @@ import styles from "./index.module.scss";
 import TradesIcon from "~@/icons/trades.svg";
 
 interface TradeListProps {
+  loading?: boolean;
   list: Trade[];
   symbol: string;
   className?: string;
 }
 
-export const TradeList = ({ list, symbol, className }: TradeListProps) => {
+export const TradeList = ({
+  loading,
+  list,
+  symbol,
+  className,
+}: TradeListProps) => {
   console.log("TradeList", { list, symbol });
 
   const columns = useMemo(() => {
@@ -131,7 +137,11 @@ export const TradeList = ({ list, symbol, className }: TradeListProps) => {
               <TableColumn key={column.key}>{column.title}</TableColumn>
             )}
           </TableHeader>
-          <TableBody emptyContent="No transaction data.">
+          <TableBody
+            emptyContent={`${
+              loading && !list.length ? "loading..." : "No transaction data."
+            }`}
+          >
             {list.map((item) => {
               return (
                 <TableRow key={item.id}>
@@ -157,7 +167,8 @@ const StyledTradeList = styled.div`
   gap: 16px;
   background: transparent;
   @media screen and (max-width: 1024px) {
-    padding: 16px 0;
+    padding-top: 0;
+    padding-bottom: 24px;
   }
 `;
 
@@ -188,6 +199,9 @@ const StyledTradeListTable = styled.div`
   width: 100%;
   @media screen and (max-width: 1024px) {
     overflow-x: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 `;
 
