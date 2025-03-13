@@ -8,15 +8,15 @@ import UniswapV3Pool from "./abi/UniswapV3Pool";
 import { Address } from "./types";
 import { parseEther, zeroAddress } from "viem";
 
-export const mainChain = sepolia;
+export const mainChain = bsc;
 export const SCAN_API_KEY = process.env[`SCAN_API_KEY_${mainChain.id}`];
 
 export const tokenSymbol = mainChain.nativeCurrency.symbol;
 export const contractAddress = {
-  BondingCurve: "0xfF795E4B82c97e41e1eFA40239fE1A13763542CD" as Address,
-  BABTValidatorAddress: "0xb4C4f1E74bdA0Cc587EC7E314eA34cE07Dbe0015" as Address,
-  HaresFactory: "0x1684E74EDA3e23e1D450B25BE82A49BD8B3401a1" as Address,
-  WETH: "0x7b79995e5f793a07bc00c21412e50ecae098e7f9" as Address,
+  BondingCurve: "0x3E2c77C7591a57beEc4Fd759407D17d19C78385E" as Address,
+  BABTValidatorAddress: "0xB5Fb5724a204E83fE894C1b67A04B0ad6eD300F7" as Address,
+  HaresFactory: "0x69EfCb45b473A0Af765b52d0267534E01F2208FB" as Address,
+  WETH: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c" as Address,
 };
 
 export const ABIs = {
@@ -41,16 +41,16 @@ export const EventTopic: Record<string, string> = {
 };
 
 export const BondingCurveConfig = {
-  A: 883000000,
-  B: 6100000000,
+  A: 50000000,
+  B: 1000000000,
 };
 
 export const HaresAiWarpcastLink = "https://warpcast.com/hares-ai";
 
 export const HaresAiTwitterLink = "/";
 
-export const graduatedPool = parseEther("18.91"); // 18.91
-export const graduatedPoolConstant = "19.11"; // 18.91 / 0.99
+export const graduatedPool = parseEther("0.061277"); // 18.91
+export const graduatedPoolConstant = "0.0619"; // 18.91 / 0.99
 
 export const primaryMarketSupply = parseEther((8e8).toString()); // 800,000,000
 
