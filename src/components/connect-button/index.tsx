@@ -3,11 +3,12 @@ import styled from "@emotion/styled";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
 import DisconnectIcon from "~@/icons/disconnect.svg";
 import Avatar from "boring-avatars";
-import { useAccount, useConnect, useConnectors } from "wagmi";
+import { useAccount, useConnect, useConnectors, useDisconnect } from "wagmi";
 
 const WalletConnectButton = () => {
   const { signLoading, shouldSign, handleSign, isMobile } = useGlobalCtx();
   const { isConnecting } = useAccount();
+  const { disconnect } = useDisconnect();
   return (
     <>
       {/* <ConnectButton /> */}
@@ -38,6 +39,7 @@ const WalletConnectButton = () => {
                 onClick={() => {
                   openAccountModal();
                 }}
+                onDisconnect={disconnect}
               />
             );
 
@@ -72,6 +74,7 @@ interface WalletInfoProps {
   balance?: string;
   walletAddress: string;
   onClick?: () => void;
+  onDisconnect?: () => void;
 }
 
 const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
@@ -79,6 +82,7 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
   balance,
   walletAddress,
   onClick,
+  onDisconnect,
 }) => {
   const {
     shouldSign,
@@ -125,7 +129,14 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
                   variant="beam"
                 />
                 <WalletAddress>{truncatedAddress}</WalletAddress>
-                <DisconnectIcon className="disconnect-icon" />
+                <DisconnectIcon
+                  className="disconnect-icon"
+                  onClick={(e: any) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    onDisconnect && onDisconnect();
+                  }}
+                />
               </>
             )}
           </ProfileBtn>
