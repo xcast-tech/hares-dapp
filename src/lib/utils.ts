@@ -52,6 +52,7 @@ export const formatDecimalNumber = (
 };
 
 export const formatDisplayDecimalNumber = (num: number | string) => {
+  if (!Number(num)) return "0";
   if (Number(num) < 1e-4) {
     return "<0.0001";
   }
@@ -104,6 +105,7 @@ export function formatTokenBalance(value: string | number): string {
 }
 
 export function formatBigintTokenBalance(value: bigint): string {
+  if (value === BigInt(0)) return "0";
   const num = formatEther(value);
 
   if (Number(num) < 1e-3) {
