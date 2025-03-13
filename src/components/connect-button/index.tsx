@@ -46,7 +46,7 @@ const WalletConnectButton = () => {
             <ConnectBtnBox>
               <ConnectBtnBoxInner>
                 <ConnectBtn
-                  disabled={isConnecting || signLoading}
+                  disabled={signLoading}
                   onClick={() => {
                     if (connectModalOpen) return;
                     openConnectModal();
@@ -107,7 +107,6 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
               if (!isCorrectChain) {
                 await handleSwitchNetwork();
               }
-              console.log("ProfileBtn onClick");
               onClick && onClick();
             }}
           >

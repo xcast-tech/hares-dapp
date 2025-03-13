@@ -51,7 +51,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const { switchChainAsync } = useSwitchChain();
   const { signMessageAsync } = useSignMessage();
   const { disconnect } = useDisconnect();
-  const { address, chain, isConnected } = useAccount();
+  const { address, chain } = useAccount();
   const [profile, setProfile] = useState<ProfileType>();
   const [isLoading, setIsLoading] = useState(true);
   const [signLoading, setSignLoading] = useState(false);
@@ -65,8 +65,8 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   }, [chain, mainChain]);
 
   const isActionReady = useMemo(() => {
-    return Boolean(isConnected && address && !shouldSign);
-  }, [isConnected, address, shouldSign]);
+    return Boolean(address && !shouldSign);
+  }, [address, shouldSign]);
 
   const isLogin = useMemo(() => {
     return (
@@ -155,7 +155,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    if (!isConnected || !address || !profile) return;
+    if (!address || !profile) return;
     if (profile.address?.toLowerCase() !== address.toLowerCase()) {
       setShouldSign(true);
       // auto sign on web; manual sign on mobile
@@ -164,12 +164,12 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
       }
       return;
     }
-    if (address && isConnected) {
+    if (address) {
       validate?.(address).then((res) => {
         setIsBABValidated(res);
       });
     }
-  }, [isConnected, address, profile, isMobile]);
+  }, [address, profile, isMobile]);
 
   useEffect(() => {
     fetchProfile();

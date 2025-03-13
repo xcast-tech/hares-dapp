@@ -313,9 +313,9 @@ export function useHaresContract() {
     return tx;
   }
 
-  async function validate(token: Address) {
+  async function validate(address: Address) {
     if (!publicClient) {
-      return true;
+      return false;
     }
 
     // const validator = await publicClient?.readContract({

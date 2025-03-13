@@ -124,16 +124,12 @@ export default function Token(props: IToken) {
     isMobile,
   } = useGlobalCtx();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const publicClient = usePublicClient();
-  // const router = useRouter();
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
 
   const { data: balance } = useBalance({ address });
 
   const ca = detail.address as Address;
   const [totalSupply, setTotalSupply] = useState(detail.totalSupply);
-  const [isGraduate, setIsGraduate] = useState(detail.isGraduate);
+  const [isGraduated, setIsGraduated] = useState(detail.isGraduate === 1);
 
   const [tokenBalance, setTokenBalance] = useState<bigint>(BigInt(0));
   const [slippage, setSlippage] = useState("20");
@@ -225,7 +221,7 @@ export default function Token(props: IToken) {
 
       // check isGraduate
       if (Number(latelyTrade.totalSupply) > primaryMarketSupply) {
-        setIsGraduate(1);
+        setIsGraduated(true);
       }
       setHistoryList(_trades);
       setTotalSupply(latelyTrade.totalSupply);
@@ -299,7 +295,8 @@ export default function Token(props: IToken) {
       return;
     }
     const amount = +(buyInputValue || "");
-    if (amount <= 0) {
+    if (!amount) return;
+    if (amount < 0) {
       toast("Invalid amount");
       return;
     }
@@ -328,6 +325,7 @@ export default function Token(props: IToken) {
       return;
     }
     const amount = +(sellInputValue || "");
+    if (!amount) return;
     if (amount <= 0) {
       toast("Invalid amount");
       return;
@@ -470,7 +468,7 @@ export default function Token(props: IToken) {
                   />
                 </StyledTokenActionInputRight>
               </StyledTokenActionTradePlaceInputBox>
-              {buyInputValue && !isGraduate && (
+              {buyInputValue && !isGraduated && (
                 <StyledTokenReceived>
                   {detail?.symbol} received:{" "}
                   {simulateBuying || isBuyInsufficientToken
@@ -512,7 +510,7 @@ export default function Token(props: IToken) {
                   if (!isCorrectChain) {
                     await handleSwitchNetwork();
                   }
-                  if (!isBABValidated) {
+                  if (!isGraduated && !isBABValidated) {
                     router.push("/about");
                     return;
                   }
@@ -528,7 +526,7 @@ export default function Token(props: IToken) {
                   "Insufficient Token"
                 ) : !address || shouldSign ? (
                   <span>Connect Wallet & Sign</span>
-                ) : !isBABValidated ? (
+                ) : !isGraduated && !isBABValidated ? (
                   "Mint BABT first"
                 ) : (
                   <span>
@@ -560,7 +558,7 @@ export default function Token(props: IToken) {
                   />
                 </StyledTokenActionInputRight>
               </StyledTokenActionTradePlaceInputBox>
-              {sellInputValue && !isGraduate && (
+              {sellInputValue && !isGraduated && (
                 <StyledTokenReceived>
                   {tokenSymbol} received:{" "}
                   {simulateSelling || isSellInsufficientToken
@@ -727,7 +725,7 @@ export default function Token(props: IToken) {
               id={mobileTabs[0].key}
             >
               <TokenInfo
-                isGraduate={isGraduate === 1}
+                isGraduated={isGraduated}
                 totalSupply={totalSupply}
                 detail={detail}
               />
@@ -740,13 +738,13 @@ export default function Token(props: IToken) {
               <span>{ca}</span>
             </StyledTokenRBHInfo>
             <StyledTradingChartBox active={mobileTabs[1].active}>
-              {isGraduate ? (
+              {isGraduated ? (
                 <StyledTokenGraduate>
                   The token has already graduated and been migrated to the
                   PancakeSwap V3 pool.
                 </StyledTokenGraduate>
               ) : null}
-              <StyledTradingChartContainer isIframeMode={isGraduate === 1}>
+              <StyledTradingChartContainer isIframeMode={isGraduated}>
                 {/* <TradingView
                 className="w-full h-[500px] bg-black"
                 symbol={detail.symbol}
@@ -758,7 +756,7 @@ export default function Token(props: IToken) {
                   <div></div>
                 ) : (
                   <TradingChart
-                    isGraduated={isGraduate === 1}
+                    isGraduated={isGraduated}
                     param={{
                       name: detail.name,
                       ticker: detail.symbol,

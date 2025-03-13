@@ -33,26 +33,26 @@ import ProgressBar from "@/components/common/progressBar";
 
 interface InfoProps {
   detail?: IToken;
-  isGraduate?: boolean;
+  isGraduated?: boolean;
   totalSupply?: string;
 }
 
 export const TokenInfo: FC<InfoProps> = ({
   detail,
-  isGraduate,
+  isGraduated,
   totalSupply,
 }) => {
   const { ethPrice } = useAppContext();
 
   const currentEth = useMemo(() => {
     if (!totalSupply) return BigInt(0);
-    return isGraduate
+    return isGraduated
       ? graduatedPool
       : getTokenSellQuote(
           Number(totalSupply) / 1e18,
           Number(totalSupply) / 1e18
         );
-  }, [isGraduate, totalSupply]);
+  }, [isGraduated, totalSupply]);
 
   const marketCap = useMemo(() => {
     if (!ethPrice || !detail) return "-";
