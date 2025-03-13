@@ -80,7 +80,7 @@ export const TVChartContainer = ({
         autosize: true,
         custom_css_url: "/tradingview-chart.css",
         overrides: chartOverrides,
-        interval: "5" as ResolutionString,
+        interval: "15" as ResolutionString,
       };
 
       tvWidgetRef.current = new widget(widgetOptions);

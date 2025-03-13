@@ -440,11 +440,24 @@ export const groupDatasInRanges = (
         to: Math.min(from + (i + 1) * range, to),
       };
     });
+  let latelyTempTrade: Trade = trades[0];
   rangeGroup.forEach((range) => {
     const rangeDatas = trades.filter(
       (trade) => trade.timestamp >= range.from && trade.timestamp < range.to
     );
-    result.push(rangeDatas);
+    if (!rangeDatas.length) {
+      result.push([
+        {
+          ...latelyTempTrade,
+          timestamp: range.from,
+          trueEth: "0",
+          trueOrderSize: "0",
+        },
+      ]);
+    } else {
+      latelyTempTrade = { ...rangeDatas[rangeDatas.length - 1] };
+      result.push(rangeDatas);
+    }
   });
   return result;
 };
