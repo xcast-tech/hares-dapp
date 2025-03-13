@@ -160,7 +160,7 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
             {rightNavs.map((nav) => {
               if (nav.type === "link") {
                 return (
-                  <Link href={nav.link} key={nav.link}>
+                  <Link href={nav.link} key={nav.link} target="_blank">
                     <StyledHeaderRightNav>{nav.icon}</StyledHeaderRightNav>
                   </Link>
                 );

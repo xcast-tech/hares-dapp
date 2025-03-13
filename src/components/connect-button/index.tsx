@@ -118,7 +118,7 @@ const CryptoBalanceDisplay: React.FC<WalletInfoProps> = ({
               <SignMessage>Wrong Network</SignMessage>
             ) : shouldSign ? (
               <SignMessage>
-                {signLoading ? "Waiting for Sign..." : "Sign Message"}{" "}
+                {signLoading ? "Waiting for Sign..." : "Sign Message"}
               </SignMessage>
             ) : (
               <>
