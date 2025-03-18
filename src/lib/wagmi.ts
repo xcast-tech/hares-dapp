@@ -39,11 +39,7 @@ export const wagmiConfig = createConfig({
   client({ chain }) {
     return createClient({
       chain,
-      transport: http(
-        mainChain.id === sepolia.id
-          ? "https://ethereum-sepolia-rpc.publicnode.com"
-          : "https://bsc-dataseed1.binance.org/"
-      ),
+      transport: http(),
     });
   },
   ssr: true,
