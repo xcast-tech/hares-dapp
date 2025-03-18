@@ -40,7 +40,9 @@ export const wagmiConfig = createConfig({
     return createClient({
       chain,
       transport: http(
-        mainChain.id === sepolia.id ? "https://rpc.ankr.com/eth_sepolia" : ""
+        mainChain.id === sepolia.id
+          ? "https://ethereum-sepolia-rpc.publicnode.com"
+          : "https://bsc-dataseed1.binance.org/"
       ),
     });
   },
@@ -50,8 +52,11 @@ export const wagmiConfig = createConfig({
 export const publicClient = createPublicClient({
   chain: mainChain,
   transport: http(
-    mainChain.id === sepolia.id ? "https://rpc.ankr.com/eth_sepolia" : ""
+    mainChain.id === sepolia.id
+      ? "https://ethereum-sepolia-rpc.publicnode.com"
+      : "https://bsc-dataseed1.binance.org/"
   ),
+  // mainChain.id === sepolia.id ? "https://rpc.ankr.com/eth_sepolia" : ""
   // "https://polygon-mainnet.g.alchemy.com/v2/ewYI1qbiYF06opUs36WZ9qJJRZRstxNK"
 });
 export const publicWsClient = createPublicClient({
