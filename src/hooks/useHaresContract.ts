@@ -1,33 +1,11 @@
 import { getSignatureApi } from "@/lib/apis";
-import {
-  ABIs,
-  contractAddress,
-  EventTopic,
-  primaryMarketSupply,
-} from "@/lib/constant";
+import { ABIs, contractAddress, EventTopic, primaryMarketSupply } from "@/lib/constant";
 import { Address } from "@/lib/types";
-import {
-  calcSalt,
-  getEthBuyQuote,
-  getSqrtPriceLimitX96,
-  getTokenSellQuote,
-} from "@/lib/utils";
+import { calcSalt, getEthBuyQuote, getSqrtPriceLimitX96, getTokenSellQuote } from "@/lib/utils";
 import { toast } from "react-toastify";
 import { useSignInMessage } from "@farcaster/auth-kit";
-import {
-  decodeEventLog,
-  parseEther,
-  zeroAddress,
-  padBytes,
-  bytesToHex,
-  zeroHash,
-} from "viem";
-import {
-  useAccount,
-  usePublicClient,
-  useWriteContract,
-  useWalletClient,
-} from "wagmi";
+import { decodeEventLog, parseEther, zeroAddress, padBytes, bytesToHex, zeroHash } from "viem";
+import { useAccount, usePublicClient, useWriteContract, useWalletClient } from "wagmi";
 
 export function useHaresContract() {
   const { address } = useAccount();
@@ -36,23 +14,11 @@ export function useHaresContract() {
   const walletClient = useWalletClient();
   const { data: hash, writeContract, writeContractAsync } = useWriteContract();
 
-  async function createToken(
-    name: string,
-    symbol: string,
-    tokenUri = "",
-    value: string = ""
-  ) {
+  async function createToken(name: string, symbol: string, tokenUri = "", value: string = "") {
     if (!address) {
       return;
     }
-    const { predictedAddress, salt } = calcSalt(
-      name,
-      symbol,
-      tokenUri,
-      contractAddress.HaresFactory,
-      contractAddress.BABTValidatorAddress,
-      address
-    );
+    const { predictedAddress, salt } = calcSalt(name, symbol, tokenUri, contractAddress.HaresFactory, contractAddress.BABTValidatorAddress, address);
     const tx = await writeContractAsync({
       address: contractAddress.HaresFactory,
       abi: ABIs.HaresFactoryAbi,
@@ -135,9 +101,7 @@ export function useHaresContract() {
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
-      sqrtPriceLimitX96 = BigInt(
-        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true)
-      );
+      sqrtPriceLimitX96 = BigInt(getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true));
       // sqrtPriceLimitX96 = sqrtPriceX96;
     } else {
       // primaryMarket
@@ -154,12 +118,7 @@ export function useHaresContract() {
     });
   }
 
-  async function buy(
-    token: Address,
-    eth: number,
-    slipage: number,
-    onTxSend: (tx: string) => void = () => { }
-  ) {
+  async function buy(token: Address, eth: number, slipage: number, onTxSend: (tx: string) => void = () => {}) {
     if (!address) {
       return;
     }
@@ -174,9 +133,7 @@ export function useHaresContract() {
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
-      sqrtPriceLimitX96 = BigInt(
-        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true)
-      );
+      sqrtPriceLimitX96 = BigInt(getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, true));
       // sqrtPriceLimitX96 = sqrtPriceX96;
     } else {
       // primaryMarket
@@ -200,18 +157,12 @@ export function useHaresContract() {
     return tx;
   }
 
-  async function simulateSell(
-    token: Address,
-    tokenToSell: number,
-    slipage: number
-  ) {
+  async function simulateSell(token: Address, tokenToSell: number, slipage: number) {
     if (!address) {
       return;
     }
     const currentSupply = await getCurrentSupply(token);
-    const sellQuote = Number(
-      getTokenSellQuote(Number(currentSupply) / 1e18, tokenToSell)
-    );
+    const sellQuote = Number(getTokenSellQuote(Number(currentSupply) / 1e18, tokenToSell));
 
     let minOrderSize = BigInt(0);
     let sqrtPriceLimitX96 = BigInt(0);
@@ -219,9 +170,7 @@ export function useHaresContract() {
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
-      sqrtPriceLimitX96 = BigInt(
-        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, false)
-      );
+      sqrtPriceLimitX96 = BigInt(getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, false));
     } else {
       minOrderSize = BigInt(Math.floor(sellQuote * (1 - slipage)));
     }
@@ -231,28 +180,16 @@ export function useHaresContract() {
       abi: ABIs.HaresAbi,
       functionName: "sell",
       account: address,
-      args: [
-        parseEther(tokenToSell.toString()),
-        address,
-        minOrderSize,
-        sqrtPriceLimitX96,
-      ],
+      args: [parseEther(tokenToSell.toString()), address, minOrderSize, sqrtPriceLimitX96],
     });
   }
 
-  async function sell(
-    token: Address,
-    tokenToSell: number,
-    slipage: number,
-    onTxSend: (tx: string) => void = () => { }
-  ) {
+  async function sell(token: Address, tokenToSell: number, slipage: number, onTxSend: (tx: string) => void = () => {}) {
     if (!address) {
       return;
     }
     const currentSupply = await getCurrentSupply(token);
-    const sellQuote = Number(
-      getTokenSellQuote(Number(currentSupply) / 1e18, tokenToSell)
-    );
+    const sellQuote = Number(getTokenSellQuote(Number(currentSupply) / 1e18, tokenToSell));
 
     let minOrderSize = BigInt(0);
     let sqrtPriceLimitX96 = BigInt(0);
@@ -260,9 +197,7 @@ export function useHaresContract() {
       const poolAddress = await getTokenPoolAddress(token);
       const sqrtPriceX96 = await getCurrentSqrtPriceX96(poolAddress as Address);
       const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
-      sqrtPriceLimitX96 = BigInt(
-        getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, false)
-      );
+      sqrtPriceLimitX96 = BigInt(getSqrtPriceLimitX96(sqrtPriceX96, slipage, isWETHToken0, false));
     } else {
       minOrderSize = BigInt(Math.floor(sellQuote * (1 - slipage)));
     }
@@ -298,12 +233,7 @@ export function useHaresContract() {
       address: token,
       abi: ABIs.HaresAbi,
       functionName: "sell",
-      args: [
-        parseEther(tokenToSell.toString()),
-        address,
-        minOrderSize,
-        sqrtPriceLimitX96,
-      ],
+      args: [parseEther(tokenToSell.toString()), address, minOrderSize, sqrtPriceLimitX96],
       gasPrice: BigInt(Math.floor(Number(gasPrice) * 1.1)),
     });
     onTxSend(tx);
@@ -311,6 +241,44 @@ export function useHaresContract() {
       hash: tx,
     });
     return tx;
+  }
+
+  async function getClaimable(creator: Address, token: Address, lpId: number | string) {
+    const simulate = await publicClient?.simulateContract({
+      address: contractAddress.NonfungiblePositionManager,
+      abi: ABIs.NonfungiblePositionManager,
+      functionName: "collect",
+      account: token,
+      args: [
+        {
+          tokenId: BigInt(lpId),
+          recipient: token,
+          amount0Max: BigInt(1e30),
+          amount1Max: BigInt(1e30),
+        },
+      ],
+    });
+    const returnValue = simulate?.result;
+    if (!returnValue) {
+      return {
+        eth: 0,
+        token: 0,
+      };
+    }
+    const isWETHToken0 = parseInt(contractAddress.WETH) < parseInt(token);
+    return {
+      eth: isWETHToken0 ? Number(returnValue[0]) * 0.4 : Number(returnValue[1]) * 0.4,
+      token: isWETHToken0 ? Number(returnValue[1]) * 0.4 : Number(returnValue[0]) * 0.4,
+    };
+  }
+
+  async function claim(token: Address) {
+    await writeContract({
+      address: token,
+      abi: ABIs.HaresAbi,
+      functionName: "claimSecondaryRewards",
+      args: [],
+    });
   }
 
   async function validate(address: Address) {
@@ -357,5 +325,7 @@ export function useHaresContract() {
     simulateSell,
     getTokenBalance,
     validate,
+    claim,
+    getClaimable,
   };
 }

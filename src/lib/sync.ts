@@ -50,7 +50,7 @@ export async function syncEvents(from: number, to: number) {
       timestamp: e.timeStamp,
       topic: e.eventName,
       txIndex: e.txIndex,
-      chain: mainChain.id
+      chain: mainChain.id,
     })),
     {
       onConflict: "topic,hash,data,chain",
@@ -110,7 +110,7 @@ async function handleTokenCreated(row: Database["public"]["Tables"]["Event"]["Ro
       metadata,
       created_timestamp: row.timestamp,
       updated_timestamp: row.timestamp,
-      chain: row.chain
+      chain: row.chain,
     },
     {
       onConflict: "createEvent",
@@ -146,7 +146,7 @@ async function handleTokenTransfer(row: Database["public"]["Tables"]["Event"]["R
       toTokenBalance: args.toTokenBalance,
       timestamp: row.timestamp,
       txIndex: row.txIndex,
-      chain: row.chain
+      chain: row.chain,
     },
     {
       onConflict: "event",
@@ -190,7 +190,7 @@ async function handleTokenBuy(row: Database["public"]["Tables"]["Event"]["Row"])
       type: 0,
       timestamp: row.timestamp,
       txIndex: row.txIndex,
-      chain: row.chain
+      chain: row.chain,
     },
     {
       onConflict: "event",
@@ -240,7 +240,7 @@ async function handleTokenSell(row: Database["public"]["Tables"]["Event"]["Row"]
       type: 1,
       timestamp: row.timestamp,
       txIndex: row.txIndex,
-      chain: row.chain
+      chain: row.chain,
     },
     {
       onConflict: "event",

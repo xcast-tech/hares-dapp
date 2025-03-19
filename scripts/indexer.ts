@@ -11,7 +11,7 @@ import { createPublicClient, http } from "viem";
 
 export const publicClient = createPublicClient({
   chain: mainChain,
-  transport: http(),
+  transport: http("https://bsc-dataseed2.binance.org/"),
 });
 
 let start = 0;

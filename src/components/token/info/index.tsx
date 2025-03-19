@@ -1,14 +1,15 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import copy from "copy-to-clipboard";
 import { twMerge } from "tailwind-merge";
-import { Button } from "@heroui/react";
+import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
 import { Telegram } from "@/components/telegram";
 import { Website } from "@/components/website";
 import { Copy } from "@/components/copy";
 import {
   formatDecimalNumber,
   formatNumber,
+  formatTokenBalance,
   getTokenMarketCap,
   getTokenSellQuote,
   maskAddress,
@@ -17,10 +18,11 @@ import { toast } from "react-toastify";
 import { IToken } from "@/lib/types";
 import dayjs from "dayjs";
 import { Twitter2 } from "@/components/twitter2";
-import { formatEther } from "viem";
+import { Address, formatEther, parseEther } from "viem";
 import {
   graduatedPool,
   graduatedPoolConstant,
+  mainChain,
   tokenSymbol,
 } from "@/lib/constant";
 
@@ -30,6 +32,9 @@ import TGIcon from "~@/icons/tg.svg";
 import WebsiteIcon from "~@/icons/website.svg";
 import { useAppContext } from "@/context/useAppContext";
 import ProgressBar from "@/components/common/progressBar";
+import styles from './index.module.scss'
+import { useHaresContract } from "@/hooks/useHaresContract";
+import { useGlobalCtx } from "@/context/useGlobalCtx";
 
 interface InfoProps {
   detail?: IToken;
@@ -42,7 +47,15 @@ export const TokenInfo: FC<InfoProps> = ({
   isGraduated,
   totalSupply,
 }) => {
+  const { address } = useGlobalCtx();
   const { ethPrice } = useAppContext();
+  const { claim, getClaimable } = useHaresContract();
+
+  const [isClaimDialogVisible, setIsClaimDialogVisible] = useState(false)
+  const [claimableETH, setClaimableETH] = useState(0)
+  const [claimableToken, setClaimableToken] = useState(0)
+
+  const shouldShowClaimBtn = detail?.address && detail?.lpPositionId && detail?.isGraduate && address?.toLowerCase() === detail?.creatorAddress.toLowerCase()
 
   const currentEth = useMemo(() => {
     if (!totalSupply) return BigInt(0);
@@ -81,6 +94,18 @@ export const TokenInfo: FC<InfoProps> = ({
     ].filter((item) => !!item.url);
   }, [detail]);
 
+  useEffect(() => {
+    const getClaimableFee = async () => {
+      if (!detail?.isGraduate || address?.toLowerCase() !== detail?.creatorAddress.toLowerCase() || !detail?.address || !detail?.lpPositionId) {
+        return
+      }
+      const res = await getClaimable(detail.creatorAddress as Address, (detail?.address as Address), detail.lpPositionId)
+      setClaimableETH(res.eth)
+      setClaimableToken(res.token)
+    }
+    getClaimableFee()
+  }, [detail, address])
+
   console.log("- socialMedias", socialMedias);
 
   return (
@@ -100,6 +125,7 @@ export const TokenInfo: FC<InfoProps> = ({
               <StyledTokenMCA>MCap: ${marketCap}</StyledTokenMCA>
             </StyledTokenMetaHeadLeft>
             <StyledTokenMetaHeadRight>
+              {shouldShowClaimBtn && <StyledTokenAddressBtn onPress={() => setIsClaimDialogVisible(true)}>Claim fee</StyledTokenAddressBtn>}
               <StyledTokenAddressBtn
                 endContent={<Copy />}
                 onPress={() => {
@@ -169,7 +195,7 @@ export const TokenInfo: FC<InfoProps> = ({
             CA: {maskAddress(detail?.address, 10, 6)}
           </div>
         </MobileStyledTokenAddressBtn>
-
+        {shouldShowClaimBtn && <MobileStyledTokenAddressBtn onPress={() => setIsClaimDialogVisible(true)}>Claim fee</MobileStyledTokenAddressBtn>}
         {detail && (
           <MobileStyledPoolProgress>
             <MobileStyledPoolProgressBar>
@@ -228,6 +254,41 @@ export const TokenInfo: FC<InfoProps> = ({
           })}
         </StyledTokenSocialBox>
       )} */}
+      <Modal
+        classNames={{
+          base: styles["claim-modal-base"],
+          backdrop: styles["claim-modal-backdrop"],
+          wrapper: styles["claim-modal-wrapper"],
+          header: styles["claim-modal-header"],
+          body: styles["claim-modal-body"],
+          footer: styles["claim-modal-footer"],
+        }}
+        isOpen={isClaimDialogVisible}
+        onOpenChange={v => setIsClaimDialogVisible(v)}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Claim fee</ModalHeader>
+              <ModalBody>
+                <div className="mt-4">
+                  {tokenSymbol}: {formatTokenBalance(claimableETH)}
+                </div>
+                <div>
+                  {detail?.symbol}: {formatTokenBalance(claimableToken)}
+                </div>
+              </ModalBody>
+              <ModalFooter>
+              <StyledModalButton
+                onPress={() => claim(detail?.address as Address)}
+              >
+                Claim
+              </StyledModalButton>
+            </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </StyledTokenInfo>
   );
 };
@@ -582,4 +643,23 @@ const MobileStyledTokenSocialLink = styled.a`
     line-height: normal;
     text-transform: capitalize;
   }
+`;
+
+const StyledModalButton = styled(Button)`
+  width: 100%;
+  display: flex;
+  height: 48px;
+  padding: 0px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  align-self: stretch;
+  border-radius: 24px;
+  background: linear-gradient(274deg, #ffc720 0%, #fcd535 49.5%);
+
+  color: #1b1f29;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 150%; /* 21px */
 `;

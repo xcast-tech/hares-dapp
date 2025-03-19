@@ -5,6 +5,7 @@ import HaresFactoryAbi from "./abi/HaresFactory";
 import HaresAbi from "./abi/Hares";
 import HaresValidatorAbi from "./abi/HaresValidator";
 import UniswapV3Pool from "./abi/UniswapV3Pool";
+import NonfungiblePositionManager from "./abi/NonfungiblePositionManager";
 import { Address } from "./types";
 import { parseEther, zeroAddress } from "viem";
 
@@ -17,6 +18,7 @@ export const contractAddress = {
   BABTValidatorAddress: "0x2E0Eb54F0A52D6F20b77Bac37b4bC68F6b98e2c6" as Address,
   HaresFactory: "0xb83Db501827cDDc48A304BFf012dDf0F5683C93e" as Address,
   WETH: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c" as Address,
+  NonfungiblePositionManager: "0x46A15B0b27311cedF172AB29E4f4766fbE7F4364" as Address,
 };
 
 export const ABIs = {
@@ -25,6 +27,7 @@ export const ABIs = {
   HaresAbi,
   HaresValidatorAbi,
   UniswapV3Pool,
+  NonfungiblePositionManager,
 };
 
 export const EventTopic: Record<string, string> = {
