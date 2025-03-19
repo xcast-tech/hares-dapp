@@ -15,7 +15,7 @@ export const tokenSymbol = mainChain.nativeCurrency.symbol;
 export const contractAddress = {
   BondingCurve: "0x17334F09aA1e09Ec2A4fEEF9533fBBC99ADa0fb8" as Address,
   BABTValidatorAddress: "0x2E0Eb54F0A52D6F20b77Bac37b4bC68F6b98e2c6" as Address,
-  HaresFactory: "0x84fD1cfE0c65D46C356119629D4B5935891CbE84" as Address,
+  HaresFactory: "0xb83Db501827cDDc48A304BFf012dDf0F5683C93e" as Address,
   WETH: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c" as Address,
 };
 
