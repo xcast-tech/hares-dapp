@@ -57,7 +57,7 @@ export function useHaresContract() {
       address: contractAddress.HaresFactory,
       abi: ABIs.HaresFactoryAbi,
       functionName: "createToken",
-      args: [name, symbol, zeroAddress, tokenUri, salt],
+      args: [name, symbol, contractAddress.BABTValidatorAddress, tokenUri, salt],
       // gas,
       value: parseEther(value),
     });
@@ -158,7 +158,7 @@ export function useHaresContract() {
     token: Address,
     eth: number,
     slipage: number,
-    onTxSend: (tx: string) => void = () => {}
+    onTxSend: (tx: string) => void = () => { }
   ) {
     if (!address) {
       return;
@@ -244,7 +244,7 @@ export function useHaresContract() {
     token: Address,
     tokenToSell: number,
     slipage: number,
-    onTxSend: (tx: string) => void = () => {}
+    onTxSend: (tx: string) => void = () => { }
   ) {
     if (!address) {
       return;
