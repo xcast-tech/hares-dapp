@@ -25,6 +25,7 @@ import ReactiveCard from "@/components/common/reactive-card";
 import ShinyCard from "@/components/common/shiny";
 import DotsLoadingIcon from "~@/icons/dots-loading.svg";
 import InfiniteScroll from "@/components/common/infiniteScroll";
+import ToggleButton from "@/components/common/toggle-button";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -35,6 +36,7 @@ export default function Home() {
   // const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
   const [end, setEnd] = useState(false);
   const [sort, setSort] = useState("created_timestamp");
+  const [lpSwitch, setLpSwitch] = useState(false);
 
   const pageSize = 12;
 
@@ -60,8 +62,9 @@ export default function Home() {
       search,
       page: page + 1,
       pageSize,
+      isGraduate: Number(lpSwitch),
     });
-  }, [loading, end, page, pageSize, sort, search]);
+  }, [loading, end, page, pageSize, sort, search, lpSwitch]);
 
   async function fetchList(data: TokenListApiData) {
     setLoading(true);
@@ -109,6 +112,13 @@ export default function Home() {
     setList([]);
   };
 
+  const handleToggleChange = (bool: boolean) => {
+    window.scrollTo({ top: 0 });
+
+    setLpSwitch(bool);
+    setList([]);
+  };
+
   // useEffect(() => {
   //   if (!paginationDomRef.current) return;
   //   const callback = (entries: IntersectionObserverEntry[]) => {
@@ -147,13 +157,14 @@ export default function Home() {
       search,
       page: 1,
       pageSize,
+      isGraduate: Number(lpSwitch),
     });
     return () => {
       setList([]);
       setEnd(false);
       setPage(1);
     };
-  }, [sort, search]);
+  }, [sort, search, lpSwitch]);
 
   return (
     <>
@@ -162,7 +173,10 @@ export default function Home() {
       </Head>
       <StyledHome>
         <StyledHomeBanner>
-          <ReactiveCard></ReactiveCard>
+          {/* <ReactiveCard></ReactiveCard> */}
+          <StyledHomeBannerSubTitle>
+            BAB-gated token launchpad on BNB Chain.
+          </StyledHomeBannerSubTitle>
           <StyledHomeBannerTitle>Build And Build For Fun</StyledHomeBannerTitle>
           <StyledHomeCreateCoin>
             <Link href="/create">
@@ -190,6 +204,20 @@ export default function Home() {
                 </StyledHomeSearchInputBox>
               </StyledHomeSearchLeft>
               <StyledHomeSearchRight>
+                <StyledLpSwitchBox disabled={loading}>
+                  <ToggleButton
+                    checked={lpSwitch}
+                    onChange={(bool) => {
+                      handleToggleChange(bool);
+                    }}
+                  >
+                    <span>PancakeSwap LP</span>
+                    <StyledLpSwitchStatus on={lpSwitch}>
+                      {lpSwitch ? "ON" : "OFF"}
+                    </StyledLpSwitchStatus>
+                  </ToggleButton>
+                </StyledLpSwitchBox>
+
                 <Select
                   // classNames={{
                   //   trigger:
@@ -295,26 +323,41 @@ const StyledHomeBanner = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 16px;
-  background: rgba(255, 255, 255, 0.01);
+  // gap: 16px;
+  background-image: url(/home-banner-bg.png);
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  background-position: center bottom;
   @media screen and (max-width: 1024px) {
     display: none;
   }
 `;
 
+const StyledHomeBannerSubTitle = styled.h2`
+  color: #e4e6e9;
+  text-align: center;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 1.8px;
+  opacity: 0.7;
+`;
+
 const StyledHomeBannerTitle = styled.h1`
   text-align: center;
-  font-family: var(--font-climate-crisis);
-  font-size: 48px;
+  font-family: var(--font-karantina);
+  font-size: 120px;
   font-style: normal;
   font-weight: 400;
-  line-height: normal;
+  line-height: 100%; /* 120px */
+  text-transform: uppercase;
 
   background: linear-gradient(
-    96deg,
-    #1c1c1c -9.54%,
-    #fff 49.6%,
-    #303030 105.26%
+    92deg,
+    #eaecef 27.72%,
+    #eaecef 52.18%,
+    #696969 106.08%
   );
   background-clip: text;
   -webkit-background-clip: text;
@@ -322,6 +365,7 @@ const StyledHomeBannerTitle = styled.h1`
 `;
 
 const StyledHomeCreateCoin = styled.div`
+  margin-top: 16px;
   position: relative;
   width: 100%;
   display: flex;
@@ -383,7 +427,8 @@ const StyledHomeSearch = styled.div`
     border-top: 0.5px solid rgba(255, 255, 255, 0.12);
     border-bottom: 0.5px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.01);
-    padding: 0 12px;
+    padding: 0;
+    height: 108px;
   }
 `;
 
@@ -400,6 +445,7 @@ const StyledHomeSearchContainer = styled.div`
   @media screen and (max-width: 1024px) {
     margin: 0;
     border: none;
+    flex-direction: column;
   }
 `;
 
@@ -421,6 +467,8 @@ const StyledHomeSearchLeft = styled.div`
   @media screen and (max-width: 1024px) {
     padding: 0 10px;
     gap: 10px;
+    height: 54px;
+    width: 100%;
     svg {
       width: 16px;
       height: 16px;
@@ -463,8 +511,42 @@ const StyledHomeSearchRight = styled.div`
   align-items: center;
   border-left: 1px solid rgba(255, 255, 255, 0.12);
   @media screen and (max-width: 1024px) {
-    border-left: 0.5px solid rgba(255, 255, 255, 0.12);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    height: 54px;
+    width: 100%;
   }
+`;
+
+const StyledLpSwitchBox = styled.div<{ disabled?: boolean }>`
+  height: 100%;
+  color: #eaecef;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%; /* 19.5px */
+  white-space: nowrap;
+  opacity: ${(props) => (props.disabled ? 0.4 : 1)};
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+`;
+
+const StyledLpSwitchStatus = styled.span<{ on: boolean }>`
+  display: flex;
+  width: 24px;
+  height: 16px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 2px;
+
+  color: #020308;
+  text-align: center;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 150%; /* 16.5px */
+  text-transform: uppercase;
+  background-color: ${(props) => (props.on ? "#05DD6B" : "#F31260")};
 `;
 
 const StyledHomeSwiper = styled.div``;

@@ -1,43 +1,14 @@
 import React, { FC, use, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  Avatar,
-  Button,
-  ButtonGroup,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownSection,
-  DropdownTrigger,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-  useDisclosure,
-} from "@heroui/react";
-import { Twitter } from "../twitter";
-import { Warpcast } from "../wrapcast";
-import { cn } from "@/lib/utils";
-import { Expand } from "../icons/expand";
-import { Close } from "../icons/close";
-import { HaresAiTwitterLink, HaresAiWarpcastLink } from "@/lib/constant";
-import { useConnect, useDisconnect, useAccountEffect } from "wagmi";
+import { useDisclosure } from "@heroui/react";
+import { useAccountEffect } from "wagmi";
 import ConnectButton from "@/components/connect-button";
 import styled from "@emotion/styled";
 import XIcon from "~@/icons/x.svg";
 import MenuIcon from "~@/icons/menu.svg";
 import { usePathname } from "next/navigation";
-import styles from "./style.module.scss";
 import DrawerRight from "@/components/common/drawer/right";
+import BABLogo from "~@/icons/bab-logo.svg";
 
 interface HeaderProps {
   enityOffset?: number;
@@ -127,7 +98,8 @@ export const Header: FC<HeaderProps> = ({ enityOffset = 0 }) => {
         <StyledHeaderLeft>
           <Link href="/">
             <StyledHeaderLogo>
-              <img src="/logo.png" alt="BAB.fun logo" />
+              {/* <img src="/logo.png" alt="BAB.fun logo" /> */}
+              <BABLogo />
             </StyledHeaderLogo>
           </Link>
           <StyledHeaderNavs>
@@ -407,17 +379,22 @@ const StyledHeaderLeft = styled.div`
 
 const StyledHeaderLogo = styled.div`
   // width: 80px;
-  color: #fcd535;
+  color: #eaecef;
   font-size: 28px;
   font-style: italic;
   font-weight: 900;
   line-height: 150%; /* 42px */
   letter-spacing: -0.56px;
-  > img {
-    height: 40px;
+  > svg {
+    width: 36px;
+    height: 36px;
   }
   @media screen and (max-width: 1024px) {
     // width: 70px;
+    > svg {
+      width: 30px;
+      height: 30px;
+    }
   }
 `;
 

@@ -24,6 +24,7 @@ export interface TokenListApiData {
   search?: string;
   page: number;
   pageSize: number;
+  isGraduate?: number;
 }
 
 export const tokenListApi = async (data: TokenListApiData) => {
@@ -152,3 +153,11 @@ export async function fetchTradeDatas(
     count: number;
   };
 }
+
+export const getTokenMeta = async (address: string) => {
+  const res = await request("/api/token/meta", {
+    method: "get",
+    params: { address },
+  });
+  return res?.data;
+};

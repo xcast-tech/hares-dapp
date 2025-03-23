@@ -13,7 +13,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { AppProvider } from "@/context/useAppContext";
 import { ReactElement, ReactNode, use, useEffect } from "react";
 import { cn, getDomain } from "@/lib/utils";
-import { Inter, Climate_Crisis } from "next/font/google";
+import { Inter, Climate_Crisis, Karantina } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 
 import styled from "@emotion/styled";
@@ -42,15 +42,23 @@ const climateCrisis = Climate_Crisis({
   variable: "--font-climate-crisis",
 });
 
+const karantina = Karantina({
+  subsets: ["latin"], // 字体子集
+  weight: ["400"], // 字体粗细
+  variable: "--font-karantina",
+});
+
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const pathname = usePathname();
 
   useEffect(() => {
     document.body.classList.add(inter.className);
     document.body.classList.add(climateCrisis.variable);
+    document.body.classList.add(karantina.variable);
     return () => {
       document.body.classList.remove(inter.className);
       document.body.classList.remove(climateCrisis.variable);
+      document.body.classList.remove(karantina.variable);
     };
   }, []);
 

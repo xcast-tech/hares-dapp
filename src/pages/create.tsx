@@ -89,6 +89,8 @@ const Create = () => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const disabledSubmit = !name || !ticker || !picture || loading || uploading;
 
   const socialMedias = useMemo(() => {
@@ -214,10 +216,14 @@ const Create = () => {
       <StyledCreateContainer>
         <StyledCreateTokenPreview>
           <StarsBG />
-          <ShinyCard color="#fff" radius={16} duration={5}>
+          <ShinyCard color="#fff" radius={16} duration={5} default>
             <StyledTokenCard>
               <StyledTokenCardPic>
-                <StyledTokenCardPicContainer>
+                <StyledTokenCardPicContainer
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                  }}
+                >
                   {picture && <img src={picture} alt="" />}
                 </StyledTokenCardPicContainer>
               </StyledTokenCardPic>
@@ -323,6 +329,7 @@ const Create = () => {
                 Image
               </StyledCreateTokenFormTitle>
               <CommonInput
+                ref={fileInputRef}
                 isRequired
                 name="file"
                 type="file"
@@ -553,6 +560,7 @@ const StyledTokenCardPicContainer = styled.div`
   overflow: hidden;
   background: rgba(255, 255, 255, 0.04);
   z-index: 1;
+  cursor: pointer;
   > img {
     position: absolute;
     width: 100%;

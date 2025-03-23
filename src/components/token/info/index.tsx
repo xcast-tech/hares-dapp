@@ -1,8 +1,15 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { FC, use, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import copy from "copy-to-clipboard";
 import { twMerge } from "tailwind-merge";
-import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/react";
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+} from "@heroui/react";
 import { Telegram } from "@/components/telegram";
 import { Website } from "@/components/website";
 import { Copy } from "@/components/copy";
@@ -18,11 +25,10 @@ import { toast } from "react-toastify";
 import { IToken } from "@/lib/types";
 import dayjs from "dayjs";
 import { Twitter2 } from "@/components/twitter2";
-import { Address, formatEther, parseEther } from "viem";
+import { Address, formatEther } from "viem";
 import {
   graduatedPool,
   graduatedPoolConstant,
-  mainChain,
   tokenSymbol,
 } from "@/lib/constant";
 
@@ -32,9 +38,10 @@ import TGIcon from "~@/icons/tg.svg";
 import WebsiteIcon from "~@/icons/website.svg";
 import { useAppContext } from "@/context/useAppContext";
 import ProgressBar from "@/components/common/progressBar";
-import styles from './index.module.scss'
+import styles from "./index.module.scss";
 import { useHaresContract } from "@/hooks/useHaresContract";
 import { useGlobalCtx } from "@/context/useGlobalCtx";
+import { getTokenMeta } from "@/lib/apis";
 
 interface InfoProps {
   detail?: IToken;
@@ -51,11 +58,26 @@ export const TokenInfo: FC<InfoProps> = ({
   const { ethPrice } = useAppContext();
   const { claim, getClaimable } = useHaresContract();
 
-  const [isClaimDialogVisible, setIsClaimDialogVisible] = useState(false)
-  const [claimableETH, setClaimableETH] = useState(0)
-  const [claimableToken, setClaimableToken] = useState(0)
+  const [isClaimDialogVisible, setIsClaimDialogVisible] = useState(false);
+  const [claimableETH, setClaimableETH] = useState(0);
+  const [claimableToken, setClaimableToken] = useState(0);
 
-  const shouldShowClaimBtn = detail?.address && detail?.lpPositionId && detail?.isGraduate && address?.toLowerCase() === detail?.creatorAddress.toLowerCase()
+  const [tokenMetaLoading, setTokenMetaLoading] = useState(true);
+  const [tokenMeta, setTokenMeta] = useState<{
+    holders: number;
+    liquidity: number;
+    volumeIn24h: number;
+  }>({
+    holders: 0,
+    liquidity: 0,
+    volumeIn24h: 0,
+  });
+
+  const shouldShowClaimBtn =
+    detail?.address &&
+    detail?.lpPositionId &&
+    detail?.isGraduate &&
+    address?.toLowerCase() === detail?.creatorAddress.toLowerCase();
 
   const currentEth = useMemo(() => {
     if (!totalSupply) return BigInt(0);
@@ -94,17 +116,57 @@ export const TokenInfo: FC<InfoProps> = ({
     ].filter((item) => !!item.url);
   }, [detail]);
 
+  const tokenTradeMetaDatas = useMemo(() => {
+    return [
+      {
+        title: "Holders",
+        value: formatNumber(tokenMeta.holders),
+      },
+      {
+        title: "Liquidity",
+        value: `$${formatTokenBalance(tokenMeta.liquidity)}`,
+      },
+      {
+        title: "24h Volume",
+        value: `$${formatTokenBalance(tokenMeta.volumeIn24h)}`,
+      },
+    ];
+  }, [tokenMeta]);
+
+  const getTokenTradeMeta = async (address: string) => {
+    setTokenMetaLoading(true);
+    const res = await getTokenMeta(address);
+    if (res.code === 0) {
+      setTokenMeta(res.data || {});
+    }
+    setTokenMetaLoading(false);
+  };
+
   useEffect(() => {
     const getClaimableFee = async () => {
-      if (!detail?.isGraduate || address?.toLowerCase() !== detail?.creatorAddress.toLowerCase() || !detail?.address || !detail?.lpPositionId) {
-        return
+      if (
+        !detail?.isGraduate ||
+        address?.toLowerCase() !== detail?.creatorAddress.toLowerCase() ||
+        !detail?.address ||
+        !detail?.lpPositionId
+      ) {
+        return;
       }
-      const res = await getClaimable(detail.creatorAddress as Address, (detail?.address as Address), detail.lpPositionId)
-      setClaimableETH(res.eth)
-      setClaimableToken(res.token)
-    }
-    getClaimableFee()
-  }, [detail, address])
+      const res = await getClaimable(
+        detail.creatorAddress as Address,
+        detail?.address as Address,
+        detail.lpPositionId
+      );
+      setClaimableETH(res.eth);
+      setClaimableToken(res.token);
+    };
+    getClaimableFee();
+  }, [detail, address]);
+
+  useEffect(() => {
+    if (!detail?.address) return;
+    getTokenTradeMeta(detail.address);
+  }, [detail?.address]);
 
   console.log("- socialMedias", socialMedias);
 
@@ -118,23 +180,36 @@ export const TokenInfo: FC<InfoProps> = ({
           <StyledTokenMetaHead>
             <StyledTokenMetaHeadLeft>
               <StyledTokenTit>{detail?.name}</StyledTokenTit>
-              <StyledTokenCreateTime>
-                Created at{" "}
-                {dayjs().to(dayjs((detail?.created_timestamp ?? 0) * 1000))}
-              </StyledTokenCreateTime>
+              <StyledTokenMetaHeadBottom>
+                <StyledTokenAddressBtn
+                  disableAnimation
+                  endContent={<Copy />}
+                  onPress={() => {
+                    copy(detail?.address ?? "");
+                    toast("copied to clipboard");
+                  }}
+                >
+                  <div className="flex-1">
+                    CA: {maskAddress(detail?.address)}
+                  </div>
+                </StyledTokenAddressBtn>
+                <StyledTokenMetaHeadBottomDivider />
+                <StyledTokenCreateTime>
+                  Created at{" "}
+                  {dayjs().to(dayjs((detail?.created_timestamp ?? 0) * 1000))}
+                </StyledTokenCreateTime>
+              </StyledTokenMetaHeadBottom>
+
               <StyledTokenMCA>MCap: ${marketCap}</StyledTokenMCA>
             </StyledTokenMetaHeadLeft>
             <StyledTokenMetaHeadRight>
-              {shouldShowClaimBtn && <StyledTokenAddressBtn onPress={() => setIsClaimDialogVisible(true)}>Claim fee</StyledTokenAddressBtn>}
-              <StyledTokenAddressBtn
-                endContent={<Copy />}
-                onPress={() => {
-                  copy(detail?.address ?? "");
-                  toast("copied to clipboard");
-                }}
-              >
-                <div className="flex-1">CA: {maskAddress(detail?.address)}</div>
-              </StyledTokenAddressBtn>
+              {shouldShowClaimBtn && (
+                <StyledClaimFeeBtn
+                  onPress={() => setIsClaimDialogVisible(true)}
+                >
+                  Claim fee
+                </StyledClaimFeeBtn>
+              )}
               {!!socialMedias.length && (
                 <StyledTokenSocialBox>
                   {socialMedias.map((item, index) => {
@@ -150,6 +225,16 @@ export const TokenInfo: FC<InfoProps> = ({
               )}
             </StyledTokenMetaHeadRight>
           </StyledTokenMetaHead>
+          <StyledTokenTradeMetaDatas loading={tokenMetaLoading}>
+            {tokenTradeMetaDatas.map((item, index) => {
+              return (
+                <StyledTokenTradeMeta key={index}>
+                  <span>{item.title}</span>
+                  <b>{item.value}</b>
+                </StyledTokenTradeMeta>
+              );
+            })}
+          </StyledTokenTradeMetaDatas>
           <StyledTokenDesc>{detail?.desc || "-"}</StyledTokenDesc>
           {detail && (
             <StyledPoolProgress>
@@ -183,6 +268,16 @@ export const TokenInfo: FC<InfoProps> = ({
         </StyledTokenMeta>
       </StyledTokenMetaBox>
       <MobileStyledTokenMeta>
+        <MobileStyledTokenTradeMetaDatas loading={tokenMetaLoading}>
+          {tokenTradeMetaDatas.map((item, index) => {
+            return (
+              <StyledTokenTradeMeta key={index}>
+                <span>{item.title}</span>
+                <b>{item.value}</b>
+              </StyledTokenTradeMeta>
+            );
+          })}
+        </MobileStyledTokenTradeMetaDatas>
         <MobileStyledTokenDesc>{detail?.desc || "-"}</MobileStyledTokenDesc>
         <MobileStyledTokenAddressBtn
           endContent={<Copy />}
@@ -195,7 +290,6 @@ export const TokenInfo: FC<InfoProps> = ({
             CA: {maskAddress(detail?.address, 10, 6)}
           </div>
         </MobileStyledTokenAddressBtn>
-        {shouldShowClaimBtn && <MobileStyledTokenAddressBtn onPress={() => setIsClaimDialogVisible(true)}>Claim fee</MobileStyledTokenAddressBtn>}
         {detail && (
           <MobileStyledPoolProgress>
             <MobileStyledPoolProgressBar>
@@ -236,24 +330,13 @@ export const TokenInfo: FC<InfoProps> = ({
             })}
           </MobileStyledTokenSocialBox>
         )}
+        {shouldShowClaimBtn && (
+          <StyledClaimFeeBtn onPress={() => setIsClaimDialogVisible(true)}>
+            Claim fee
+          </StyledClaimFeeBtn>
+        )}
       </MobileStyledTokenMeta>
 
-      {/* {!!socialMedias.length && <StyledInfoDivider />}
-
-      {!!socialMedias.length && (
-        <StyledTokenSocialBox>
-          {socialMedias.map((item, index) => {
-            return (
-              <StyledTokenSocialBtn key={index} fullWidth>
-                <StyledTokenSocialLink href={item.url} target="_blank">
-                  {item.icon}
-                  <span>{item.name}</span>
-                </StyledTokenSocialLink>
-              </StyledTokenSocialBtn>
-            );
-          })}
-        </StyledTokenSocialBox>
-      )} */}
       <Modal
         classNames={{
           base: styles["claim-modal-base"],
@@ -264,7 +347,7 @@ export const TokenInfo: FC<InfoProps> = ({
           footer: styles["claim-modal-footer"],
         }}
         isOpen={isClaimDialogVisible}
-        onOpenChange={v => setIsClaimDialogVisible(v)}
+        onOpenChange={(v) => setIsClaimDialogVisible(v)}
       >
         <ModalContent>
           {(onClose) => (
@@ -279,12 +362,12 @@ export const TokenInfo: FC<InfoProps> = ({
                 </div>
               </ModalBody>
               <ModalFooter>
-              <StyledModalButton
-                onPress={() => claim(detail?.address as Address)}
-              >
-                Claim
-              </StyledModalButton>
-            </ModalFooter>
+                <StyledModalButton
+                  onPress={() => claim(detail?.address as Address)}
+                >
+                  Claim
+                </StyledModalButton>
+              </ModalFooter>
             </>
           )}
         </ModalContent>
@@ -360,7 +443,7 @@ const StyledTokenMetaHeadLeft = styled.div`
 
 const StyledTokenTit = styled.div`
   overflow: hidden;
-  text-align: center;
+  text-align: left;
   text-overflow: ellipsis;
   font-size: 24px;
   font-style: normal;
@@ -373,6 +456,54 @@ const StyledTokenTit = styled.div`
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+`;
+
+const StyledTokenMetaHeadBottom = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  @media screen and (max-width: 1024px) {
+    margin-top: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+`;
+
+const StyledTokenAddressBtn = styled(Button)`
+  display: flex;
+  padding: 0;
+  height: 13px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+
+  color: rgba(234, 236, 239, 0.5);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  > svg {
+    color: rgba(234, 236, 239, 0.8);
+  }
+  &:hover {
+    color: rgba(234, 236, 239, 0.8);
+  }
+  @media screen and (max-width: 1024px) {
+    font-size: 11px;
+    text-align: left;
+  }
+`;
+
+const StyledTokenMetaHeadBottomDivider = styled.div`
+  width: 1px;
+  height: 12px;
+  background: rgba(234, 236, 239, 0.2);
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 const StyledTokenCreateTime = styled.p`
@@ -407,27 +538,38 @@ const StyledTokenMetaHeadRight = styled.div`
   }
 `;
 
-const StyledTokenAddressBtn = styled(Button)`
+const StyledClaimFeeBtn = styled(Button)`
   display: flex;
-  padding: 0 10px;
-  height: 32px;
-  align-items: center;
+  padding: 0px 12px;
   justify-content: center;
-  gap: 10px;
+  align-items: center;
+  gap: 6px;
+  align-self: stretch;
   border-radius: 4px;
-  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(274deg, #ffc720 0%, #fcd535 49.5%);
 
-  background: rgba(255, 255, 255, 0.05);
-
-  color: rgba(234, 236, 239, 0.8);
-
-  font-size: 11px;
+  color: #18191e;
+  font-size: 12px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 700;
   line-height: normal;
-  &:hover {
-    color: rgba(234, 236, 239, 1);
-    background: rgba(255, 255, 255, 0.1);
+  height: 32px;
+
+  @media screen and (max-width: 1024px) {
+    width: 100%;
+    display: flex;
+    height: 40px;
+    padding: 0px 12px;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+
+    color: #18191e;
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
   }
 `;
 
@@ -467,6 +609,63 @@ const StyledTokenSocialLink = styled.a`
   width: 100%;
   height: 100%;
   text-decoration: none;
+`;
+
+const MobileStyledTokenTradeMetaDatas = styled.div<{ loading?: boolean }>`
+  display: none;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  @media screen and (max-width: 1024px) {
+    display: ${({ loading }) => (loading ? "none" : "grid")};
+  }
+
+  .full {
+    grid-column: 1 / -1;
+  }
+`;
+
+const StyledTokenTradeMetaDatas = styled.div<{ loading?: boolean }>`
+  margin-top: 10px;
+  display: ${({ loading }) => (loading ? "none" : "flex")};
+  align-items: center;
+  gap: 8px;
+  @media screen and (max-width: 1024px) {
+    display: none;
+  }
+`;
+
+const StyledTokenTradeMeta = styled.div`
+  display: flex;
+  padding: 3px 8px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(234, 236, 239, 0.5);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 140%; /* 18.2px */
+  > b {
+    color: #eaecef;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 140%;
+  }
+
+  @media screen and (max-width: 1024px) {
+    display: flex;
+    height: 32px;
+    padding: 3px 6px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex: 1 0 0;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.08);
+  }
 `;
 
 const StyledTokenDesc = styled.p`

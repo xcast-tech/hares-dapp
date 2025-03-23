@@ -5,6 +5,7 @@ interface ShinyCardProps {
   radius?: number;
   duration?: number;
   disabled?: boolean;
+  default?: boolean;
   color?: string;
   children: React.ReactNode;
 }
@@ -14,6 +15,7 @@ const ShinyCard: FC<ShinyCardProps> = ({
   color = "#fcd535",
   disabled,
   children,
+  default: isDefault,
 }) => {
   return disabled ? (
     children
@@ -26,6 +28,7 @@ const ShinyCard: FC<ShinyCardProps> = ({
       }
       radius={radius}
       duration={duration}
+      default={isDefault}
     >
       {children}
     </StyledShinyCard>
@@ -34,7 +37,11 @@ const ShinyCard: FC<ShinyCardProps> = ({
 
 export default ShinyCard;
 
-const StyledShinyCard = styled.div<{ radius?: number; duration?: number }>`
+const StyledShinyCard = styled.div<{
+  radius?: number;
+  duration?: number;
+  default?: boolean;
+}>`
   :root {
     @keyframes gradient-angle {
       to {
@@ -101,7 +108,7 @@ const StyledShinyCard = styled.div<{ radius?: number; duration?: number }>`
   isolation: isolate;
   position: relative;
   overflow: hidden;
-  cursor: pointer;
+  cursor: ${(props) => (props.default ? "default" : "pointer")};
   outline-offset: 4px;
   font-family: inherit;
   border: 1px solid transparent;
