@@ -26,6 +26,7 @@ import ShinyCard from "@/components/common/shiny";
 import DotsLoadingIcon from "~@/icons/dots-loading.svg";
 import InfiniteScroll from "@/components/common/infiniteScroll";
 import ToggleButton from "@/components/common/toggle-button";
+import DotIcon from "~@/icons/dot.svg";
 
 export default function Home() {
   const [search, setSearch] = useState("");
@@ -211,10 +212,13 @@ export default function Home() {
                       handleToggleChange(bool);
                     }}
                   >
-                    <span>PancakeSwap LP</span>
                     <StyledLpSwitchStatus on={lpSwitch}>
-                      {lpSwitch ? "ON" : "OFF"}
+                      <DotIcon />
                     </StyledLpSwitchStatus>
+                    <span>PancakeSwap LP</span>
+                    {/* <StyledLpSwitchStatus on={lpSwitch}>
+                      {lpSwitch ? "ON" : "OFF"}
+                    </StyledLpSwitchStatus> */}
                   </ToggleButton>
                 </StyledLpSwitchBox>
 
@@ -526,27 +530,23 @@ const StyledLpSwitchBox = styled.div<{ disabled?: boolean }>`
   line-height: 150%; /* 19.5px */
   white-space: nowrap;
   opacity: ${(props) => (props.disabled ? 0.4 : 1)};
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
 `;
 
 const StyledLpSwitchStatus = styled.span<{ on: boolean }>`
+  margin-right: 8px;
   display: flex;
-  width: 24px;
-  height: 16px;
-  flex-direction: column;
+  width: 13px;
+  height: 13px;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  border-radius: 2px;
-
-  color: #020308;
-  text-align: center;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 150%; /* 16.5px */
-  text-transform: uppercase;
-  background-color: ${(props) => (props.on ? "#05DD6B" : "#F31260")};
+  border-radius: 50%;
+  border: 1px solid #eaecef;
+  padding: 3px;
+  > svg {
+    width: 7px;
+    height: 7px;
+    color: ${(props) => (props.on ? "#FCD535" : "transparent")};
+  }
 `;
 
 const StyledHomeSwiper = styled.div``;

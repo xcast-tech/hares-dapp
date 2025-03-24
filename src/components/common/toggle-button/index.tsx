@@ -5,7 +5,7 @@ const StyledLabel = styled.label`
   display: flex;
   align-items: center;
   padding: 0 24px;
-  gap: 4px;
+  // gap: 4px;
   user-select: none;
   height: 100%;
   cursor: pointer;

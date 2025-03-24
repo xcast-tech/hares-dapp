@@ -11,12 +11,14 @@ export default async function handler(
     search = "",
     sort = "created_timestamp",
     direction = "desc",
+    isGraduate = 0,
   } = req.query as {
     search?: string;
     page: string;
     pageSize: string;
     sort: string;
     direction: string;
+    isGraduate: string;
   };
 
   // const page = 1;
@@ -29,7 +31,8 @@ export default async function handler(
     .select(
       "id,name,symbol,address,totalSupply,creatorAddress,isGraduate,tokenUri,metadata"
     )
-    .eq('chain', mainChain.id)
+    .eq("chain", mainChain.id)
+    .eq("isGraduate", isGraduate)
     .or(
       `name.ilike.%${search}%,symbol.ilike.%${search}%,address.ilike.%${search}%`
     )
@@ -50,7 +53,7 @@ export default async function handler(
   const { error: error2, count } = await supabaseClient
     .from("Token")
     .select("*", { count: "exact", head: true })
-    .eq('chain', mainChain.id)
+    .eq("chain", mainChain.id)
     .or(
       `name.ilike.%${search}%,symbol.ilike.%${search}%,address.ilike.%${search}%`
     );
