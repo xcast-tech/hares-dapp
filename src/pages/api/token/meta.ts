@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         data: metaRes.error.message,
       });
     }
-    const liquidity = getTokenSellQuote(Number(token.totalSupply) / 1e18, Number(token.totalSupply) / 1e18);
+    const liquidity = getTokenSellQuote(Number(token?.totalSupply ?? 0) / 1e18, Number(token?.totalSupply ?? 0) / 1e18);
     return res.json({
       code: 0,
       data: {
