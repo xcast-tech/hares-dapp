@@ -124,28 +124,20 @@ export const TokenInfo: FC<InfoProps> = ({
       },
       {
         title: "Liquidity",
-        value: `$${formatNumber(tokenMeta.liquidity)}`,
+        value: detail?.isGraduate ? `$${formatNumber(tokenMeta.liquidity)}` : `$${formatNumber(tokenMeta.liquidity * ethPrice / 1e18)}`,
       },
       {
         title: "24h Volume",
-        value: `$${formatNumber(tokenMeta.volumeIn24h)}`,
+        value: detail?.isGraduate ? `$${formatNumber(tokenMeta.volumeIn24h)}` : `$${formatNumber(tokenMeta.volumeIn24h * ethPrice / 1e18)}`,
       },
     ];
-  }, [tokenMeta]);
+  }, [tokenMeta, ethPrice]);
 
   const getTokenTradeMeta = async (address: string) => {
     setTokenMetaLoading(true);
     const res = await getTokenMeta(address);
     if (res.code === 0) {
-      if (detail?.isGraduate) {
-        setTokenMeta(res.data || {});
-      } else {
-        setTokenMeta({
-          holders: Number(res?.holders),
-          liquidity: Number(res?.liquidity * ethPrice / 1e18),
-          volumeIn24h: Number(res?.volumeIn24h * ethPrice / 1e18),
-        });
-      }
+      setTokenMeta(res.data || {});
     }
     setTokenMetaLoading(false);
   };
