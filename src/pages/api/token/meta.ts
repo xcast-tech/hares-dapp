@@ -11,13 +11,14 @@ export default async function handler(
   const finalAddress = (address as string).toLowerCase();
 
   if (!address) {
-    res.json({
+    return res.json({
       code: 400,
       data: "address is required",
     });
   }
 
-  const tokenRes = await supabaseClient.from("Token").select('*').eq("address", finalAddress).single();
+  const tokenRes = await supabaseClient.from("Token").select('*').eq("address", finalAddress)
+  console.log(tokenRes.data)
 
   if (tokenRes.error) {
     return res.json({
@@ -46,8 +47,8 @@ export default async function handler(
       code: 0,
       data: {
         holders: metaRes.data[0].holders,
-        liquidity,
-        volumeIn24h: metaRes.data[0].volumn,
+        liquidity: liquidity.toString(),
+        volumeIn24h: BigInt(metaRes.data[0].volumn).toString(),
       },
     });
   }
