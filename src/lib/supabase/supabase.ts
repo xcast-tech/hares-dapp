@@ -245,6 +245,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_holder_count: {
+        Args: {
+          p_address: string
+        }
+        Returns: number
+      }
+      get_meta: {
+        Args: {
+          p_address: string
+          p_fromtime: number
+        }
+        Returns: {
+          holders: number
+          volumn: number
+        }[]
+      }
       get_token_list: {
         Args: {
           p_search: string
@@ -304,6 +320,13 @@ export type Database = {
           isGraduate: number
           created_at: number
         }[]
+      }
+      get_volumn: {
+        Args: {
+          p_address: string
+          fromtime: number
+        }
+        Returns: number
       }
     }
     Enums: {

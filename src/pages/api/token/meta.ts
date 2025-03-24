@@ -1,7 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { mainChain } from "@/lib/constant";
 import { supabaseClient } from "@/lib/supabase";
-import { chain, pick } from "lodash-es";
+import { getTokenSellQuote } from "@/lib/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -18,21 +17,58 @@ export default async function handler(
     });
   }
 
-  // to do: get holders
-  const holders = 10;
+  const tokenRes = await supabaseClient.from("Token").select('*').eq("address", finalAddress).single();
 
-  // to do: get liquidity
-  const liquidity = 100123918239e18;
+  if (tokenRes.error) {
+    return res.json({
+      code: 500,
+      data: tokenRes.error.message,
+    });
+  }
 
-  // to do: get volume in 24h
-  const volumeIn24h = 20000e18;
+  if (!tokenRes.data.isGraduate) {
+    const token = tokenRes.data;
+    const metaRes = await supabaseClient.rpc('get_meta', {
+      p_address: finalAddress,
+      p_fromtime: Math.floor(Date.now() / 1000) - 3600 * 24,
+    })
+
+    if (metaRes.error) {
+      return res.json({
+        code: 500,
+        data: metaRes.error.message,
+      });
+    }
+
+    const liquidity = getTokenSellQuote(Number(token.totalSupply), Number(token.totalSupply))
+
+    return res.json({
+      code: 0,
+      data: {
+        holders: metaRes.data[0].holders,
+        liquidity,
+        volumeIn24h: metaRes.data[0].volumn,
+      },
+    });
+  }
+
+  const aveRes = await fetch(`https://dev.ave-api.com/v2/tokens/${finalAddress}-bsc`).then((res) => res.json());
+
+  if (aveRes.msg !== 'SUCCESS') {
+    return res.json({
+      code: 500,
+      data: aveRes.msg,
+    });
+  }
+
+  const { holders, tvl, tx_volume_u_24h } = aveRes.data;
 
   res.json({
     code: 0,
     data: {
       holders,
-      liquidity,
-      volumeIn24h,
+      liquidity: tvl,
+      volumeIn24h: tx_volume_u_24h
     },
   });
 }

@@ -84,9 +84,9 @@ export const TokenInfo: FC<InfoProps> = ({
     return isGraduated
       ? graduatedPool
       : getTokenSellQuote(
-          Number(totalSupply) / 1e18,
-          Number(totalSupply) / 1e18
-        );
+        Number(totalSupply) / 1e18,
+        Number(totalSupply) / 1e18
+      );
   }, [isGraduated, totalSupply]);
 
   const marketCap = useMemo(() => {
@@ -124,11 +124,11 @@ export const TokenInfo: FC<InfoProps> = ({
       },
       {
         title: "Liquidity",
-        value: `$${formatTokenBalance(tokenMeta.liquidity)}`,
+        value: `$${formatNumber(tokenMeta.liquidity)}`,
       },
       {
         title: "24h Volume",
-        value: `$${formatTokenBalance(tokenMeta.volumeIn24h)}`,
+        value: `$${formatNumber(tokenMeta.volumeIn24h)}`,
       },
     ];
   }, [tokenMeta]);
@@ -137,7 +137,15 @@ export const TokenInfo: FC<InfoProps> = ({
     setTokenMetaLoading(true);
     const res = await getTokenMeta(address);
     if (res.code === 0) {
-      setTokenMeta(res.data || {});
+      if (detail?.isGraduate) {
+        setTokenMeta(res.data || {});
+      } else {
+        setTokenMeta({
+          holders: Number(res?.holders),
+          liquidity: Number(res?.liquidity * ethPrice / 1e18),
+          volumeIn24h: Number(res?.volumeIn24h * ethPrice / 1e18),
+        });
+      }
     }
     setTokenMetaLoading(false);
   };
@@ -256,9 +264,9 @@ export const TokenInfo: FC<InfoProps> = ({
                   {currentEth === graduatedPool
                     ? graduatedPoolConstant
                     : formatDecimalNumber(
-                        formatEther((currentEth * BigInt(100)) / BigInt(99)),
-                        4
-                      )}
+                      formatEther((currentEth * BigInt(100)) / BigInt(99)),
+                      4
+                    )}
                   /&nbsp;
                   {graduatedPoolConstant} {tokenSymbol}
                 </b>
@@ -295,9 +303,8 @@ export const TokenInfo: FC<InfoProps> = ({
             <MobileStyledPoolProgressBar>
               <MobileStyledPoolProgressBarInner
                 style={{
-                  width: `${
-                    (Number(currentEth) / Number(graduatedPool)) * 100
-                  }%`,
+                  width: `${(Number(currentEth) / Number(graduatedPool)) * 100
+                    }%`,
                 }}
               ></MobileStyledPoolProgressBarInner>
             </MobileStyledPoolProgressBar>
@@ -307,9 +314,9 @@ export const TokenInfo: FC<InfoProps> = ({
                 {currentEth === graduatedPool
                   ? graduatedPoolConstant
                   : formatDecimalNumber(
-                      formatEther((currentEth * BigInt(100)) / BigInt(99)),
-                      4
-                    )}
+                    formatEther((currentEth * BigInt(100)) / BigInt(99)),
+                    4
+                  )}
                 /&nbsp;
                 {graduatedPoolConstant} {tokenSymbol}
               </b>
