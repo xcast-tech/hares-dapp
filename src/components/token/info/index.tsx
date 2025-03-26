@@ -73,6 +73,10 @@ export const TokenInfo: FC<InfoProps> = ({
     volumeIn24h: 0,
   });
 
+  const shouldShowClaimEntry = detail?.address &&
+    detail?.lpPositionId &&
+    detail?.isGraduate
+
   const shouldShowClaimBtn =
     detail?.address &&
     detail?.lpPositionId &&
@@ -203,7 +207,7 @@ export const TokenInfo: FC<InfoProps> = ({
               <StyledTokenMCA>MCap: ${marketCap}</StyledTokenMCA>
             </StyledTokenMetaHeadLeft>
             <StyledTokenMetaHeadRight>
-              {shouldShowClaimBtn && (
+              {shouldShowClaimEntry && (
                 <StyledClaimFeeBtn
                   onPress={() => setIsClaimDialogVisible(true)}
                 >
@@ -329,7 +333,7 @@ export const TokenInfo: FC<InfoProps> = ({
             })}
           </MobileStyledTokenSocialBox>
         )}
-        {shouldShowClaimBtn && (
+        {shouldShowClaimEntry && (
           <StyledClaimFeeBtn onPress={() => setIsClaimDialogVisible(true)}>
             Claim fee
           </StyledClaimFeeBtn>
@@ -360,13 +364,15 @@ export const TokenInfo: FC<InfoProps> = ({
                   {detail?.symbol}: {formatTokenBalance(claimableToken)}
                 </div>
               </ModalBody>
-              <ModalFooter>
-                <StyledModalButton
-                  onPress={() => claim(detail?.address as Address)}
-                >
-                  Claim
-                </StyledModalButton>
-              </ModalFooter>
+              {shouldShowClaimBtn &&
+                <ModalFooter>
+                  <StyledModalButton
+                    onPress={() => claim(detail?.address as Address)}
+                  >
+                    Claim
+                  </StyledModalButton>
+                </ModalFooter>
+              }
             </>
           )}
         </ModalContent>
